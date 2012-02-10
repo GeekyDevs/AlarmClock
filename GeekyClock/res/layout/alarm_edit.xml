@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+	android:layout_height="wrap_content" 
+	android:layout_width="fill_parent" 
+	android:orientation="vertical" 
+	android:id="@+id/ea_ll_root">
+	
+	<ScrollView android:layout_height="wrap_content" 
+		android:layout_width="fill_parent" 
+		android:id="@+id/ea_sv_full_scroller">
+
+		<LinearLayout android:orientation="vertical" 
+					  android:layout_height="fill_parent" 
+					  android:layout_width="fill_parent">
+
+			<LinearLayout android:layout_height="wrap_content" 
+						  android:layout_width="fill_parent" 
+						  android:background="@android:drawable/dark_header">
+						  
+				<TextView android:layout_width="wrap_content" 
+						  android:layout_height="wrap_content" 
+						  android:textColor="#FFF" 
+						  android:padding="2dip" 
+						  android:textStyle="bold" 
+						  android:text="@string/alarm_header">
+				</TextView>
+			</LinearLayout>
+			
+			<View android:layout_width="fill_parent" 
+				  android:layout_height="1dip" 
+				  android:background="@android:drawable/divider_horizontal_dark">
+			</View>
+			
+			<LinearLayout android:id="@+id/ea_ll_alarm_enabled" 
+						  android:focusable="true" 
+						  android:orientation="horizontal" 
+						  android:layout_width="fill_parent" 
+						  android:background="@android:drawable/list_selector_background" 
+						  android:clickable="true" 
+						  android:layout_height="wrap_content" 
+						  android:gravity="center_vertical" 
+						  android:padding="10dip" 
+						  android:minHeight="70dip">
+						  
+				<TextView android:layout_width="wrap_content" 
+						  android:layout_height="wrap_content" 
+						  android:textSize="18dip" 
+						  android:textColor="#FFF" 
+						  android:layout_weight="1" 
+						  android:text="@string/enable_alarm">
+				</TextView>
+				
+				<CheckBox android:layout_width="wrap_content" 
+						  android:layout_height="wrap_content" 
+						  android:id="@+id/ea_chk_alarm_enabled" 
+						  android:focusable="false" 
+						  android:focusableInTouchMode="false">
+				</CheckBox>		
+			</LinearLayout>
+			
+			<View android:layout_width="fill_parent" 
+				  android:layout_height="1dip" 
+				  android:background="@android:drawable/divider_horizontal_dark">
+			</View>
+			
+			<LinearLayout android:layout_height="wrap_content" 
+						  android:focusable="true" 
+						  android:layout_width="fill_parent" 
+						  android:padding="10dip" 
+						  android:background="@android:drawable/list_selector_background" 
+						  android:clickable="true" 
+						  android:orientation="vertical" 
+						  android:minHeight="70dip" 
+						  android:id="@+id/ea_ll_label">
+						  
+				<TextView android:layout_width="wrap_content" 
+						  android:layout_height="wrap_content" 
+						  android:textColor="#FFF" 
+						  android:textSize="18dip" 
+						  android:text="@string/label">
+				</TextView>
+				
+				<TextView android:layout_width="wrap_content" 
+						  android:layout_height="wrap_content" 
+						  android:text="@string/label_msg" 
+						  android:id="@+id/ea_tv_label">
+				</TextView>
+			</LinearLayout>
+		
+			<View android:layout_width="fill_parent" 
+				  android:layout_height="1dip" 
+				  android:background="@android:drawable/divider_horizontal_dark">
+			</View>
+			
+			<LinearLayout android:layout_height="wrap_content" 
+						  android:id="@+id/ea_ll_alarm_time" 
+						  android:focusable="true" 
+						  android:layout_width="fill_parent" 
+						  android:padding="10dip" 
+						  android:background="@android:drawable/list_selector_background" 
+						  android:clickable="true" 
+						  android:orientation="vertical" 
+						  android:minHeight="70dip">
+						  
+				<TextView android:layout_width="wrap_content" 
+						  android:layout_height="wrap_content" 
+						  android:textSize="18dip" 
+						  android:textColor="#FFF" 
+						  android:text="@string/alarm_time">
+				</TextView>
+				
+				<TextView android:layout_width="wrap_content" 
+						  android:layout_height="wrap_content" 
+						  android:id="@+id/ea_tv_time">
+				</TextView>
+			</LinearLayout>
+
+			<View android:layout_width="fill_parent" 
+				  android:layout_height="1dip" 
+				  android:background="@android:drawable/divider_horizontal_dark">
+			</View>
+			
+			<LinearLayout android:layout_height="wrap_content" 
+						  android:id="@+id/ea_ll_alarm_repeat" 
+						  android:focusable="true" 
+						  android:layout_width="fill_parent" 
+						  android:padding="10dip" 
+						  android:background="@android:drawable/list_selector_background" 
+						  android:clickable="true" 
+						  android:orientation="vertical" 
+						  android:minHeight="70dip">
+			
+				<TextView android:layout_width="wrap_content" 
+						  android:layout_height="wrap_content" 
+						  android:textColor="#FFF" 
+						  android:textSize="18dip" 
+						  android:text="@string/alarm_repeat">
+				</TextView>
+			
+				<TextView android:layout_width="wrap_content" 
+						  android:layout_height="wrap_content" 
+						  android:id="@+id/ea_tv_alarm_repeat">
+				</TextView>
+			</LinearLayout>
+			
+			<View android:layout_width="fill_parent" 
+				  android:layout_height="1dip" 
+				  android:background="@android:drawable/divider_horizontal_dark">
+			</View>
+			
+			<LinearLayout android:layout_height="wrap_content" 
+						  android:id="@+id/ea_ll_alarm_date" 
+						  android:focusable="true" 
+						  android:layout_width="fill_parent" 
+						  android:padding="10dip" 
+						  android:background="@android:drawable/list_selector_background" 
+						  android:clickable="true" 
+						  android:orientation="vertical" 
+						  android:minHeight="70dip">
+			
+				<TextView android:layout_width="wrap_content" 
+						  android:layout_height="wrap_content" 
+						  android:textColor="#FFF" 
+						  android:textSize="18dip" 
+						  android:text="@string/alarm_date">
+				</TextView>
+			
+				<TextView android:layout_width="wrap_content" 
+						  android:layout_height="wrap_content" 
+						  android:id="@+id/ea_tv_alarm_date">
+				</TextView>
+			</LinearLayout>		
+			
+			<View android:layout_width="fill_parent" 
+				  android:layout_height="1dip" 
+				  android:background="@android:drawable/divider_horizontal_dark">
+			</View>
+			
+			<LinearLayout android:layout_height="wrap_content" 
+						  android:layout_width="fill_parent" 
+						  android:background="@android:drawable/dark_header">
+						  
+				<TextView android:layout_width="wrap_content" 
+						  android:layout_height="wrap_content" 
+						  android:textColor="#FFF" 
+						  android:padding="2dip" 
+						  android:textStyle="bold" 
+						  android:text="@string/alarm_mode_header">
+				</TextView>
+			</LinearLayout>
+			
+			<View android:layout_width="fill_parent" 
+				  android:layout_height="1dip" 
+				  android:background="@android:drawable/divider_horizontal_dark">
+			</View>
+			
+			<LinearLayout android:focusable="true" 
+						  android:orientation="horizontal" 
+						  android:layout_width="fill_parent" 
+						  android:background="@android:drawable/list_selector_background" 
+						  android:clickable="true" 
+						  android:layout_height="wrap_content" 
+						  android:gravity="center_vertical" 
+						  android:padding="10dip" 
+						  android:minHeight="70dip" 
+						  android:id="@+id/enable_failsafe">
+						  
+				<LinearLayout android:layout_height="wrap_content" 
+							  android:orientation="vertical" 
+							  android:layout_width="wrap_content" 
+							  android:layout_weight="1">
+
+					<TextView android:layout_width="wrap_content" 
+							  android:layout_height="wrap_content" 
+							  android:textSize="18dip" 
+							  android:textColor="#FFF" 
+							  android:layout_weight="1" 
+							  android:text="@string/failsafe_mode">
+					</TextView>
+					
+					<TextView android:layout_width="wrap_content" 
+							  android:layout_height="wrap_content" 
+							  android:text="@string/failsafe_desc">
+					</TextView>
+				</LinearLayout>
+				
+				<CheckBox android:layout_width="wrap_content" 
+						  android:layout_height="wrap_content" 
+						  android:focusable="false" 
+						  android:focusableInTouchMode="false" 
+						  android:id="@+id/chk_failsafe_mode">
+				</CheckBox>
+			</LinearLayout>
+			
+			<View android:layout_width="fill_parent" 
+				  android:layout_height="1dip" 
+				  android:background="@android:drawable/divider_horizontal_dark">
+			</View>
+			
+			<LinearLayout android:focusable="true" 
+						  android:orientation="horizontal" 
+						  android:layout_width="fill_parent" 
+						  android:background="@android:drawable/list_selector_background" 
+						  android:clickable="true" 
+						  android:layout_height="wrap_content" 
+						  android:gravity="center_vertical" 
+						  android:padding="10dip" 
+						  android:minHeight="70dip" 
+						  android:id="@+id/enable_challenge">
+						  
+				<LinearLayout android:layout_height="wrap_content" 
+							  android:orientation="vertical" 
+							  android:layout_width="wrap_content" 
+							  android:layout_weight="1">
+
+					<TextView android:layout_width="wrap_content" 
+							  android:layout_height="wrap_content" 
+							  android:textSize="18dip" 
+							  android:textColor="#FFF" 
+							  android:layout_weight="1" 
+							  android:text="@string/challenge_mode">
+					</TextView>
+					
+					<TextView android:layout_width="wrap_content" 
+							  android:layout_height="wrap_content" 
+							  android:text="@string/challenge_desc">
+					</TextView>
+				</LinearLayout>
+				
+				<CheckBox android:layout_width="wrap_content" 
+						  android:layout_height="wrap_content" 
+						  android:focusable="false" 
+						  android:focusableInTouchMode="false" 
+						  android:id="@+id/chk_challenge_mode">
+				</CheckBox>
+			</LinearLayout>
+			
+			<View android:layout_width="fill_parent" 
+				  android:layout_height="1dip" 
+				  android:background="@android:drawable/divider_horizontal_dark">
+			</View>
+			
+		</LinearLayout>
+	</ScrollView>
+</LinearLayout>
+      
