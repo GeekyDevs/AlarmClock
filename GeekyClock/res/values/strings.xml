@@ -6,27 +6,31 @@
     <string name="menu_toggle_notif">Toggle Notification</string>
     <string name="empty_alarm_list">No Alarm to Display</string>
 
-    <string name="edit_alarm_title">Edit Alarm</string>
+    <string name="edit_alarm_title">Set alarm</string>
     <string name="alarm_header">Alarm Settings</string>
     <string name="enable_alarm">Turn Alarm On</string>
-    <string name="label">Label</string>
+    <string name="label">Name</string>
     <string name="label_msg">Enter a custom label for your alarm</string>
     <string name="alarm_time">Time</string>
-    <string name="alarm_repeat">Repeat</string>
-    <string name="alarm_date">Date</string>
+    <string name="alarm_repeat">Alarm repeat</string>
     
-    <string name="alarm_mode_header">Alarm Modes</string>
-    <string name="failsafe_mode">FailSafe Mode</string>
+    <string name="alarm_mode_header">WakeUp Settings</string>
+    <string name="failsafe_mode">FailSafe</string>
     <string name="failsafe_desc">
         An alarm mode that restricts user to a certain number
         of snoozes.  When the limit is reached, the alarm will remain
         active for a duration without the ability for the user to disable it. After
         that time, the alarm will automatically turn off. </string>
-    <string name="challenge_mode">WakeUp Challenge Mode</string>
+    <string name="snooze_limit">Snooze Limit</string>
+    <string name="challenge_mode">WakeUp Challenge</string>
     <string name="challenge_desc">
         An alarm mode that poses a mathematical problem for the user to solve in
         order to snooze or turn off alarm.
     </string>
+    
+    <string name="alarm_settings_header">Alarm Settings</string>
+    <string name="alarm_sound">Sound</string>
+    <string name="alarm_vibrate">Vibrate</string>
     
     <string name="volume_header">Volume Options</string>
     <string name="set_volume">Set Media Volume</string>

@@ -18,7 +18,7 @@
 						  android:layout_height="wrap_content" 
 						  android:orientation="vertical">
 
-				<LinearLayout android:id="@+id/sr_ll_rtp_mon" 
+				<LinearLayout android:id="@+id/sr_ll_rpt_mon" 
 							  android:focusable="true" 
 							  android:orientation="horizontal" 
 							  android:layout_width="fill_parent" 
@@ -39,7 +39,7 @@
 					
 					<CheckBox android:layout_width="wrap_content" 
 							  android:layout_height="wrap_content" 
-							  android:id="@+id/sr_chk_rpt_mon" 
+							  android:id="@+id/rpt_mon" 
 							  android:focusable="false" 
 							  android:focusableInTouchMode="false">
 					</CheckBox>
@@ -50,7 +50,7 @@
 				  android:background="@android:drawable/divider_horizontal_dark">
 			</View>
 
-			<LinearLayout android:id="@+id/sr_ll_rtp_tues" 
+			<LinearLayout android:id="@+id/sr_ll_rpt_tues" 
 						  android:focusable="true" 
 						  android:orientation="horizontal" 
 						  android:layout_width="fill_parent" 
@@ -71,7 +71,7 @@
 				
 				<CheckBox android:layout_width="wrap_content" 
 						  android:layout_height="wrap_content" 
-						  android:id="@+id/sr_chk_rpt_tues" 
+						  android:id="@+id/rpt_tues" 
 						  android:focusable="false" 
 						  android:focusableInTouchMode="false">
 				</CheckBox>
@@ -82,7 +82,7 @@
 				  android:background="@android:drawable/divider_horizontal_dark">
 			</View>
 			
-			<LinearLayout android:id="@+id/sr_ll_rtp_wed" 
+			<LinearLayout android:id="@+id/sr_ll_rpt_wed" 
 						  android:focusable="true" 
 						  android:orientation="horizontal" 
 						  android:layout_width="fill_parent" 
@@ -103,7 +103,7 @@
 				
 				<CheckBox android:layout_width="wrap_content" 
 						  android:layout_height="wrap_content" 
-						  android:id="@+id/sr_chk_rpt_wed" 
+						  android:id="@+id/rpt_wed" 
 						  android:focusable="false" 
 						  android:focusableInTouchMode="false">
 				</CheckBox>
@@ -114,7 +114,7 @@
 				  android:background="@android:drawable/divider_horizontal_dark">
 			</View>
 			
-			<LinearLayout android:id="@+id/sr_ll_rtp_thur" 
+			<LinearLayout android:id="@+id/sr_ll_rpt_thur" 
 						  android:focusable="true" 
 						  android:orientation="horizontal" 
 						  android:layout_width="fill_parent" 
@@ -125,7 +125,7 @@
 						  android:padding="10dip" 
 						  android:minHeight="70dip">
 						  
-				<TextView android:layout_width="wrap_content" 
+				<TextView android:layout_width="0dip" 
 						  android:layout_height="wrap_content" 
 						  android:textSize="18dip" 
 						  android:textColor="#FFF" 
@@ -135,7 +135,7 @@
 				
 				<CheckBox android:layout_width="wrap_content" 
 						  android:layout_height="wrap_content" 
-						  android:id="@+id/sr_chk_rpt_thur" 
+						  android:id="@+id/rpt_thur" 
 						  android:focusable="false" 
 						  android:focusableInTouchMode="false">
 				</CheckBox>
@@ -146,7 +146,7 @@
 				  android:background="@android:drawable/divider_horizontal_dark">
 			</View>
 			
-			<LinearLayout android:id="@+id/sr_ll_rtp_fri" 
+			<LinearLayout android:id="@+id/sr_ll_rpt_fri" 
 						  android:focusable="true" 
 						  android:orientation="horizontal" 
 						  android:layout_width="fill_parent" 
@@ -167,7 +167,7 @@
 				
 				<CheckBox android:layout_width="wrap_content" 
 						  android:layout_height="wrap_content" 
-						  android:id="@+id/sr_chk_rpt_fri" 
+						  android:id="@+id/rpt_fri" 
 						  android:focusable="false" 
 						  android:focusableInTouchMode="false">
 				</CheckBox>
@@ -178,7 +178,7 @@
 				  android:background="@android:drawable/divider_horizontal_dark">
 			</View>
 			
-			<LinearLayout android:id="@+id/sr_ll_rtp_sat" 
+			<LinearLayout android:id="@+id/sr_ll_rpt_sat" 
 						  android:focusable="true" 
 						  android:orientation="horizontal" 
 						  android:layout_width="fill_parent" 
@@ -199,7 +199,7 @@
 				
 				<CheckBox android:layout_width="wrap_content" 
 						  android:layout_height="wrap_content" 
-						  android:id="@+id/sr_chk_rpt_sat" 
+						  android:id="@+id/rpt_sat" 
 						  android:focusable="false" 
 						  android:focusableInTouchMode="false">
 				</CheckBox>
@@ -210,7 +210,7 @@
 				  android:background="@android:drawable/divider_horizontal_dark">
 			</View>
 			
-			<LinearLayout android:id="@+id/sr_ll_rtp_sun" 
+			<LinearLayout android:id="@+id/sr_ll_rpt_sun" 
 						  android:focusable="true" 
 						  android:orientation="horizontal" 
 						  android:layout_width="fill_parent" 
@@ -231,7 +231,7 @@
 				
 				<CheckBox android:layout_width="wrap_content" 
 						  android:layout_height="wrap_content" 
-						  android:id="@+id/sr_chk_rpt_sun" 
+						  android:id="@+id/rpt_sun" 
 						  android:focusable="false" 
 						  android:focusableInTouchMode="false">
 				</CheckBox>
