@@ -36,4 +36,8 @@
     <string name="set_volume">Set Media Volume</string>
     <string name="set_volume_desc">Change the media volume before launching the app.</string>
     
+    <string name="ok_button">OK</string>
+    <string name="save_button">Save</string>
+    <string name="cancel_button">Cancel</string>
+    
 </resources>

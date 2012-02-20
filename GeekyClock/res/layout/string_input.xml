@@ -16,7 +16,7 @@
 		android:padding="10dip" 
 		android:layout_width="fill_parent" 
 		android:visibility="gone" 
-		android:id="@+id/si_tv_long_message">
+		android:id="@+id/label_header">
 	</TextView>
 	
 	<LinearLayout 
@@ -24,33 +24,17 @@
 		android:layout_width="fill_parent" 
 		android:orientation="horizontal" 
 		android:gravity="center_vertical">
-		
-		<TextView 
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content" 
-			android:padding="10dip" 
-			android:textSize="16dip" 
-			android:textColor="#FFF" 
-			android:text="Timeout:" 
-			android:id="@+id/si_tv_short_message">
-		</TextView>
-		
+
 		<EditText 
-			android:layout_width="wrap_content" 
+		    android:layout_marginTop="4dip"
+		    android:layout_marginBottom="4dip"
+			android:layout_width="0dip" 
 			android:layout_height="wrap_content" 
 			android:lines="1" 
-			android:text="60" 
 			android:layout_weight="1"
-			android:id="@+id/si_et_input">
+			android:id="@+id/edit_input">
 		</EditText>
 	</LinearLayout>
-	
-	<Button 
-		android:layout_height="wrap_content" 
-		android:id="@+id/si_btn_test" 
-		android:text="Test Now" 
-		android:layout_width="fill_parent">
-	</Button>
 	
 	<LinearLayout 
 		android:layout_height="wrap_content" 
@@ -62,16 +46,16 @@
 		<Button 
 			android:layout_height="wrap_content" 
 			android:layout_width="100dip" 
-			android:text="OK" 
-			android:id="@+id/si_btn_ok">
+			android:text="@string/ok_button" 
+			android:id="@+id/ok_label">
 		</Button>
 	
 		<Button 
 			android:layout_height="wrap_content" 
-			android:text="Cancel" 
+			android:text="@string/cancel_button" 
 			android:layout_width="100dip" 
 			android:layout_margin="5dip" 
-			android:id="@+id/si_btn_cancel">
+			android:id="@+id/cancel_label">
 		</Button>
 	</LinearLayout>
 </LinearLayout>

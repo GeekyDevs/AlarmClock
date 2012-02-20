@@ -6,13 +6,15 @@
 	android:orientation="vertical" 
 	android:id="@+id/ea_ll_root">
 	
-	<ScrollView android:layout_height="wrap_content" 
+	<ScrollView 
+	    android:layout_height="wrap_content" 
 		android:layout_width="fill_parent" 
 		android:id="@+id/ea_sv_full_scroller">
-
-		<LinearLayout android:orientation="vertical" 
-					  android:layout_height="fill_parent" 
-					  android:layout_width="fill_parent">
+		
+		<LinearLayout 
+		    android:orientation="vertical" 
+			android:layout_height="wrap_content" 
+			android:layout_width="fill_parent">
 			
 		    <View android:layout_width="fill_parent" 
 				  android:layout_height="1dip" 
@@ -84,7 +86,7 @@
 						  android:clickable="true" 
 						  android:orientation="vertical" 
 						  android:minHeight="70dip" 
-						  android:id="@+id/ea_ll_label">
+						  android:id="@+id/ll_label">
 						  
 				<TextView android:layout_width="wrap_content" 
 						  android:layout_height="wrap_content" 
@@ -96,7 +98,7 @@
 				<TextView android:layout_width="wrap_content" 
 						  android:layout_height="wrap_content" 
 						  android:text="@string/label_msg" 
-						  android:id="@+id/ea_tv_label">
+						  android:id="@+id/label_view">
 				</TextView>
 			</LinearLayout>
 
@@ -136,14 +138,13 @@
 						  
 				<LinearLayout android:layout_height="wrap_content" 
 							  android:orientation="vertical" 
-							  android:layout_width="wrap_content" 
+							  android:layout_width="0dip" 
 							  android:layout_weight="1">
 
 					<TextView android:layout_width="wrap_content" 
-							  android:layout_height="wrap_content" 
+							  android:layout_height="fill_parent" 
 							  android:textSize="18dip" 
 							  android:textColor="#FFF" 
-							  android:layout_weight="1" 
 							  android:text="@string/failsafe_mode">
 					</TextView>
 					
@@ -157,7 +158,7 @@
 						  android:layout_height="wrap_content" 
 						  android:focusable="false" 
 						  android:focusableInTouchMode="false" 
-						  android:id="@+id/chk_failsafe_mode">
+						  android:id="@+id/chk_failsafe">
 				</CheckBox>
 			</LinearLayout>
 			
@@ -166,15 +167,16 @@
 				  android:background="@android:drawable/divider_horizontal_dark">
 			</View>
 			
-			<LinearLayout android:focusable="true" 
-						  android:orientation="horizontal" 
-						  android:layout_width="fill_parent" 
-						  android:background="@android:drawable/list_selector_background" 
-						  android:clickable="true" 
-						  android:layout_height="wrap_content" 
-						  android:gravity="center_vertical" 
-						  android:padding="10dip" 
-						  android:minHeight="70dip">
+			<LinearLayout
+			    android:focusable="true" 
+				android:orientation="horizontal" 
+			    android:layout_width="fill_parent" 
+			    android:background="@android:drawable/list_selector_background" 
+			    android:clickable="true" 
+			    android:layout_height="wrap_content" 
+			    android:gravity="center_vertical" 
+			    android:padding="10dip" 
+			    android:minHeight="70dip">
 						  
 				<LinearLayout android:layout_height="wrap_content" 
 							  android:orientation="vertical" 
@@ -189,14 +191,19 @@
 							  android:text="@string/snooze_limit">
 					</TextView>
 					
+					<SeekBar
+						android:id="@+id/seekbar"
+						android:layout_width="fill_parent"   
+						android:layout_height="wrap_content"   
+						android:layout_margin="10dip">
+					</SeekBar>
+					
+					<TextView 
+						android:layout_width="wrap_content" 
+					  	android:layout_height="wrap_content" 
+					  	android:id="@+id/snooze_limit">
+					</TextView>	
 				</LinearLayout>
-				
-				<CheckBox android:layout_width="wrap_content" 
-						  android:layout_height="wrap_content" 
-						  android:focusable="false" 
-						  android:focusableInTouchMode="false" 
-						  android:id="@+id/chk_snooze_limit">
-				</CheckBox>
 			</LinearLayout>
 			
 			<View android:layout_width="fill_parent" 
@@ -217,11 +224,11 @@
 						  
 				<LinearLayout android:layout_height="wrap_content" 
 							  android:orientation="vertical" 
-							  android:layout_width="wrap_content" 
+							  android:layout_width="0dip" 
 							  android:layout_weight="1">
 
 					<TextView android:layout_width="wrap_content" 
-							  android:layout_height="wrap_content" 
+							  android:layout_height="0dip" 
 							  android:textSize="18dip" 
 							  android:textColor="#FFF" 
 							  android:layout_weight="1" 
@@ -238,7 +245,7 @@
 						  android:layout_height="wrap_content" 
 						  android:focusable="false" 
 						  android:focusableInTouchMode="false" 
-						  android:id="@+id/chk_challenge_mode">
+						  android:id="@+id/chk_challenge">
 				</CheckBox>
 			</LinearLayout>
 			
@@ -335,6 +342,34 @@
 				</CheckBox>
 			</LinearLayout>
 			
+			<View android:layout_width="fill_parent" 
+				  android:layout_height="1dip" 
+				  android:background="@android:drawable/divider_horizontal_dark">
+			</View>
+			
+			<LinearLayout android:id="@+id/LinearLayout01" 
+				   		  android:layout_height="wrap_content" 
+				   		  android:layout_width="fill_parent" 
+				   		  android:orientation="horizontal" 
+				   		  android:padding="2dip" 
+				   		  android:gravity="center">
+   		  
+	   			<Button android:layout_width="100dip" 
+			        	android:layout_height="wrap_content" 
+			        	android:layout_marginLeft="5dip" 
+			        	android:layout_marginRight="5dip" 
+			        	android:text="@string/save_button" 
+			        	android:id="@+id/save_settings">
+	    		</Button>
+	    		
+	   			<Button android:layout_width="100dip" 
+			        	android:layout_height="wrap_content" 
+			        	android:layout_marginLeft="5dip" 
+			        	android:layout_marginRight="5dip" 
+			        	android:text="@string/cancel_button" 
+			        	android:id="@+id/cancel_settings">
+	    		</Button>
+	    	</LinearLayout>
 		</LinearLayout>
 	</ScrollView>
 </LinearLayout>
