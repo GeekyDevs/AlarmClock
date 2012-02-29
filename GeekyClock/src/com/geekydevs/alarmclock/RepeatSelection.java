@@ -1,6 +1,7 @@
 package com.geekydevs.alarmclock;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -25,24 +26,15 @@ public class RepeatSelection extends Activity {
 		@Override
 		public void onClick(View v) {
 			
-			String daysChecked = "";
-			
-			if (chkMon.isChecked()) {daysChecked += "Monday, ";}
-			if (chkTue.isChecked()) {daysChecked += "Tuesday, ";}
-			if (chkWed.isChecked()) {daysChecked += "Wednesday, ";}
-			if (chkThu.isChecked()) {daysChecked += "Thursday, ";}
-			if (chkFri.isChecked()) {daysChecked += "Friday, ";}
-			if (chkSat.isChecked()) {daysChecked += "Saturday, ";}
-			if (chkSun.isChecked()) {daysChecked += "Sunday, ";}
-			
-			if (daysChecked == "") {
-				daysChecked = "Never";
-			} else {
-				daysChecked = daysChecked.substring(0, daysChecked.length()-2);
-			}
-
 			Intent i = new Intent();
-			i.putExtra("days", daysChecked);
+			
+			i.putExtra("Monday", chkMon.isChecked());
+			i.putExtra("Tuesday", chkTue.isChecked());
+			i.putExtra("Wednesday", chkWed.isChecked());
+			i.putExtra("Thursday", chkThu.isChecked());
+			i.putExtra("Friday", chkFri.isChecked());
+			i.putExtra("Saturday", chkSat.isChecked());
+			i.putExtra("Sunday", chkSun.isChecked());
 
 			setResult(Activity.RESULT_OK, i);
 			finish();

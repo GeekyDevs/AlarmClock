@@ -1,13 +1,12 @@
 package com.geekydevs.alarmclock;
 
 import java.util.Calendar;
-import java.util.Arrays;
-import java.util.ArrayList;
 
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -18,6 +17,7 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 
 public class AlarmEdit extends Activity {
@@ -60,9 +60,11 @@ public class AlarmEdit extends Activity {
 		
 		dbAdapter = new AlarmDBAdapter(this);
 		dbAdapter.open();
-
+		
 		findViews();
 		assignListeners();
+		
+		loadAlarmFromIntent();
 	}
 	
 	/*
@@ -109,23 +111,34 @@ public class AlarmEdit extends Activity {
 		cancelButton.setOnClickListener(cancelOnClick);
 	}
 	
-	/*
-	 * Called when the user clicks the 'Save' button in the alarm edit screen.
-	 * Save any change
-	 */
-	private void setAlarm() {
-		
-		String seqDays = (String) repeatView.getText();
-		
-	    ArrayList<String> days = new ArrayList<String>(Arrays.asList(seqDays.split(", ")));
-		
-		//Alarm.ALARM_DEFAULTS.put("repeat_mon", days.contains("Monday"));
-		
-		//Intent i = new Intent(this, AlarmService.class);
-		//i.setAction(AlarmService.ACTION_SET_ALARM);
-		//startService(i);
-		
-		finish();
+	private void loadAlarmFromIntent() {
+		Intent i = getIntent();
+		if (i.hasExtra("_id")){
+			
+			Bundle b = getIntent().getExtras();
+			int id = (int) b.getLong("_id");
+
+			alarm = dbAdapter.getAlarmById(id);
+			
+			ContentValues values = alarm.getAll();
+			
+			updateTimeView(Alarm.formatTime((Integer) values.get("hour"), (Integer) values.get("minute")));
+			updateRepeatView(Alarm.formatRepeat(alarm.getAll()));
+			updateLabelView(values.get("name") + "");
+			
+			if ((Boolean) values.get("failsafe_on")) {
+				//snoozeView.setVisibility(0);
+				snoozeView.setText("Limit: " + values.get("snooze_value"));
+				seekBar.setVisibility(0);
+			}
+			failSafe.setChecked((Boolean) values.get("failsafe_on"));
+			seekBar.setProgress((Integer) values.get("snooze_value"));
+			wakeUp.setChecked((Boolean) values.get("wakeup_on"));
+			
+		} else {
+			alarm = new Alarm(dbAdapter.countCursors());
+			dbAdapter.initialise(alarm);
+		}
 	}
 	
 	/*
@@ -149,10 +162,23 @@ public class AlarmEdit extends Activity {
 		if (resultCode == RESULT_OK) {
 			switch (requestCode) {
 			case ACTION_CHOOSE_REPEAT:
-				updateRepeatView(data.getStringExtra("days"));
+				
+				alarm.assign("repeat_mon", data.getBooleanExtra("Monday", false));
+				alarm.assign("repeat_tue", data.getBooleanExtra("Tuesday", false));
+				alarm.assign("repeat_wed", data.getBooleanExtra("Wednesday", false));
+				alarm.assign("repeat_thu", data.getBooleanExtra("Thursday", false));
+				alarm.assign("repeat_fri", data.getBooleanExtra("Friday", false));
+				alarm.assign("repeat_sat", data.getBooleanExtra("Saturday", false));
+				alarm.assign("repeat_sun", data.getBooleanExtra("Sunday", false));
+				
+				updateRepeatView(Alarm.formatRepeat(alarm.getAll()));
 				break;
 			case ACTION_INPUT_LABEL:
-				updateLabelView(data.getStringExtra("label"));
+				
+				String label = data.getStringExtra("label");
+				
+				alarm.assign("name", label);
+				updateLabelView(label);
 				break;
 			}
 		}
@@ -164,9 +190,19 @@ public class AlarmEdit extends Activity {
 	protected Dialog onCreateDialog(int id) {
 		
 		Calendar c = Calendar.getInstance(); 
-		int minute = c.get(Calendar.MINUTE);
-		int hour = c.get(Calendar.HOUR);
-
+		int minute;
+		int hour;
+		
+		String timeDisplay = timeView.getText() + "";
+		
+		if (timeDisplay == "") {
+			hour = c.get(Calendar.HOUR_OF_DAY);
+			minute = c.get(Calendar.MINUTE);
+		} else {
+			hour = (Integer) alarm.getAll().get("hour");
+			minute = (Integer) alarm.getAll().get("minute");
+		}
+	
 		switch (id)
 		{
 		case DIALOG_PICK_TIME:
@@ -185,11 +221,10 @@ public class AlarmEdit extends Activity {
 		@Override
 		public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 		
-			Alarm.assign("hour", hourOfDay);
-			Alarm.assign("minute", minute);
+			alarm.assign("hour", hourOfDay);
+			alarm.assign("minute", minute);
 
-			updateTimeView(Alarm.formatTime());
-			//updateTimeView(Alarm.createTableStatement("alarm"));
+			updateTimeView(Alarm.formatTime(hourOfDay, minute));
 		}
 	};
 	
@@ -240,7 +275,7 @@ public class AlarmEdit extends Activity {
 		public void onClick(View v) {
 			
 			if (failSafe.isChecked()) {
-				
+
 				snoozeView.setVisibility(0);
 				seekBar.setVisibility(0);
 				seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
@@ -258,7 +293,7 @@ public class AlarmEdit extends Activity {
 					public void onProgressChanged(SeekBar seekBar, int progress,
 							boolean fromUser) {
 						snoozeView.setText("Limit: " + progress);
-						Alarm.ALARM_DEFAULTS_INT.put("snooze_limit", progress);
+						alarm.assign("snooze_value", progress);
 					}
 				});
 			} else {
@@ -266,7 +301,7 @@ public class AlarmEdit extends Activity {
 				snoozeView.setVisibility(4);
 			}
 			
-			
+			alarm.assign("failsafe_on", failSafe.isChecked());
 		}
 	};
 	
@@ -278,6 +313,7 @@ public class AlarmEdit extends Activity {
 		@Override
 		public void onClick(View v) {
 		
+			alarm.assign("wakeup_on", wakeUp.isChecked());
 		}
 	};
 	
@@ -288,31 +324,12 @@ public class AlarmEdit extends Activity {
 		
 		@Override
 		public void onClick(View v) {
-			//setAlarm();
 			
-			ContentValues values = new ContentValues();
-			/*
-			for (String key : Alarm.ALARM_DEFAULTS_INT.keySet()) {
-				if (!key.equals("ID")) {
-					values.put(key, Alarm.ALARM_DEFAULTS_INT.get(key));
-				}
-			}
-			values.put("name", (String)labelView.getText());
+			dbAdapter.saveAlarm(alarm.getAll());
 			
-			String days = (String) repeatView.getText();
+			setResult(Activity.RESULT_OK);
+			finish();
 			
-			values.put("repeat_mon", days.contains("Monday"));
-			values.put("repeat_tue", days.contains("Tuesday"));
-			values.put("repeat_wed", days.contains("Wednesday"));
-			values.put("repeat_thu", days.contains("Thursday"));
-			values.put("repeat_fri", days.contains("Friday"));
-			values.put("repeat_sat", days.contains("Saturday"));
-			values.put("repeat_sun", days.contains("Sunday"));
-			values.put("failsafe_on", failSafe.isChecked());
-			*/
-			//values.put("wakeup_on", wakeUp.isChecked());
-			
-			//int i = dbAdapter.updateSettings(values, "ID=" + Alarm.ALARM_DEFAULTS_INT.get("ID"));
 		}
 	};
 	
@@ -324,7 +341,8 @@ public class AlarmEdit extends Activity {
 		
 		@Override
 		public void onClick(View v) {
-			setResult(Activity.RESULT_OK);
+
+			setResult(Activity.RESULT_CANCELED);
 			finish();
 		}
 	};
