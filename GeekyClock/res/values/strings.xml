@@ -40,4 +40,6 @@
     <string name="save_button">Save</string>
     <string name="cancel_button">Cancel</string>
     
+    <string name="launch_msg">Alarm Launched</string>
+    <string name="app_launched">GeekyAlarm Launched!</string>
 </resources>

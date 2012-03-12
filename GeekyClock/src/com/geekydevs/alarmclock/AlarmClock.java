@@ -1,16 +1,28 @@
 package com.geekydevs.alarmclock;
 
+import java.util.Calendar;
+
+import android.app.AlarmManager;
 import android.app.ListActivity;
+import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.SystemClock;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnCreateContextMenuListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -18,6 +30,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class AlarmClock extends ListActivity {
+	
+	private static final int EDIT_ALARM = Menu.FIRST+1;
+	private static final int DELETE_ALARM = Menu.FIRST+2;
+	private static final int TURN_ALARM_ON = Menu.FIRST+3;
 	
 	private AlarmDBAdapter dbAdapter;
 	private CursorAdapter curAdapter;
@@ -45,12 +61,13 @@ public class AlarmClock extends ListActivity {
     	
     	ListView listV = getListView();
     	listV.setAdapter(curAdapter);
+    	listV.setOnCreateContextMenuListener(createItemContext);
     	
     	((Button)findViewById(R.id.m_btn_add_new)).setOnClickListener(onAddNewAlarmClick);
     }
     
     /*
-     * Opens the edit screen 
+     * Listens for user's key press on any alarm on the list to launch the edit screen. 
      */
     @Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
@@ -58,6 +75,9 @@ public class AlarmClock extends ListActivity {
 		super.onListItemClick(l, v, position, id);
 	}
  
+    /*
+     * Sends an intent to alarm edit screen with the alarm's id attached. 
+     */
     private void launchAlarmEdit(long id) {
     	Intent i = new Intent(this, AlarmEdit.class);
 		i.putExtra("_id", id);
@@ -75,6 +95,70 @@ public class AlarmClock extends ListActivity {
 		}
 		
 	};
+	
+	/*
+	 * Listens for user's key hold on alarm row to bring up context menu of alarm actions.
+	 */
+	private final OnCreateContextMenuListener createItemContext = new OnCreateContextMenuListener() {
+		
+		@Override
+		public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+			
+			menu.add(0, EDIT_ALARM, 0, "Edit Alarm");
+			menu.add(0, DELETE_ALARM, 1, "Delete Alarm");
+			//menu.add(0, TURN_ALARM_ON, 2, "Turn Alarm On");
+		}
+	};
+	
+	/*
+	 * Checks which context menu action was selected and perform that responsibility.
+	 */
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		
+		AdapterContextMenuInfo acmi = (AdapterContextMenuInfo) item.getMenuInfo();
+		long selectedId = acmi.id;
+		
+		switch (item.getItemId()) {
+		case EDIT_ALARM:
+			launchAlarmEdit(selectedId);
+			break;
+		case DELETE_ALARM:
+			dbAdapter.deleteAlarm(selectedId);
+			curAdapter.getCursor().requery();
+
+			turnOffAlarm();
+			
+			break;
+		//case TURN_ALARM_ON:
+		}
+		
+		return super.onContextItemSelected(item);
+	}
+	
+	/*
+	 * Request that the alarm service be started.
+	 */
+	private void setUpAlarm(int id) {
+		
+		Intent i = new Intent(this, AlarmService.class);
+		i.setAction(AlarmService.ACTION_SET_ALARM);
+		i.putExtra("_id", id);
+		startService(i);
+		
+	}
+	
+	/*
+	 * Removes the alarm with the intent.  Occurs when user disables the 
+	 * alarm or deletes it.
+	 */
+	private void turnOffAlarm() {
+		
+		Intent i = new Intent(this, AlarmService.class);
+		i.setAction(AlarmService.ACTION_STOP_ALARM);
+		startService(i);
+	}
+	
 	
 	/*
 	 * Adapter that exposes data from a Cursor to a ListView widget.
@@ -97,20 +181,21 @@ public class AlarmClock extends ListActivity {
 			TextView labelText = (TextView) view.findViewById(R.id.label_row);
 			
 			TextView failSafeText = (TextView) view.findViewById(R.id.failsafe_row);
-			TextView snoozeText = (TextView) view.findViewById(R.id.snooze_row);
 			TextView wakeUpText = (TextView) view.findViewById(R.id.wakeup_row);
 
+			CheckBox chkAlarmOn = (CheckBox) view.findViewById(R.id.alarm_enabled_row);
+			
 			String time = Alarm.formatTime(cursor.getInt(1), cursor.getInt(2));
 			ContentValues values = new ContentValues();
 			
-			values.put("repeat_mon", cursor.getInt(4) > 0);
-			values.put("repeat_tue", cursor.getInt(5) > 0);
-			values.put("repeat_wed", cursor.getInt(6) > 0);
-			values.put("repeat_thu", cursor.getInt(7) > 0);
-			values.put("repeat_fri", cursor.getInt(8) > 0);
-			values.put("repeat_sat", cursor.getInt(9) > 0);
-			values.put("repeat_sun", cursor.getInt(10) > 0);
-
+			values.put("repeat_sun", cursor.getInt(4) > 0);
+			values.put("repeat_mon", cursor.getInt(5) > 0);
+			values.put("repeat_tue", cursor.getInt(6) > 0);
+			values.put("repeat_wed", cursor.getInt(7) > 0);
+			values.put("repeat_thu", cursor.getInt(8) > 0);
+			values.put("repeat_fri", cursor.getInt(9) > 0);
+			values.put("repeat_sat", cursor.getInt(10) > 0);
+			
 			alarmImage.setImageDrawable(getResources().getDrawable(R.drawable.icon));
 			timeText.setText(time);
 			repeatText.setText(Alarm.formatRepeat(values) + "");
@@ -127,6 +212,11 @@ public class AlarmClock extends ListActivity {
 				label = label.substring(0, 13) + "...";
 			}
 			labelText.setText(label);
+			
+			chkAlarmOn.setOnCheckedChangeListener(null);
+			chkAlarmOn.setTag(cursor.getInt(0));
+			chkAlarmOn.setChecked(cursor.getInt(16) > 0);
+			chkAlarmOn.setOnCheckedChangeListener(checkAlarm);
 		}
 		
 		@Override
@@ -137,5 +227,23 @@ public class AlarmClock extends ListActivity {
 			
 			return v;
 		}
+		
+		private CheckBox.OnCheckedChangeListener checkAlarm = new CheckBox.OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
+				
+				int alarmId = Integer.parseInt(arg0.getTag().toString());
+				dbAdapter.setAlarmToDB(alarmId, arg1);
+				curAdapter.getCursor().requery();
+
+				if (arg1) { 
+					setUpAlarm(alarmId); 
+				} else {
+					turnOffAlarm();
+				}
+			}
+			
+		};
 	}
 }

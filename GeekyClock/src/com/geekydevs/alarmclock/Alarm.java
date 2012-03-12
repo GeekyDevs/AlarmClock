@@ -7,10 +7,20 @@ import java.util.Calendar;
 
 public class Alarm {
 
+	private static final String[] allKeys = new String [] {"_id", "hour", "minute", "name", "repeat_sun", "repeat_mon", "repeat_tue", "repeat_wed",
+		   "repeat_thu", "repeat_fri", "repeat_sat", "failsafe_on",
+		   "wakeup_on", "vibrate_on", "sound", "snooze_value", "alarm_enabled"};
+	
+	public static final int ALARM_SUNDAY = 4;
+	public static final int ALARM_MONDAY = 5;
+	public static final int ALARM_TUESDAY = 6;
+	public static final int ALARM_WEDNESDAY = 7;
+	public static final int ALARM_THURSDAY = 8;
+	public static final int ALARM_FRIDAY = 9;
+	public static final int ALARM_SATURDAY = 10;
+	
+
 	private ContentValues alarmProperty = new ContentValues();
-	private static final String[] allKeys = new String [] {"_id", "hour", "minute", "name", "repeat_mon", "repeat_tue", "repeat_wed",
-														   "repeat_thu", "repeat_fri", "repeat_sat", "repeat_sun", "failsafe_on",
-														   "wakeup_on", "vibrate_on", "sound", "snooze_value"};
 	
 	public Alarm (int idNum) {
 	
@@ -20,18 +30,19 @@ public class Alarm {
 		alarmProperty.put("hour", c.get(Calendar.HOUR_OF_DAY));
 		alarmProperty.put("minute", c.get(Calendar.MINUTE));
 		alarmProperty.put("name", "");	
+		alarmProperty.put("repeat_sun", false);
 		alarmProperty.put("repeat_mon", false);
 		alarmProperty.put("repeat_tue", false);
 		alarmProperty.put("repeat_wed", false);
 		alarmProperty.put("repeat_thu", false);
 		alarmProperty.put("repeat_fri", false);
 		alarmProperty.put("repeat_sat", false);
-		alarmProperty.put("repeat_sun", false);
 		alarmProperty.put("failsafe_on", false); //11
 		alarmProperty.put("wakeup_on", false);
 		alarmProperty.put("vibrate_on", false);
 		alarmProperty.put("sound", "default");
 		alarmProperty.put("snooze_value", 5);
+		alarmProperty.put("alarm_enabled", true);
 	}
 	
 	public Alarm (Cursor cursor) {
@@ -129,13 +140,13 @@ public class Alarm {
 		
 		String repeat = "";
 
+		if ((Boolean) days.get("repeat_sun")) { repeat += "Sunday, ";}
 		if ((Boolean) days.get("repeat_mon")) { repeat += "Monday, ";}
 		if ((Boolean) days.get("repeat_tue")) { repeat += "Tuesday, ";}
 		if ((Boolean) days.get("repeat_wed")) { repeat += "Wednesday, ";}
 		if ((Boolean) days.get("repeat_thu")) { repeat += "Thursday, ";}
 		if ((Boolean) days.get("repeat_fri")) { repeat += "Friday, ";}
 		if ((Boolean) days.get("repeat_sat")) { repeat += "Saturday, ";}
-		if ((Boolean) days.get("repeat_sun")) { repeat += "Sunday, ";}
 		
 		if (repeat == "") {
 			repeat = "Never";

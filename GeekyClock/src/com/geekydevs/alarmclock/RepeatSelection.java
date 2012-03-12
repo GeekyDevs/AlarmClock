@@ -28,14 +28,14 @@ public class RepeatSelection extends Activity {
 			
 			Intent i = new Intent();
 			
+			i.putExtra("Sunday", chkSun.isChecked());
 			i.putExtra("Monday", chkMon.isChecked());
 			i.putExtra("Tuesday", chkTue.isChecked());
 			i.putExtra("Wednesday", chkWed.isChecked());
 			i.putExtra("Thursday", chkThu.isChecked());
 			i.putExtra("Friday", chkFri.isChecked());
 			i.putExtra("Saturday", chkSat.isChecked());
-			i.putExtra("Sunday", chkSun.isChecked());
-
+			
 			setResult(Activity.RESULT_OK, i);
 			finish();
 		}
@@ -57,14 +57,14 @@ public class RepeatSelection extends Activity {
 		setContentView(R.layout.repeat_selection);
 		setTitle("Alarm Repeats...");
 		
+		chkSun = (CheckBox)findViewById(R.id.rpt_sun);
 		chkMon = (CheckBox)findViewById(R.id.rpt_mon);
 		chkTue = (CheckBox)findViewById(R.id.rpt_tues);
 		chkWed = (CheckBox)findViewById(R.id.rpt_wed);
 		chkThu = (CheckBox)findViewById(R.id.rpt_thur);
 		chkFri = (CheckBox)findViewById(R.id.rpt_fri);
 		chkSat = (CheckBox)findViewById(R.id.rpt_sat);
-		chkSun = (CheckBox)findViewById(R.id.rpt_sun);
-
+		
 		findViewById(R.id.sr_btn_ok).setOnClickListener(okOnClick);
 		findViewById(R.id.sr_btn_cancel).setOnClickListener(cancelOnClick);
 		
@@ -73,13 +73,13 @@ public class RepeatSelection extends Activity {
 		Bundle b = getIntent().getExtras();
 		oldSetting = b.getString("days");
 		
+		if (oldSetting.indexOf("Sunday") >= 0) {chkSun.setChecked(true);}
 		if (oldSetting.indexOf("Monday") >= 0) {chkMon.setChecked(true);}
 		if (oldSetting.indexOf("Tuesday") >= 0) {chkTue.setChecked(true);}
 		if (oldSetting.indexOf("Wednesday") >= 0) {chkWed.setChecked(true);}
 		if (oldSetting.indexOf("Thursday") >= 0) {chkThu.setChecked(true);}
 		if (oldSetting.indexOf("Friday") >= 0) {chkFri.setChecked(true);}
 		if (oldSetting.indexOf("Saturday") >= 0) {chkSat.setChecked(true);}
-		if (oldSetting.indexOf("Sunday") >= 0) {chkSun.setChecked(true);}
 		
 	}
 	

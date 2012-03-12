@@ -53,14 +53,7 @@
 		    android:id="@+id/failsafe_row" 
 		    android:textSize="12dip">
 		</TextView>
-		
-		<TextView 
-		    android:layout_width="wrap_content" 
-		    android:layout_height="wrap_content" 
-		    android:id="@+id/snooze_row" 
-		    android:textSize="12dip">
-		</TextView>
-		
+
 		<TextView 
 		    android:layout_width="wrap_content" 
 		    android:layout_height="wrap_content" 

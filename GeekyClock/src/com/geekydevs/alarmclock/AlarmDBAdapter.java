@@ -68,6 +68,10 @@ public class AlarmDBAdapter {
 		return mDb.insert(TABLE_NAME, null, alarm.getAll()) >= 0;
 	}
 	
+	/*
+	 * Retrieves all the setting information associated with the existing alarm opened 
+	 * for editing.
+	 */
 	public Alarm getAlarmById(int id) {
 		
 		Alarm alarm;
@@ -88,14 +92,45 @@ public class AlarmDBAdapter {
 	 */
 	public Cursor fetchAllAlarms() {
 		
-		Cursor c = mDb.rawQuery("SELECT * FROM alarms", null);
+		Cursor c = mDb.rawQuery("SELECT * FROM " + TABLE_NAME, null);
 		//c.moveToFirst();
 		return c;
 	}
 	
-	public int countCursors() {
+	/*
+	 * Fetch the alarm settings with that id.
+	 */
+	public Cursor fetchAlarmById (int id) {
+	
+		return mDb.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE _id=" + id, null);
+	}
+	
+	/*
+	 * Retrieve all alarms that have been enabled (i.e. check box been checked)
+	 */
+	public Cursor fetchEnabledAlarms() {
+		return mDb.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE alarm_enabled=TRUE", null);
+	}
+	
+	/*
+	 * Counts the number of rows in the table. Used to assign a new alarm the id that haven't
+	 * been assigned yet. 
+	 */
+	public int getNewId() {
 		
-		return fetchAllAlarms().getCount();
+		Cursor c = fetchAllAlarms();
+		if (c.moveToLast()) {
+			return c.getInt(0) + 1;
+		} else {
+			return 0;
+		}
+	}
+	
+	public void setAlarmToDB(int ID, boolean enabled) {
+		
+		ContentValues values = new ContentValues();
+		values.put("alarm_enabled", enabled);
+		mDb.update(TABLE_NAME, values, "_id=" + ID, null);
 	}
 	
 	/*
@@ -105,5 +140,12 @@ public class AlarmDBAdapter {
 	public boolean saveAlarm(ContentValues values) {
 		
 		 return mDb.update(TABLE_NAME, values, "_id=" + values.get("_id"), null) > 0;
+	}
+	
+	/*
+	 * Delete the alarm with that id from the database.
+	 */
+	public void deleteAlarm(long ID) {
+		mDb.delete(TABLE_NAME, "_id=" + ID, null);
 	}
 }

@@ -9,6 +9,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -46,6 +47,9 @@ public class AlarmEdit extends Activity {
 	private AlarmDBAdapter dbAdapter;
 	
 	private Alarm alarm;
+	private Context ctx;
+	
+	private Boolean newAlarm = true;
 	
 	/*
 	 * Automatically called when AlarmEdit was created and launches the UI to
@@ -66,6 +70,29 @@ public class AlarmEdit extends Activity {
 		
 		loadAlarmFromIntent();
 	}
+	
+	/*
+	 * Cancels any changes made if back key has been pressed.
+	 */
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event)  {
+	    
+		long id;
+		
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+	    	
+	    	if (newAlarm) {
+	    		id = (Integer) alarm.getAll().get("_id");
+	    		dbAdapter.deleteAlarm((Long) id);
+	    	}
+	    	finish();
+			
+	        return true;
+	    }
+
+	    return super.onKeyDown(keyCode, event);
+	}
+
 	
 	/*
 	 * Assigns each item in the UI that requires interaction to the proper 
@@ -115,6 +142,8 @@ public class AlarmEdit extends Activity {
 		Intent i = getIntent();
 		if (i.hasExtra("_id")){
 			
+			newAlarm = false;
+			
 			Bundle b = getIntent().getExtras();
 			int id = (int) b.getLong("_id");
 
@@ -136,7 +165,7 @@ public class AlarmEdit extends Activity {
 			wakeUp.setChecked((Boolean) values.get("wakeup_on"));
 			
 		} else {
-			alarm = new Alarm(dbAdapter.countCursors());
+			alarm = new Alarm(dbAdapter.getNewId());
 			dbAdapter.initialise(alarm);
 		}
 	}
@@ -163,14 +192,14 @@ public class AlarmEdit extends Activity {
 			switch (requestCode) {
 			case ACTION_CHOOSE_REPEAT:
 				
+				alarm.assign("repeat_sun", data.getBooleanExtra("Sunday", false));
 				alarm.assign("repeat_mon", data.getBooleanExtra("Monday", false));
 				alarm.assign("repeat_tue", data.getBooleanExtra("Tuesday", false));
 				alarm.assign("repeat_wed", data.getBooleanExtra("Wednesday", false));
 				alarm.assign("repeat_thu", data.getBooleanExtra("Thursday", false));
 				alarm.assign("repeat_fri", data.getBooleanExtra("Friday", false));
 				alarm.assign("repeat_sat", data.getBooleanExtra("Saturday", false));
-				alarm.assign("repeat_sun", data.getBooleanExtra("Sunday", false));
-				
+
 				updateRepeatView(Alarm.formatRepeat(alarm.getAll()));
 				break;
 			case ACTION_INPUT_LABEL:
@@ -327,11 +356,23 @@ public class AlarmEdit extends Activity {
 			
 			dbAdapter.saveAlarm(alarm.getAll());
 			
+			setUpAlarm((Integer) alarm.getAll().get("_id"));		
+			
+			dbAdapter.close();
+			
 			setResult(Activity.RESULT_OK);
 			finish();
 			
 		}
 	};
+	
+	private void setUpAlarm(int id) {
+		
+		Intent i = new Intent(this, AlarmService.class);
+		i.setAction(AlarmService.ACTION_SET_ALARM);
+		i.putExtra("_id", id);
+		startService(i);
+	}
 	
 	/*
 	 * Listens for user's key press to cancel all changes made in the alarm
@@ -341,7 +382,14 @@ public class AlarmEdit extends Activity {
 		
 		@Override
 		public void onClick(View v) {
-
+			
+			if (newAlarm) {
+				long id = (Integer) alarm.getAll().get("_id");
+				dbAdapter.deleteAlarm((Long) id);
+			}
+			
+			dbAdapter.close();
+			
 			setResult(Activity.RESULT_CANCELED);
 			finish();
 		}

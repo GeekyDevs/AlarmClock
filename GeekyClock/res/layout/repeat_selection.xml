@@ -18,6 +18,43 @@
 						  android:layout_height="wrap_content" 
 						  android:orientation="vertical">
 
+				<View android:layout_width="fill_parent" 
+				  	android:layout_height="1dip" 
+				  	android:background="@android:drawable/divider_horizontal_dark">
+				</View>
+			
+				<LinearLayout android:id="@+id/sr_ll_rpt_sun" 
+						  android:focusable="true" 
+						  android:orientation="horizontal" 
+						  android:layout_width="fill_parent" 
+						  android:background="@android:drawable/list_selector_background" 
+						  android:clickable="true" 
+						  android:layout_height="wrap_content" 
+						  android:gravity="center_vertical" 
+						  android:padding="10dip" 
+						  android:minHeight="70dip">
+						  
+					<TextView android:layout_width="wrap_content" 
+						  android:layout_height="wrap_content" 
+						  android:textSize="18dip" 
+						  android:textColor="#FFF" 
+						  android:layout_weight="1" 
+						  android:text="Sunday">
+					</TextView>
+				
+					<CheckBox android:layout_width="wrap_content" 
+						  android:layout_height="wrap_content" 
+						  android:id="@+id/rpt_sun" 
+						  android:focusable="false" 
+						  android:focusableInTouchMode="false">
+					</CheckBox>
+				</LinearLayout>
+				
+				<View android:layout_width="fill_parent" 
+				  	android:layout_height="1dip" 
+				  	android:background="@android:drawable/divider_horizontal_dark">
+				</View>
+			    
 				<LinearLayout android:id="@+id/sr_ll_rpt_mon" 
 							  android:focusable="true" 
 							  android:orientation="horizontal" 
@@ -200,38 +237,6 @@
 				<CheckBox android:layout_width="wrap_content" 
 						  android:layout_height="wrap_content" 
 						  android:id="@+id/rpt_sat" 
-						  android:focusable="false" 
-						  android:focusableInTouchMode="false">
-				</CheckBox>
-			</LinearLayout>
-			
-			<View android:layout_width="fill_parent" 
-				  android:layout_height="1dip" 
-				  android:background="@android:drawable/divider_horizontal_dark">
-			</View>
-			
-			<LinearLayout android:id="@+id/sr_ll_rpt_sun" 
-						  android:focusable="true" 
-						  android:orientation="horizontal" 
-						  android:layout_width="fill_parent" 
-						  android:background="@android:drawable/list_selector_background" 
-						  android:clickable="true" 
-						  android:layout_height="wrap_content" 
-						  android:gravity="center_vertical" 
-						  android:padding="10dip" 
-						  android:minHeight="70dip">
-						  
-				<TextView android:layout_width="wrap_content" 
-						  android:layout_height="wrap_content" 
-						  android:textSize="18dip" 
-						  android:textColor="#FFF" 
-						  android:layout_weight="1" 
-						  android:text="Sunday">
-				</TextView>
-				
-				<CheckBox android:layout_width="wrap_content" 
-						  android:layout_height="wrap_content" 
-						  android:id="@+id/rpt_sun" 
 						  android:focusable="false" 
 						  android:focusableInTouchMode="false">
 				</CheckBox>
