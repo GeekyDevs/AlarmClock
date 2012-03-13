@@ -175,17 +175,31 @@ public class AlarmClock extends ListActivity {
 		@Override
 		public void bindView(View view, Context context, Cursor cursor) {
 			
-			ImageView alarmImage = (ImageView) view.findViewById(R.id.alarm_icon);
+			//ImageView turnOnOffImage = (ImageView) view.findViewById(R.id.turn_onoff_icon);
+			
+			TextView labelText = (TextView) view.findViewById(R.id.label_row);
 			TextView timeText = (TextView) view.findViewById(R.id.time_row);
 			TextView repeatText = (TextView) view.findViewById(R.id.repeat_row);
-			TextView labelText = (TextView) view.findViewById(R.id.label_row);
-			
-			TextView failSafeText = (TextView) view.findViewById(R.id.failsafe_row);
-			TextView wakeUpText = (TextView) view.findViewById(R.id.wakeup_row);
 
+			ImageView alarmImage = (ImageView) view.findViewById(R.id.alarm_icon);
+			ImageView failsafeImage = (ImageView) view.findViewById(R.id.failsafe_icon);
+			ImageView challengeImage = (ImageView) view.findViewById(R.id.challenge_icon);
+			
 			CheckBox chkAlarmOn = (CheckBox) view.findViewById(R.id.alarm_enabled_row);
 			
+			//Display the alarm label
+			String label = cursor.getString(3);
+			// Fix this to work with landscape mode and not use "magic" numbers
+			if (label.length() > 16) {
+				label = label.substring(0, 13) + "...";
+			}
+			labelText.setText(label);
+			
+			// Display the scheduled time
 			String time = Alarm.formatTime(cursor.getInt(1), cursor.getInt(2));
+			timeText.setText(time);
+			
+			// Display the repeat info
 			ContentValues values = new ContentValues();
 			
 			values.put("repeat_sun", cursor.getInt(4) > 0);
@@ -196,22 +210,24 @@ public class AlarmClock extends ListActivity {
 			values.put("repeat_fri", cursor.getInt(9) > 0);
 			values.put("repeat_sat", cursor.getInt(10) > 0);
 			
-			alarmImage.setImageDrawable(getResources().getDrawable(R.drawable.icon));
-			timeText.setText(time);
 			repeatText.setText(Alarm.formatRepeat(values) + "");
 			
+			// Icon images
+			//turnOnOffImage.setImageDrawable(getResources().getDrawable(R.drawable.icon));
+			
+			if ((cursor.getInt(11) == 0) && (cursor.getInt(12) == 0)) {
+				alarmImage.setImageDrawable(getResources().getDrawable(R.drawable.alarm_icon));
+			} else {
+				alarmImage.setVisibility(ImageView.GONE);
+			}
+			
 			if (cursor.getInt(11) > 0) {
-				failSafeText.setText("FailSafe Mode (Snooze Limit: " + cursor.getInt(15) + ")");
+				failsafeImage.setImageDrawable(getResources().getDrawable(R.drawable.failsafe_icon));
 			}
-			if (cursor.getInt(12) > 0) { wakeUpText.setText("Wake-Up Mode"); }
 			
-			
-			String label = cursor.getString(3);
-			// Fix this to work with landscape mode and not use "magic" numbers
-			if (label.length() > 16) {
-				label = label.substring(0, 13) + "...";
+			if (cursor.getInt(12) > 0) {
+				challengeImage.setImageDrawable(getResources().getDrawable(R.drawable.challenge_icon));
 			}
-			labelText.setText(label);
 			
 			chkAlarmOn.setOnCheckedChangeListener(null);
 			chkAlarmOn.setTag(cursor.getInt(0));

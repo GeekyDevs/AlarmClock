@@ -33,12 +33,6 @@ public class AlarmService extends Service {
 	private Alarm alarm;
 	
 	private NotificationManager notificationManager;
-	private PowerManager.WakeLock fullWakeLock;
-	private PowerManager.WakeLock partWakeLock;
-	
-	private boolean snoozeOn;
-	private boolean playingBackup;
-	private boolean isCounting;
 	
 	@Override
 	public IBinder onBind(Intent arg) {
@@ -49,42 +43,24 @@ public class AlarmService extends Service {
 	public void onCreate() {
 		
 		super.onCreate();
-		
-		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-		partWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "GeekyAlarmTag");
-		partWakeLock.acquire();
-		
+
 		dbAdapter = new AlarmDBAdapter(this);
 		dbAdapter.open();
-		
-		snoozeOn = false;
-		playingBackup = false;
-		isCounting = false;
 	}
 	
 	@Override
 	public void onDestroy() {
 		
 		//setNextAlarm();
-		
 		dbAdapter.close();
-		
-		try {
-			fullWakeLock.release();
-		} catch (Exception e) {}
-		
 		super.onDestroy();	
 	}
 	
 	@Override
 	public void onStart(Intent intent, int startId) {
+		
 		super.onStart(intent, startId);
-		
 		performAction(intent, intent.getExtras());
-		
-		try {
-			partWakeLock.release();
-		} catch (Exception e) {}
 	}
 	
 	/*

@@ -132,6 +132,7 @@ public class AlarmEdit extends Activity {
 		lLTime.setOnClickListener(timeOnClick);
 		
 		failSafe.setOnClickListener(failSafeOnClick);
+		seekBar.setOnSeekBarChangeListener(bar);
 		wakeUp.setOnClickListener(challengeOnClick);
 		
 		saveButton.setOnClickListener(saveOnClick);
@@ -307,30 +308,35 @@ public class AlarmEdit extends Activity {
 
 				snoozeView.setVisibility(0);
 				seekBar.setVisibility(0);
-				seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-					
-					@Override
-					public void onStopTrackingTouch(SeekBar seekBar) {
-					}
-					
-					@Override
-					public void onStartTrackingTouch(SeekBar seekBar) {
-						// TODO Auto-generated method stub
-					}
-					
-					@Override
-					public void onProgressChanged(SeekBar seekBar, int progress,
-							boolean fromUser) {
-						snoozeView.setText("Limit: " + progress);
-						alarm.assign("snooze_value", progress);
-					}
-				});
+
 			} else {
 				seekBar.setVisibility(4);
 				snoozeView.setVisibility(4);
 			}
 			
 			alarm.assign("failsafe_on", failSafe.isChecked());
+		}
+	};
+	
+	/*
+	 * Listens for user's bar slide or key press on the snooze bar to get retrieve the
+	 * updated value.
+	 */
+	private SeekBar.OnSeekBarChangeListener bar = new SeekBar.OnSeekBarChangeListener() {
+		
+		@Override
+		public void onStopTrackingTouch(SeekBar seekBar) {
+		}
+		
+		@Override
+		public void onStartTrackingTouch(SeekBar seekBar) {
+		}
+		
+		@Override
+		public void onProgressChanged(SeekBar seekBar, int progress,
+				boolean fromUser) {
+			snoozeView.setText("Limit: " + progress);
+			alarm.assign("snooze_value", progress);
 		}
 	};
 	
