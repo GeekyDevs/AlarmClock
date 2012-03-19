@@ -18,6 +18,28 @@
 	        	android:text="@string/menu_add" 
 	        	android:id="@+id/m_btn_add_new">
 	    </Button>
+	 </LinearLayout>
+	 
+	 <LinearLayout android:id="@+id/LinearLayout02" 
+   		  android:layout_height="wrap_content" 
+   		  android:layout_width="fill_parent" 
+   		  android:orientation="horizontal" 
+   		  android:padding="2dip" 
+   		  android:gravity="center">
+	    
+	    <Button 
+		    android:layout_width="wrap_content" 
+	       	android:layout_height="wrap_content" 
+	       	android:text="@string/notif_on" 
+	       	android:id="@+id/notif_on">
+		</Button>
+
+		<Button 
+		    android:layout_width="fill_parent" 
+	       	android:layout_height="wrap_content" 
+	       	android:text="@string/notif_off" 
+	       	android:id="@+id/notif_off">
+	 	</Button>
 	    
 	</LinearLayout>
     

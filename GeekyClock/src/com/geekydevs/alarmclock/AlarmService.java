@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import java.lang.Math;
+
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -23,16 +24,17 @@ public class AlarmService extends Service {
 	public static final String ACTION_SET_ALARM = "set_alarm";
 	public static final String ACTION_LAUNCH_ALARM = "launch_alarm";
 	public static final String ACTION_STOP_ALARM = "stop_alarm";
+	public static final String ACTION_SHOW_NOTIF = "show_notif";
+	public static final String ACTION_CANCEL_NOTIF = "cancel_notif";
 	
 	public static final String EXTRA_DONT_DISABLE = "don't disable";
 	
 	private static final int NOTIFY_MAIN = R.layout.main;
 	private static final int NOTIFY_ALARM_SET = R.layout.alarm_edit;
 	
+	private NotificationManager notifManager;
 	private AlarmDBAdapter dbAdapter;
 	private Alarm alarm;
-	
-	private NotificationManager notificationManager;
 	
 	@Override
 	public IBinder onBind(Intent arg) {
@@ -46,6 +48,8 @@ public class AlarmService extends Service {
 
 		dbAdapter = new AlarmDBAdapter(this);
 		dbAdapter.open();
+		
+		notifManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 	}
 	
 	@Override
@@ -88,10 +92,31 @@ public class AlarmService extends Service {
 			AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
 
 			alarmManager.cancel(pendingIntent);
+		} 
+		else if (action.equals(ACTION_SHOW_NOTIF)) {
+			
+			Calendar schedule = Calendar.getInstance();
+			Cursor c = dbAdapter.fetchAllAlarms();
 
+			if (c.getCount() > 0) {
+				schedule = nextAvailableSchedule(c);
+				if (schedule != null) {
+					setNotification(schedule.getTime().toString());
+				} else {
+					setNotification("None");
+				}
+			} else {
+				cancelNotification();
+			}
+			
+		} else if (action.equals(ACTION_CANCEL_NOTIF)) {
+			cancelNotification();
 		}
 	}
 	
+	/*
+	 * Schedule the alarm.
+	 */
 	private void setAlarm(Calendar c) {
 		
 		Intent i = new Intent(this, AlarmReceiver.class);
@@ -109,19 +134,17 @@ public class AlarmService extends Service {
 		//calendar.add(Calendar.SECOND, 10);
 		
         AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
-        am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-		
-		//Toast.makeText(this, "Alarm will be scheduled", Toast.LENGTH_LONG).show();
-		
+        am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);	
 	}
 	
+	/*
+	 * Finds the next available alarm time
+	 */
 	private Calendar pickNextAlarmTime(Cursor c) {
 		
 		Calendar fCalendar = Calendar.getInstance();
 		Calendar cCalendar = Calendar.getInstance();
-		
-		//String [] daysOfWeek = new String [] {"", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-		
+
 		// Future date and time
 		int fHour = c.getInt(1);
 		int fMinute = c.getInt(2);
@@ -197,9 +220,66 @@ public class AlarmService extends Service {
 		}
 		
 		fCalendar.set(fYear, fMonth, fDay, fHour, fMinute);
-		Toast.makeText(this, "Scheduled for " + fCalendar.getTime().toString(), Toast.LENGTH_LONG).show();
+		//Toast.makeText(this, "Scheduled for " + fCalendar.getTime().toString(), Toast.LENGTH_LONG).show();
 		
 		return fCalendar;
+	}
+	
+	/*
+	 * Look for the earliest alarm schedule to appear in the notification bar.
+	 */
+	private Calendar nextAvailableSchedule(Cursor c) {
+		
+		Calendar bestDate = Calendar.getInstance();
+		
+		Calendar temp = Calendar.getInstance();
+
+		boolean assigned = false;
+		
+		if (c.moveToFirst() && (c.getInt(16) > 0)) {
+			bestDate = pickNextAlarmTime(c);
+			assigned = true;
+		}
+		
+		while(c.moveToNext()) {
+			if (c.getInt(16) > 0) {
+				
+				if (!assigned) {
+					bestDate = pickNextAlarmTime(c);
+				} else {
+					temp = pickNextAlarmTime(c);
+					if (temp.compareTo(bestDate) == -1) {
+						bestDate = temp;
+					}
+				}
+			}
+		}
+		
+		if (assigned) {
+			return bestDate;
+		} else {
+			return null;
+		}
+	}
+	
+	/*
+	 * Set the notification in the widget bar
+	 */
+	private void setNotification(String timeString) {
+
+		String message = "Next alarm: " + timeString; 
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, AlarmClock.class), 0);
+		Notification notif = new Notification(R.drawable.alarm_icon, message, System.currentTimeMillis());
+		notif.setLatestEventInfo(this, "GeekyAlarm Scheduled", timeString, contentIntent);
+		notif.flags = Notification.FLAG_ONGOING_EVENT;
+		notifManager.notify(NOTIFY_ALARM_SET, notif);	
+	}
+	
+	/*
+	 * Cancel the notification in the widget bar
+	 */
+	private void cancelNotification() {
+		notifManager.cancel(NOTIFY_ALARM_SET);
 	}
 	
 	/*

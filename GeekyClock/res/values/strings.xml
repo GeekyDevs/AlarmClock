@@ -3,7 +3,8 @@
 
     <string name="app_name">GeekyAlarm</string>
     <string name="menu_add">Add New Alarm</string>
-    <string name="menu_toggle_notif">Toggle Notification</string>
+    <string name="notif_on">Turn Notification On</string>
+    <string name="notif_off">Turn Notification Off</string>
     <string name="empty_alarm_list">No Alarm to Display</string>
 
     <string name="edit_alarm_title">Set alarm</string>
@@ -42,4 +43,7 @@
     
     <string name="launch_msg">Alarm Launched</string>
     <string name="app_launched">GeekyAlarm Launched!</string>
+    
+    <string name="snooze">Snooze</string>
+    <string name="dismiss">Dismiss Alarm</string>
 </resources>

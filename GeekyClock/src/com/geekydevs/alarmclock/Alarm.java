@@ -30,8 +30,8 @@ public class Alarm {
 		alarmProperty.put("hour", c.get(Calendar.HOUR_OF_DAY));
 		alarmProperty.put("minute", c.get(Calendar.MINUTE));
 		alarmProperty.put("name", "");	
-		alarmProperty.put("repeat_sun", false);
-		alarmProperty.put("repeat_mon", false);
+		alarmProperty.put("repeat_sun", false); //4
+		alarmProperty.put("repeat_mon", false); 
 		alarmProperty.put("repeat_tue", false);
 		alarmProperty.put("repeat_wed", false);
 		alarmProperty.put("repeat_thu", false);

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
-	android:layout_height="wrap_content" 
-	android:layout_width="fill_parent" 
-	android:orientation="vertical" 
+<RelativeLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent" 
+    android:layout_height="fill_parent" 
 	android:id="@+id/ea_ll_root">
 	
 	<ScrollView 
@@ -190,7 +190,7 @@
 							  android:layout_weight="1" 
 							  android:text="@string/snooze_limit">
 					</TextView>
-					
+
 					<SeekBar
 						android:id="@+id/seekbar"
 						android:layout_width="fill_parent"   
@@ -200,7 +200,8 @@
 					
 					<TextView 
 						android:layout_width="wrap_content" 
-					  	android:layout_height="wrap_content" 
+					  	android:layout_height="wrap_content"
+					  	android:textSize="15dip"  
 					  	android:id="@+id/snooze_limit">
 					</TextView>	
 				</LinearLayout>
@@ -343,34 +344,36 @@
 			</LinearLayout>
 			
 			<View android:layout_width="fill_parent" 
-				  android:layout_height="1dip" 
-				  android:background="@android:drawable/divider_horizontal_dark">
+				  android:layout_height="40dip">
 			</View>
-			
-			<LinearLayout android:id="@+id/LinearLayout01" 
-				   		  android:layout_height="wrap_content" 
-				   		  android:layout_width="fill_parent" 
-				   		  android:orientation="horizontal" 
-				   		  android:padding="2dip" 
-				   		  android:gravity="center">
-   		  
-	   			<Button android:layout_width="100dip" 
-			        	android:layout_height="wrap_content" 
-			        	android:layout_marginLeft="5dip" 
-			        	android:layout_marginRight="5dip" 
-			        	android:text="@string/save_button" 
-			        	android:id="@+id/save_settings">
-	    		</Button>
-	    		
-	   			<Button android:layout_width="100dip" 
-			        	android:layout_height="wrap_content" 
-			        	android:layout_marginLeft="5dip" 
-			        	android:layout_marginRight="5dip" 
-			        	android:text="@string/cancel_button" 
-			        	android:id="@+id/cancel_settings">
-	    		</Button>
-	    	</LinearLayout>
 		</LinearLayout>
 	</ScrollView>
-</LinearLayout>
+	
+	<Button 
+	    android:layout_width="fill_parent" 
+       	android:layout_height="wrap_content" 
+       	android:layout_alignParentBottom="true"
+       	android:layout_toLeftOf="@+id/gap"
+       	android:text="@string/save_button" 
+       	android:id="@+id/save_settings">
+	</Button>
+ 		
+	<TextView 
+	    android:layout_width="wrap_content" 
+		android:layout_height="0dip" 
+		android:textColor="#FFF" 
+		android:layout_alignParentBottom="true"
+		android:layout_centerHorizontal="true"
+		android:id="@+id/gap">
+	</TextView>
+	
+	<Button 
+	    android:layout_width="fill_parent" 
+       	android:layout_height="wrap_content" 
+       	android:layout_alignParentBottom="true"
+       	android:layout_toRightOf="@+id/gap"
+       	android:text="@string/cancel_button" 
+       	android:id="@+id/cancel_settings">
+ 	</Button>
+</RelativeLayout>
       

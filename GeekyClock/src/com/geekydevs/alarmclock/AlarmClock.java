@@ -1,16 +1,12 @@
 package com.geekydevs.alarmclock;
 
-import java.util.Calendar;
-
-import android.app.AlarmManager;
 import android.app.ListActivity;
-import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -35,9 +31,13 @@ public class AlarmClock extends ListActivity {
 	private static final int DELETE_ALARM = Menu.FIRST+2;
 	private static final int TURN_ALARM_ON = Menu.FIRST+3;
 	
+	private boolean notifOn = false;
+	
 	private AlarmDBAdapter dbAdapter;
 	private CursorAdapter curAdapter;
-	Alarm alarm;
+	public Alarm alarm;
+	
+	private Context ctx;
 	
     /** Called when the activity is first created. */
     @Override
@@ -51,8 +51,8 @@ public class AlarmClock extends ListActivity {
         Cursor c = dbAdapter.fetchAllAlarms();
         
         startManagingCursor(c);
-        curAdapter = new AlarmListAdapter(this, c);
-        
+        curAdapter = new AlarmListAdapter(this, c, true);
+
         assignListeners();
         
     }
@@ -64,7 +64,23 @@ public class AlarmClock extends ListActivity {
     	listV.setOnCreateContextMenuListener(createItemContext);
     	
     	((Button)findViewById(R.id.m_btn_add_new)).setOnClickListener(onAddNewAlarmClick);
+    	((Button)findViewById(R.id.notif_on)).setOnClickListener(onToggleNotifOn);
+    	((Button)findViewById(R.id.notif_off)).setOnClickListener(onToggleNotifOff);
     }
+    
+    @Override
+    protected void onDestroy() {
+    	dbAdapter.close();
+    	super.onDestroy();
+    }
+    
+    @Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		setContentView(R.layout.main);
+		
+		assignListeners();
+	}
     
     /*
      * Listens for user's key press on any alarm on the list to launch the edit screen. 
@@ -81,6 +97,7 @@ public class AlarmClock extends ListActivity {
     private void launchAlarmEdit(long id) {
     	Intent i = new Intent(this, AlarmEdit.class);
 		i.putExtra("_id", id);
+		i.putExtra("notifOn", notifOn);
 		startActivity(i);
     }
     
@@ -91,10 +108,52 @@ public class AlarmClock extends ListActivity {
 
 		@Override
 		public void onClick(View v) {
-			startActivity(new Intent(getBaseContext(), AlarmEdit.class));
+			Intent i = new Intent (getBaseContext(), AlarmEdit.class);
+			i.putExtra("notifOn", notifOn);
+			startActivity(i);
 		}
 		
 	};
+	
+	/*
+     * Turn on the notification to alert the user an alarm has been enabled.
+     */
+    private final View.OnClickListener onToggleNotifOn = new View.OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			notifOn = true;
+			toggleNotif();
+		}
+		
+	};
+	
+	/*
+     * Turn off the notification which alerts the user an alarm has been enabled.
+     */
+    private final View.OnClickListener onToggleNotifOff = new View.OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			notifOn = false;
+			Intent i = new Intent(getBaseContext(), AlarmService.class);
+			i.setAction(AlarmService.ACTION_CANCEL_NOTIF);
+			startService(i);
+		}
+		
+	};
+	
+	/*
+	 * Helper method to start service for notification. 
+	 */
+	private void toggleNotif () {
+		
+		if (notifOn) {
+			Intent i = new Intent(getBaseContext(), AlarmService.class);
+			i.setAction(AlarmService.ACTION_SHOW_NOTIF);
+			startService(i);
+		}
+	}
 	
 	/*
 	 * Listens for user's key hold on alarm row to bring up context menu of alarm actions.
@@ -128,6 +187,7 @@ public class AlarmClock extends ListActivity {
 			curAdapter.getCursor().requery();
 
 			turnOffAlarm();
+			toggleNotif();
 			
 			break;
 		//case TURN_ALARM_ON:
@@ -165,8 +225,8 @@ public class AlarmClock extends ListActivity {
 	 */
 	private class AlarmListAdapter extends CursorAdapter {
 		
-		public AlarmListAdapter(Context context, Cursor c){
-			super(context, c);
+		public AlarmListAdapter(Context context, Cursor c, Boolean autoRequery){
+			super(context, c, autoRequery);
 		}
 		
 		/*
@@ -215,18 +275,30 @@ public class AlarmClock extends ListActivity {
 			// Icon images
 			//turnOnOffImage.setImageDrawable(getResources().getDrawable(R.drawable.icon));
 			
-			if ((cursor.getInt(11) == 0) && (cursor.getInt(12) == 0)) {
-				alarmImage.setImageDrawable(getResources().getDrawable(R.drawable.alarm_icon));
+			Boolean showFailSafe = (cursor.getInt(11) > 0);
+			Boolean showChallenge = (cursor.getInt(12) > 0);
+			
+			alarmImage.setImageDrawable(getResources().getDrawable(R.drawable.alarm_icon));
+			failsafeImage.setImageDrawable(getResources().getDrawable(R.drawable.failsafe_icon));
+			challengeImage.setImageDrawable(getResources().getDrawable(R.drawable.challenge_icon));
+			
+			failsafeImage.setVisibility(ImageView.GONE);
+			challengeImage.setVisibility(ImageView.GONE);
+			
+			if (!showFailSafe && !showChallenge) {
+				alarmImage.setVisibility(ImageView.VISIBLE);
+				failsafeImage.setVisibility(ImageView.GONE);
+				challengeImage.setVisibility(ImageView.GONE);
 			} else {
 				alarmImage.setVisibility(ImageView.GONE);
 			}
 			
-			if (cursor.getInt(11) > 0) {
-				failsafeImage.setImageDrawable(getResources().getDrawable(R.drawable.failsafe_icon));
+			if (showFailSafe) {
+				failsafeImage.setVisibility(ImageView.VISIBLE);
 			}
 			
-			if (cursor.getInt(12) > 0) {
-				challengeImage.setImageDrawable(getResources().getDrawable(R.drawable.challenge_icon));
+			if (showChallenge) {
+				challengeImage.setVisibility(ImageView.VISIBLE);
 			}
 			
 			chkAlarmOn.setOnCheckedChangeListener(null);
@@ -240,7 +312,9 @@ public class AlarmClock extends ListActivity {
 			
 			final LayoutInflater inflater = LayoutInflater.from(context);
 			View v = inflater.inflate(R.layout.alarm_row, parent, false);
-			
+
+			bindView(v, context, cursor);
+
 			return v;
 		}
 		
@@ -254,10 +328,12 @@ public class AlarmClock extends ListActivity {
 				curAdapter.getCursor().requery();
 
 				if (arg1) { 
-					setUpAlarm(alarmId); 
+					setUpAlarm(alarmId);	
 				} else {
 					turnOffAlarm();
 				}
+				
+				toggleNotif();
 			}
 			
 		};

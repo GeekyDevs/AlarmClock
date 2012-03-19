@@ -15,11 +15,9 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
-import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
-
 
 public class AlarmEdit extends Activity {
 
@@ -50,6 +48,7 @@ public class AlarmEdit extends Activity {
 	private Context ctx;
 	
 	private Boolean newAlarm = true;
+	private Boolean notifOn = false;
 	
 	/*
 	 * Automatically called when AlarmEdit was created and launches the UI to
@@ -85,6 +84,8 @@ public class AlarmEdit extends Activity {
 	    		id = (Integer) alarm.getAll().get("_id");
 	    		dbAdapter.deleteAlarm((Long) id);
 	    	}
+	    	
+	    	dbAdapter.close();
 	    	finish();
 			
 	        return true;
@@ -108,14 +109,16 @@ public class AlarmEdit extends Activity {
 		timeView = (TextView)findViewById(R.id.time_selection);
 		repeatView = (TextView)findViewById(R.id.repeat_selection);
 		labelView = (TextView)findViewById(R.id.label_view);
+		
 		snoozeView = (TextView)findViewById(R.id.snooze_limit);
+		snoozeView.setVisibility(TextView.GONE);
 		
 		failSafe = (CheckBox)findViewById(R.id.chk_failsafe);
 		wakeUp = (CheckBox)findViewById(R.id.chk_challenge);
 		
 		seekBar = (SeekBar)findViewById(R.id.seekbar);
 		seekBar.setMax(10);
-		seekBar.setVisibility(4);
+		seekBar.setVisibility(SeekBar.GONE);
 		
 		saveButton = (Button)findViewById(R.id.save_settings);
 		cancelButton = (Button)findViewById(R.id.cancel_settings);
@@ -147,6 +150,7 @@ public class AlarmEdit extends Activity {
 			
 			Bundle b = getIntent().getExtras();
 			int id = (int) b.getLong("_id");
+			notifOn = b.getBoolean("notifOn");
 
 			alarm = dbAdapter.getAlarmById(id);
 			
@@ -157,15 +161,18 @@ public class AlarmEdit extends Activity {
 			updateLabelView(values.get("name") + "");
 			
 			if ((Boolean) values.get("failsafe_on")) {
-				//snoozeView.setVisibility(0);
+				snoozeView.setVisibility(TextView.VISIBLE);
 				snoozeView.setText("Limit: " + values.get("snooze_value"));
-				seekBar.setVisibility(0);
+				seekBar.setVisibility(SeekBar.VISIBLE);
 			}
 			failSafe.setChecked((Boolean) values.get("failsafe_on"));
 			seekBar.setProgress((Integer) values.get("snooze_value"));
 			wakeUp.setChecked((Boolean) values.get("wakeup_on"));
 			
 		} else {
+			Bundle b = getIntent().getExtras();
+			notifOn = b.getBoolean("notifOn");
+			
 			alarm = new Alarm(dbAdapter.getNewId());
 			dbAdapter.initialise(alarm);
 		}
@@ -305,13 +312,14 @@ public class AlarmEdit extends Activity {
 		public void onClick(View v) {
 			
 			if (failSafe.isChecked()) {
-
-				snoozeView.setVisibility(0);
-				seekBar.setVisibility(0);
-
+				snoozeView.setVisibility(TextView.VISIBLE);
+				seekBar.setVisibility(SeekBar.VISIBLE);
+				if (newAlarm) {
+					seekBar.setProgress(5);
+				}
 			} else {
-				seekBar.setVisibility(4);
-				snoozeView.setVisibility(4);
+				seekBar.setVisibility(SeekBar.GONE);
+				snoozeView.setVisibility(TextView.GONE);
 			}
 			
 			alarm.assign("failsafe_on", failSafe.isChecked());
@@ -362,9 +370,21 @@ public class AlarmEdit extends Activity {
 			
 			dbAdapter.saveAlarm(alarm.getAll());
 			
-			setUpAlarm((Integer) alarm.getAll().get("_id"));		
+			int id = (Integer) alarm.getAll().get("_id");
+			
+			setUpAlarm(id);		
+			
+			if (newAlarm) {
+				dbAdapter.setAlarmToDB(id, true);
+			}
 			
 			dbAdapter.close();
+			
+			if (notifOn) {
+				Intent i = new Intent(getBaseContext(), AlarmService.class);
+				i.setAction(AlarmService.ACTION_SHOW_NOTIF);
+				startService(i);
+			}
 			
 			setResult(Activity.RESULT_OK);
 			finish();

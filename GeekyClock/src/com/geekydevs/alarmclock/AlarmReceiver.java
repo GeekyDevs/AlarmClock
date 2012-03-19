@@ -1,11 +1,13 @@
 package com.geekydevs.alarmclock;
 
+import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.PowerManager;
+import android.os.Vibrator;
 import android.widget.Toast;
 import android.speech.tts.TextToSpeech.OnInitListener;
 
@@ -33,6 +35,13 @@ public class AlarmReceiver extends BroadcastReceiver implements OnInitListener {
 		//mediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM); // this is important.
 
 		mediaPlayer.start();
+		
+		Vibrator v = (Vibrator)ctx.getSystemService(Context.VIBRATOR_SERVICE);
+		v.vibrate(3000);
+		
+		//Intent i = new Intent(this, Snooze.class);
+		//startActivity(i);
+		
 	}
 
     @Override
