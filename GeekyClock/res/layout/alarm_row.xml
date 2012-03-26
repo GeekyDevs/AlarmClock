@@ -49,9 +49,18 @@
 	<LinearLayout 
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
-        android:layout_marginRight="10dip">
+        android:layout_marginRight="5dip">
 		
-	    
+	    <ImageView 
+            android:layout_width="wrap_content" 
+            android:layout_height="wrap_content" 
+            android:id="@+id/sound_icon" 
+            android:adjustViewBounds="true" 
+            android:maxHeight="48dip" 
+            android:maxWidth="48dip" 
+            android:minHeight="48dip" 
+            android:minWidth="48dip">
+        </ImageView>
 	</LinearLayout>
 	
 	<LinearLayout 

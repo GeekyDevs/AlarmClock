@@ -1,6 +1,6 @@
 package com.geekydevs.alarmclock;
 
-import java.lang.reflect.Method;
+import java.lang.Math;
 import java.util.Calendar;
 
 import android.app.AlarmManager;
@@ -11,21 +11,18 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import java.lang.Math;
-
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.PowerManager;
 import android.widget.Toast;
 
 
 public class AlarmService extends Service {
 
 	public static final String ACTION_SET_ALARM = "set_alarm";
-	public static final String ACTION_LAUNCH_ALARM = "launch_alarm";
 	public static final String ACTION_STOP_ALARM = "stop_alarm";
 	public static final String ACTION_SHOW_NOTIF = "show_notif";
 	public static final String ACTION_CANCEL_NOTIF = "cancel_notif";
+	public static final String ACTION_LAUNCH_SNOOZE = "launch_snooze";
 	
 	public static final String EXTRA_DONT_DISABLE = "don't disable";
 	
@@ -80,7 +77,7 @@ public class AlarmService extends Service {
 			Cursor c = dbAdapter.fetchAlarmById((Integer) b.get("_id"));
 			
 			if (c.moveToFirst()) {
-				setAlarm(pickNextAlarmTime(c));
+				setAlarm(pickNextAlarmTime(c), c);
 			}
 		} else if (action.equals(ACTION_STOP_ALARM)) {
 			
@@ -90,18 +87,22 @@ public class AlarmService extends Service {
 											0, stopIntent, 0);
 
 			AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
-
-			alarmManager.cancel(pendingIntent);
-		} 
-		else if (action.equals(ACTION_SHOW_NOTIF)) {
+			alarmManager.cancel(pendingIntent);	
+			
+		} else if (action.equals(ACTION_SHOW_NOTIF)) {
 			
 			Calendar schedule = Calendar.getInstance();
+			String dateFormat = "";
+			String timeFormat = "";
+			
 			Cursor c = dbAdapter.fetchAllAlarms();
 
 			if (c.getCount() > 0) {
 				schedule = nextAvailableSchedule(c);
 				if (schedule != null) {
-					setNotification(schedule.getTime().toString());
+					timeFormat = Alarm.formatTime(schedule.get(schedule.HOUR_OF_DAY), schedule.get(schedule.MINUTE));
+					dateFormat = schedule.getTime().toString().substring(0, 11) + timeFormat;
+					setNotification(dateFormat);
 				} else {
 					setNotification("None");
 				}
@@ -117,11 +118,21 @@ public class AlarmService extends Service {
 	/*
 	 * Schedule the alarm.
 	 */
-	private void setAlarm(Calendar c) {
+	private void setAlarm(Calendar c, Cursor cursor) {
 		
 		Intent i = new Intent(this, AlarmReceiver.class);
+		int flag = 0;
+		
+		// Check if failSafe mode has been enabled. If yes, pass the snooze limit to broadcast receiver.
+		if (cursor.getInt(11) > 0)
+			i.putExtra("snooze_count", cursor.getInt(15));
+			flag = PendingIntent.FLAG_UPDATE_CURRENT;
+			
+		if (cursor.getInt(13) > 0)
+			i.putExtra("vibrate", true);
+			
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(
-				this.getApplicationContext(), 0, i, 0);
+				this.getApplicationContext(), 0, i, flag);
 		
 		Calendar calendar = Calendar.getInstance();
 
@@ -131,7 +142,7 @@ public class AlarmService extends Service {
 		calendar.add(Calendar.SECOND, (int) secondsDif);
 		
 		// Testing purposes
-		//calendar.add(Calendar.SECOND, 10);
+		//calendar.add(Calendar.SECOND, 5);
 		
         AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
         am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);	
@@ -231,7 +242,6 @@ public class AlarmService extends Service {
 	private Calendar nextAvailableSchedule(Cursor c) {
 		
 		Calendar bestDate = Calendar.getInstance();
-		
 		Calendar temp = Calendar.getInstance();
 
 		boolean assigned = false;
@@ -269,7 +279,7 @@ public class AlarmService extends Service {
 
 		String message = "Next alarm: " + timeString; 
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, AlarmClock.class), 0);
-		Notification notif = new Notification(R.drawable.alarm_icon, message, System.currentTimeMillis());
+		Notification notif = new Notification(R.drawable.alarm_icon, message, 0);
 		notif.setLatestEventInfo(this, "GeekyAlarm Scheduled", timeString, contentIntent);
 		notif.flags = Notification.FLAG_ONGOING_EVENT;
 		notifManager.notify(NOTIFY_ALARM_SET, notif);	
@@ -281,83 +291,4 @@ public class AlarmService extends Service {
 	private void cancelNotification() {
 		notifManager.cancel(NOTIFY_ALARM_SET);
 	}
-	
-	/*
-	private void actionLaunchAlarm(boolean dontDisable) {
-		
-		turnOnForeground(getNotification(R.string.launch_msg,R.string.app_launched));
-		//alarm = dbAdapter.getAlarmById(getNextAlarm());
-		
-		try {
-			Thread.sleep(200);
-			stopOrSet();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private Notification getNotification(int message) {
-		return getNotification(message, message);
-	}
-	
-	private Notification getNotification(int message, int ticker) {
-		
-		Notification notif = new Notification(R.drawable.stat_notify_alarm, getString(ticker), System.currentTimeMillis());
-		return notif;
-	}
-	
-	private void turnOnForeground (Notification notif) {
-		
-		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-		fullWakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "GeekyAlarmTag");
-		fullWakeLock.acquire();
-		
-		try {
-			Method m = Service.class.getMethod("startForeground", new Class[] {int.class, Notification.class});
-			m.invoke(this, NOTIFY_MAIN, notif);
-		} catch (Exception e) {
-			notificationManager.notify(NOTIFY_MAIN, notif);
-		}
-	}
-	
-	private void stopOrSet() {
-		if (safeToStop()) {
-			stopSelf();
-		} else {
-			setNextAlarm();
-		}
-	}
-	
-	private boolean safeToStop() {
-		return !(playingBackup || isCounting);
-	}
-	
-	private void setNextAlarm() {
-		
-		PendingIntent sender = PendingIntent.getBroadcast(this, 0, new Intent(this, AlarmReceiver.class), 0);
-		AlarmManager manager = (AlarmManager)getSystemService(ALARM_SERVICE);
-		manager.cancel(sender);
-		
-		Cursor c = dbAdapter.fetchEnabledAlarms();
-		if (c != null) {
-			c.moveToFirst();
-			if (!c.isAfterLast()) {
-				//long nextAlarmTimeInMilis = 0;
-				long nextAlarmId = 0;
-				
-				Alarm a = null;
-				while (!c.isAfterLast()) {
-					a = new Alarm(c);
-					nextAlarmId = (Long) a.getAll().get("_id");
-					c.moveToNext();
-				}
-			} else {
-				notificationManager.cancel(NOTIFY_ALARM_SET);
-			}
-			c.close();
-		} else {
-			notificationManager.cancel(NOTIFY_ALARM_SET);
-		}
-	}
-	*/
 }

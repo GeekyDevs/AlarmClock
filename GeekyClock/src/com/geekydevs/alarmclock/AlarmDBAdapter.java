@@ -112,6 +112,16 @@ public class AlarmDBAdapter {
 	}
 	
 	/*
+	 * Retrieve alarm with id that have been enabled (i.e. check box been checked)
+	 */
+	public boolean fetchEnabledById(int id) {
+
+		Cursor c = mDb.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE _id=" + id, null);
+		c.moveToFirst();
+		return (c.getInt(16) > 0);
+	}
+	
+	/*
 	 * Counts the number of rows in the table. Used to assign a new alarm the id that haven't
 	 * been assigned yet. 
 	 */
@@ -125,11 +135,11 @@ public class AlarmDBAdapter {
 		}
 	}
 	
-	public void setAlarmToDB(int ID, boolean enabled) {
+	public void setAlarmToDB(int id, boolean enabled) {
 		
 		ContentValues values = new ContentValues();
 		values.put("alarm_enabled", enabled);
-		mDb.update(TABLE_NAME, values, "_id=" + ID, null);
+		mDb.update(TABLE_NAME, values, "_id=" + id, null);
 	}
 	
 	/*

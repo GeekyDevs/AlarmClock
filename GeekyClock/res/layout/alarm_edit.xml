@@ -349,31 +349,28 @@
 		</LinearLayout>
 	</ScrollView>
 	
-	<Button 
-	    android:layout_width="fill_parent" 
-       	android:layout_height="wrap_content" 
-       	android:layout_alignParentBottom="true"
-       	android:layout_toLeftOf="@+id/gap"
-       	android:text="@string/save_button" 
-       	android:id="@+id/save_settings">
-	</Button>
- 		
-	<TextView 
-	    android:layout_width="wrap_content" 
-		android:layout_height="0dip" 
-		android:textColor="#FFF" 
-		android:layout_alignParentBottom="true"
-		android:layout_centerHorizontal="true"
-		android:id="@+id/gap">
-	</TextView>
-	
-	<Button 
-	    android:layout_width="fill_parent" 
-       	android:layout_height="wrap_content" 
-       	android:layout_alignParentBottom="true"
-       	android:layout_toRightOf="@+id/gap"
-       	android:text="@string/cancel_button" 
-       	android:id="@+id/cancel_settings">
- 	</Button>
+	<LinearLayout 
+		    android:orientation="horizontal" 
+			android:layout_height="wrap_content" 
+			android:layout_width="fill_parent"
+			android:background="#848484"
+			android:layout_alignParentBottom="true">
+		
+		<Button 
+		    android:layout_width="fill_parent"
+	       	android:layout_height="wrap_content"
+	       	android:layout_weight="1" 
+	       	android:text="@string/save_button" 
+	       	android:id="@+id/save_settings">
+		</Button>
+
+		<Button 
+		    android:layout_width="fill_parent" 
+	       	android:layout_height="wrap_content"
+	       	android:layout_weight="1" 
+	       	android:text="@string/cancel_button" 
+	       	android:id="@+id/cancel_settings">
+	 	</Button>
+	 </LinearLayout>
 </RelativeLayout>
       

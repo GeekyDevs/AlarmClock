@@ -36,6 +36,7 @@ public class AlarmEdit extends Activity {
 	private CheckBox failSafe;
 	private SeekBar seekBar;
 	private CheckBox wakeUp;
+	private CheckBox vibrate;
 	
 	private TextView timeView;
 	private TextView repeatView;
@@ -120,6 +121,8 @@ public class AlarmEdit extends Activity {
 		seekBar.setMax(10);
 		seekBar.setVisibility(SeekBar.GONE);
 		
+		vibrate = (CheckBox)findViewById(R.id.chk_alarm_vibrate);
+		
 		saveButton = (Button)findViewById(R.id.save_settings);
 		cancelButton = (Button)findViewById(R.id.cancel_settings);
 	}
@@ -137,6 +140,8 @@ public class AlarmEdit extends Activity {
 		failSafe.setOnClickListener(failSafeOnClick);
 		seekBar.setOnSeekBarChangeListener(bar);
 		wakeUp.setOnClickListener(challengeOnClick);
+		
+		vibrate.setOnClickListener(vibrateOnClick);
 		
 		saveButton.setOnClickListener(saveOnClick);
 		cancelButton.setOnClickListener(cancelOnClick);
@@ -168,6 +173,7 @@ public class AlarmEdit extends Activity {
 			failSafe.setChecked((Boolean) values.get("failsafe_on"));
 			seekBar.setProgress((Integer) values.get("snooze_value"));
 			wakeUp.setChecked((Boolean) values.get("wakeup_on"));
+			vibrate.setChecked((Boolean) values.get("vibrate_on"));
 			
 		} else {
 			Bundle b = getIntent().getExtras();
@@ -175,6 +181,9 @@ public class AlarmEdit extends Activity {
 			
 			alarm = new Alarm(dbAdapter.getNewId());
 			dbAdapter.initialise(alarm);
+			
+			Calendar c = Calendar.getInstance();
+			timeView.setText(Alarm.formatTime(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)));
 		}
 	}
 	
@@ -361,6 +370,18 @@ public class AlarmEdit extends Activity {
 	};
 	
 	/*
+	 * Listens for user's check to enable/disable Wake-Up challenge mode.
+	 */
+	private View.OnClickListener vibrateOnClick = new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+		
+			alarm.assign("vibrate_on", vibrate.isChecked());
+		}
+	};
+	
+	/*
 	 * Listens for user's key press to save all changes made and set the alarm.
 	 */
 	private View.OnClickListener saveOnClick = new View.OnClickListener() {
@@ -371,11 +392,14 @@ public class AlarmEdit extends Activity {
 			dbAdapter.saveAlarm(alarm.getAll());
 			
 			int id = (Integer) alarm.getAll().get("_id");
-			
-			setUpAlarm(id);		
-			
+
 			if (newAlarm) {
 				dbAdapter.setAlarmToDB(id, true);
+				setUpAlarm(id);	
+			} else {
+				if (dbAdapter.fetchEnabledById(id)) {
+					setUpAlarm(id);
+				}
 			}
 			
 			dbAdapter.close();

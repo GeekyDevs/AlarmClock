@@ -241,9 +241,10 @@ public class AlarmClock extends ListActivity {
 			TextView timeText = (TextView) view.findViewById(R.id.time_row);
 			TextView repeatText = (TextView) view.findViewById(R.id.repeat_row);
 
-			ImageView alarmImage = (ImageView) view.findViewById(R.id.alarm_icon);
+			//ImageView alarmImage = (ImageView) view.findViewById(R.id.alarm_icon);
 			ImageView failsafeImage = (ImageView) view.findViewById(R.id.failsafe_icon);
 			ImageView challengeImage = (ImageView) view.findViewById(R.id.challenge_icon);
+			ImageView soundImage = (ImageView) view.findViewById(R.id.sound_icon);
 			
 			CheckBox chkAlarmOn = (CheckBox) view.findViewById(R.id.alarm_enabled_row);
 			
@@ -277,14 +278,17 @@ public class AlarmClock extends ListActivity {
 			
 			Boolean showFailSafe = (cursor.getInt(11) > 0);
 			Boolean showChallenge = (cursor.getInt(12) > 0);
+			Boolean vibrateOn = (cursor.getInt(13) > 0);
 			
-			alarmImage.setImageDrawable(getResources().getDrawable(R.drawable.alarm_icon));
+			//alarmImage.setImageDrawable(getResources().getDrawable(R.drawable.alarm_icon));
 			failsafeImage.setImageDrawable(getResources().getDrawable(R.drawable.failsafe_icon));
 			challengeImage.setImageDrawable(getResources().getDrawable(R.drawable.challenge_icon));
+			soundImage.setImageDrawable(getResources().getDrawable(R.drawable.sound));
 			
 			failsafeImage.setVisibility(ImageView.GONE);
 			challengeImage.setVisibility(ImageView.GONE);
 			
+			/*
 			if (!showFailSafe && !showChallenge) {
 				alarmImage.setVisibility(ImageView.VISIBLE);
 				failsafeImage.setVisibility(ImageView.GONE);
@@ -292,6 +296,7 @@ public class AlarmClock extends ListActivity {
 			} else {
 				alarmImage.setVisibility(ImageView.GONE);
 			}
+			*/
 			
 			if (showFailSafe) {
 				failsafeImage.setVisibility(ImageView.VISIBLE);
@@ -299,6 +304,10 @@ public class AlarmClock extends ListActivity {
 			
 			if (showChallenge) {
 				challengeImage.setVisibility(ImageView.VISIBLE);
+			}
+			
+			if (vibrateOn) {
+				soundImage.setImageDrawable(getResources().getDrawable(R.drawable.vibrate));
 			}
 			
 			chkAlarmOn.setOnCheckedChangeListener(null);
@@ -328,11 +337,10 @@ public class AlarmClock extends ListActivity {
 				curAdapter.getCursor().requery();
 
 				if (arg1) { 
-					setUpAlarm(alarmId);	
+					setUpAlarm(alarmId);
 				} else {
 					turnOffAlarm();
 				}
-				
 				toggleNotif();
 			}
 			

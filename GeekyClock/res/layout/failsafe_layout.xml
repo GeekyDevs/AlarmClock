@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  	xmlns:android="http://schemas.android.com/apk/res/android"
+  	android:orientation="vertical" 
+  	android:layout_height="fill_parent" 
+  	android:layout_width="fill_parent">
+	
+	<ImageView 
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:id="@+id/failsafe_screen"
+        android:adjustViewBounds="true" 
+        android:maxHeight="410dip"  
+        android:layout_marginTop="10dip"  
+		android:layout_marginBottom="10dip" 
+		android:layout_marginLeft="5dip" 
+		android:layout_marginRight="5dip">
+    </ImageView>
+    
+	<TextView 
+		android:layout_width="fill_parent" 
+		android:layout_height="wrap_content" 
+		android:textColor="#FFF"
+		android:textSize="30dip"  
+		android:gravity="center_vertical|center_horizontal"
+		android:paddingBottom="20dip"
+		android:id="@+id/time_remaining">
+	</TextView>
+
+</LinearLayout>
