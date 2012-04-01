@@ -18,25 +18,38 @@ public class AlarmReceiver extends BroadcastReceiver{
 		wl.acquire(120000);
 		*/
 		
-		//Vibrator v = (Vibrator)ctx.getSystemService(Context.VIBRATOR_SERVICE);
-		//v.vibrate(3000);
-		
 		Intent i = new Intent(ctx, Snooze.class);
-
-		if (arg1.hasExtra("snooze_count")) {
-			
+		
+		boolean challengeOn = arg1.getExtras().getInt("challenge_on") > 0;
+		boolean failSafeOn = arg1.getExtras().getInt("failsafe_on") > 0;
+		
+		if (challengeOn) {
+			i = new Intent(ctx, Challenge.class);
+			if (failSafeOn) {
+				int snoozeCount = arg1.getExtras().getInt("snooze_count");
+				if (snoozeCount > 0) {
+					i.putExtra("snooze_count", snoozeCount);
+				} else {
+					i = new Intent(ctx, FailSafe.class);
+				}
+			}
+		} 
+		else if (failSafeOn) 
+		{
 			int snoozeCount = arg1.getExtras().getInt("snooze_count");
 			if (snoozeCount > 0) {
 				i = new Intent(ctx, Snooze.class);
-				i.putExtra("snooze_count", arg1.getExtras().getInt("snooze_count")); 
+				i.putExtra("snooze_count", snoozeCount); 
 			} else {
 				i = new Intent(ctx, FailSafe.class);
 			}
 		}
 		
-		if (arg1.hasExtra("vibrate"))
-			i.putExtra("vibrate", true);
+		if (arg1.hasExtra("vibrate")) {
+			i.putExtra("vibrate", 1);
+		}
 		
+		i.putExtra("sound", arg1.getExtras().getString("sound"));
 		i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		ctx.startActivity(i);
 

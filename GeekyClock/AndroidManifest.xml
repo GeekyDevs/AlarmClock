@@ -41,9 +41,20 @@
             android:theme="@android:style/Theme.Dialog">
         </activity>
         
+        <activity 
+            android:name=".SoundSelection"
+            android:theme="@android:style/Theme.Dialog">   
+        </activity>
+        
         <activity
             android:name=".FailSafe"
             android:configChanges="keyboard|keyboardHidden|orientation">
+        </activity>
+        
+        <activity
+            android:name=".Challenge"
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:screenOrientation="landscape">
         </activity>
         
         <service android:name=".AlarmService"></service>

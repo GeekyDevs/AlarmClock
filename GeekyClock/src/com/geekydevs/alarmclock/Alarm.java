@@ -40,7 +40,7 @@ public class Alarm {
 		alarmProperty.put("failsafe_on", false); // 11
 		alarmProperty.put("wakeup_on", false);
 		alarmProperty.put("vibrate_on", false);
-		alarmProperty.put("sound", "default");
+		alarmProperty.put("sound", "Default");
 		alarmProperty.put("snooze_value", 5); // 15
 		alarmProperty.put("alarm_enabled", true);
 	}

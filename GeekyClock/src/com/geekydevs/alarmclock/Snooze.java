@@ -29,6 +29,7 @@ public class Snooze extends Activity {
 	private TextView snooze;
 	
 	private boolean isNativeSnooze = true;
+	private boolean challengeOn = false;
 	private int snooze_flag = 0;
 	private int snooze_remaining;
 	
@@ -58,15 +59,25 @@ public class Snooze extends Activity {
 			snooze_remaining = snooze_cnt;
 		}
 		
+		if (getIntent().hasExtra("challenge_on"))
+			challengeOn = getIntent().getExtras().getInt("challenge_on") > 0;
+		
 		amanager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		amanager.setStreamVolume(AudioManager.STREAM_ALARM, 20, 0);
 
-		mediaPlayer = MediaPlayer.create(this, R.raw.alarm1);
+		String sound = getIntent().getExtras().getString("sound");
+		if (sound.equals("Default")) {
+			mediaPlayer = MediaPlayer.create(this, R.raw.normal);
+		} else if (sound.equals("C'mon Man")) {
+			mediaPlayer = MediaPlayer.create(this, R.raw.cmon_man);
+		} else if (sound.equals("Red Alert")) {
+			mediaPlayer = MediaPlayer.create(this, R.raw.red_alert);
+		}
 
 		mediaPlayer.start();
 		mediaPlayer.setLooping(true);
 		
-		if (getIntent().hasExtra("vibrate"))
+		if (getIntent().getExtras().getInt("vibrate") > 0)
 			snooze_flag = PendingIntent.FLAG_UPDATE_CURRENT;
 			vibrate = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
 			vibrate.vibrate(pattern, 0);
@@ -83,8 +94,13 @@ public class Snooze extends Activity {
 			
 			Intent i = new Intent(getBaseContext(), AlarmReceiver.class);
 			i.putExtra("vibrate", (getIntent().hasExtra("vibrate")));
+			i.putExtra("sound", getIntent().getExtras().getString("sound"));
+			
+			if (challengeOn) 
+				i.putExtra("challenge_on", getIntent().getExtras().getInt("challenge_on"));
 			
 			if (!isNativeSnooze) {
+				i.putExtra("failsafe_on", 1);
 				i.putExtra("snooze_count", snooze_remaining - 1);
 			}
 

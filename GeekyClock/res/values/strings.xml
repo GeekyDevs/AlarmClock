@@ -46,4 +46,6 @@
     
     <string name="snooze">Snooze</string>
     <string name="dismiss">Dismiss Alarm</string>
+    
+    <string name="solve">Solve</string>
 </resources>

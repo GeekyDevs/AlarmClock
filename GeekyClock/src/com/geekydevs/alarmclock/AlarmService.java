@@ -125,11 +125,17 @@ public class AlarmService extends Service {
 		
 		// Check if failSafe mode has been enabled. If yes, pass the snooze limit to broadcast receiver.
 		if (cursor.getInt(11) > 0)
+			i.putExtra("failsafe_on", cursor.getInt(11));
 			i.putExtra("snooze_count", cursor.getInt(15));
 			flag = PendingIntent.FLAG_UPDATE_CURRENT;
-			
+		
+		if (cursor.getInt(12) > 0)
+			i.putExtra("challenge_on", cursor.getInt(12));
+		
 		if (cursor.getInt(13) > 0)
 			i.putExtra("vibrate", true);
+		
+		i.putExtra("sound", cursor.getString(14));
 			
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(
 				this.getApplicationContext(), 0, i, flag);
@@ -279,7 +285,7 @@ public class AlarmService extends Service {
 
 		String message = "Next alarm: " + timeString; 
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, AlarmClock.class), 0);
-		Notification notif = new Notification(R.drawable.alarm_icon, message, 0);
+		Notification notif = new Notification(R.drawable.alarm_icon, message, System.currentTimeMillis());
 		notif.setLatestEventInfo(this, "GeekyAlarm Scheduled", timeString, contentIntent);
 		notif.flags = Notification.FLAG_ONGOING_EVENT;
 		notifManager.notify(NOTIFY_ALARM_SET, notif);	

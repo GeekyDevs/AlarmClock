@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RadioGroup
+  	xmlns:android="http://schemas.android.com/apk/res/android"
+  	android:layout_width="fill_parent"
+  	android:orientation="vertical" 
+  	android:layout_height="fill_parent">
+  		
+	<View android:layout_width="fill_parent" 
+		android:layout_height="1dip" 
+		android:background="@android:drawable/divider_horizontal_dark">
+	</View>
+  
+  	<RadioButton 
+  		android:checked="true"
+		android:layout_width="fill_parent" 
+	  	android:layout_height="wrap_content" 
+	  	android:id="@+id/default_ring"
+	  	android:text="Default"
+	  	android:textSize="20dip"
+	  	android:focusable="false" 
+	  	android:focusableInTouchMode="false">
+	</RadioButton>
+  
+  	<RadioButton 
+		android:layout_width="fill_parent" 
+	  	android:layout_height="wrap_content" 
+	  	android:id="@+id/red_alert_ring" 
+	  	android:text="Red Alert"
+	  	android:textSize="20dip"
+	  	android:focusable="false" 
+	  	android:focusableInTouchMode="false">
+	</RadioButton>
+	
+	<RadioButton 
+		android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content" 
+	  	android:id="@+id/cmon_man_ring" 
+	  	android:text="C'mon Man"
+	  	android:textSize="20dip"
+	  	android:focusable="false" 
+	  	android:focusableInTouchMode="false">
+	</RadioButton>
+ 	
+	<View android:layout_width="fill_parent" 
+		  android:layout_height="1dip" 
+		  android:background="@android:drawable/divider_horizontal_dark">
+	</View>
+
+	<LinearLayout android:orientation="horizontal" 
+				  android:layout_weight="1" 
+				  android:layout_width="wrap_content" 
+				  android:gravity="center_horizontal" 
+				  android:background="#CCC">
+				  
+		<Button android:layout_width="wrap_content" 
+				android:layout_height="wrap_content" 
+				android:id="@+id/ring_ok" 
+				android:text="Ok" 
+				android:width="100dip" 
+				android:layout_margin="10dip">
+		</Button>
+		
+		<Button android:layout_width="wrap_content" 
+				android:layout_height="wrap_content" 
+				android:id="@+id/ring_cancel" 
+				android:text="@string/cancel_button" 
+				android:width="100dip" 
+				android:layout_margin="10dip">
+		</Button>
+	</LinearLayout>
+</RadioGroup>

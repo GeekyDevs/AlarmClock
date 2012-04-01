@@ -273,16 +273,18 @@
 				  android:background="@android:drawable/divider_horizontal_dark">
 			</View>
 			
-			<LinearLayout android:focusable="true" 
-						  android:orientation="horizontal" 
-						  android:layout_width="fill_parent" 
-						  android:background="@android:drawable/list_selector_background" 
-						  android:clickable="true" 
-						  android:layout_height="wrap_content" 
-						  android:gravity="center_vertical" 
-						  android:padding="10dip" 
-						  android:minHeight="70dip">
-						  
+			<LinearLayout 
+			    android:id="@+id/ll_alarm_sound"
+		    	android:focusable="true" 
+				android:orientation="horizontal" 
+				android:layout_width="fill_parent" 
+				android:background="@android:drawable/list_selector_background" 
+				android:clickable="true" 
+				android:layout_height="wrap_content" 
+				android:gravity="center_vertical" 
+				android:padding="10dip" 
+				android:minHeight="70dip">
+					  
 				<LinearLayout android:layout_height="wrap_content" 
 							  android:orientation="vertical" 
 							  android:layout_width="0dip" 
@@ -299,7 +301,7 @@
 					<TextView 
 						android:layout_width="wrap_content" 
 					  	android:layout_height="wrap_content" 
-					  	android:id="@+id/ea_tv_sound">
+					  	android:id="@+id/sound_pick">
 					</TextView>
 					
 				</LinearLayout>

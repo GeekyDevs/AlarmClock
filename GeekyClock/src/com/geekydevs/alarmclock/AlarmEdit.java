@@ -24,6 +24,7 @@ public class AlarmEdit extends Activity {
 	private static final int DIALOG_PICK_TIME = 1;
 	
 	private static final int ACTION_INPUT_LABEL = 1;
+	private static final int ACTION_CHOOSE_SOUND = 2;
 	private static final int ACTION_CHOOSE_REPEAT = 3;
 	
 	private Button saveButton;
@@ -32,6 +33,7 @@ public class AlarmEdit extends Activity {
 	private LinearLayout lLRepeat;
 	private LinearLayout lLTime;
 	private LinearLayout lLLabel;
+	private LinearLayout lLSound;
 	
 	private CheckBox failSafe;
 	private SeekBar seekBar;
@@ -42,6 +44,7 @@ public class AlarmEdit extends Activity {
 	private TextView repeatView;
 	private TextView labelView;
 	private TextView snoozeView;
+	private TextView soundView;
 	
 	private AlarmDBAdapter dbAdapter;
 	
@@ -106,7 +109,7 @@ public class AlarmEdit extends Activity {
 		
 		lLRepeat = (LinearLayout)findViewById(R.id.ea_ll_alarm_repeat);
 		lLTime = (LinearLayout)findViewById(R.id.ea_ll_alarm_time);
-		
+	
 		timeView = (TextView)findViewById(R.id.time_selection);
 		repeatView = (TextView)findViewById(R.id.repeat_selection);
 		labelView = (TextView)findViewById(R.id.label_view);
@@ -122,6 +125,8 @@ public class AlarmEdit extends Activity {
 		seekBar.setVisibility(SeekBar.GONE);
 		
 		vibrate = (CheckBox)findViewById(R.id.chk_alarm_vibrate);
+		lLSound = (LinearLayout)findViewById(R.id.ll_alarm_sound);
+		soundView = (TextView)findViewById(R.id.sound_pick);
 		
 		saveButton = (Button)findViewById(R.id.save_settings);
 		cancelButton = (Button)findViewById(R.id.cancel_settings);
@@ -142,6 +147,7 @@ public class AlarmEdit extends Activity {
 		wakeUp.setOnClickListener(challengeOnClick);
 		
 		vibrate.setOnClickListener(vibrateOnClick);
+		lLSound.setOnClickListener(soundOnClick);
 		
 		saveButton.setOnClickListener(saveOnClick);
 		cancelButton.setOnClickListener(cancelOnClick);
@@ -164,6 +170,7 @@ public class AlarmEdit extends Activity {
 			updateTimeView(Alarm.formatTime((Integer) values.get("hour"), (Integer) values.get("minute")));
 			updateRepeatView(Alarm.formatRepeat(alarm.getAll()));
 			updateLabelView(values.get("name") + "");
+			updateSoundView(values.get("sound") + "");
 			
 			if ((Boolean) values.get("failsafe_on")) {
 				snoozeView.setVisibility(TextView.VISIBLE);
@@ -184,6 +191,7 @@ public class AlarmEdit extends Activity {
 			
 			Calendar c = Calendar.getInstance();
 			timeView.setText(Alarm.formatTime(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)));
+			updateSoundView(alarm.getAll().get("sound") + "");
 		}
 	}
 	
@@ -202,11 +210,22 @@ public class AlarmEdit extends Activity {
 		labelView.setText(label);
 	}
 	
+	private void updateSoundView(String sound) {
+		soundView.setText(sound);
+	}
+	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		
 		if (resultCode == RESULT_OK) {
 			switch (requestCode) {
+			case ACTION_INPUT_LABEL:
+				
+				String label = data.getStringExtra("label");
+				
+				alarm.assign("name", label);
+				updateLabelView(label);
+				break;
 			case ACTION_CHOOSE_REPEAT:
 				
 				alarm.assign("repeat_sun", data.getBooleanExtra("Sunday", false));
@@ -219,12 +238,11 @@ public class AlarmEdit extends Activity {
 
 				updateRepeatView(Alarm.formatRepeat(alarm.getAll()));
 				break;
-			case ACTION_INPUT_LABEL:
+			case ACTION_CHOOSE_SOUND:
 				
-				String label = data.getStringExtra("label");
-				
-				alarm.assign("name", label);
-				updateLabelView(label);
+				String sound = data.getStringExtra("sound");
+				alarm.assign("sound", sound);
+				updateSoundView(sound);
 				break;
 			}
 		}
@@ -308,6 +326,19 @@ public class AlarmEdit extends Activity {
 			Intent i = new Intent(AlarmEdit.this, StringInputDialog.class);
 			i.putExtra("label", labelView.getText());
 			startActivityForResult(i, ACTION_INPUT_LABEL);
+		}
+	};
+	
+	/*
+	 * Listens for user's key press to open the label edit UI.
+	 */
+	private View.OnClickListener soundOnClick = new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			Intent i = new Intent(AlarmEdit.this, SoundSelection.class);
+			i.putExtra("sound", soundView.getText());
+			startActivityForResult(i, ACTION_CHOOSE_SOUND);
 		}
 	};
 	
