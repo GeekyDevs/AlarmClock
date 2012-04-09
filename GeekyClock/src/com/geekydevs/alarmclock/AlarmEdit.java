@@ -452,6 +452,7 @@ public class AlarmEdit extends Activity {
 		Intent i = new Intent(this, AlarmService.class);
 		i.setAction(AlarmService.ACTION_SET_ALARM);
 		i.putExtra("_id", id);
+		i.putExtra("notifOn", notifOn);
 		startService(i);
 	}
 	

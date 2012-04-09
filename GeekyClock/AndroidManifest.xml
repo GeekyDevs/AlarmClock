@@ -48,19 +48,18 @@
         
         <activity
             android:name=".FailSafe"
-            android:configChanges="keyboard|keyboardHidden|orientation">
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:screenOrientation="portrait">
         </activity>
         
         <activity
             android:name=".Challenge"
             android:configChanges="keyboard|keyboardHidden|orientation"
-            android:screenOrientation="landscape">
+            android:screenOrientation="portrait">
         </activity>
         
         <service android:name=".AlarmService"></service>
         <receiver android:name=".AlarmReceiver"></receiver>
     </application>
-    
-    
-    
+
 </manifest>

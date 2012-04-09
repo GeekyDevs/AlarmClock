@@ -45,11 +45,9 @@ public class AlarmReceiver extends BroadcastReceiver{
 			}
 		}
 		
-		if (arg1.hasExtra("vibrate")) {
-			i.putExtra("vibrate", 1);
-		}
-		
+		i.putExtra("vibrate", arg1.getExtras().getInt("vibrate"));
 		i.putExtra("sound", arg1.getExtras().getString("sound"));
+		i.putExtra("notifOn", arg1.getExtras().getBoolean("notifOn"));
 		i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		ctx.startActivity(i);
 

@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 import android.widget.Toast;
 
 
@@ -77,7 +78,7 @@ public class AlarmService extends Service {
 			Cursor c = dbAdapter.fetchAlarmById((Integer) b.get("_id"));
 			
 			if (c.moveToFirst()) {
-				setAlarm(pickNextAlarmTime(c), c);
+				setAlarm(pickNextAlarmTime(c), c, b.getBoolean("notifOn"));
 			}
 		} else if (action.equals(ACTION_STOP_ALARM)) {
 			
@@ -98,6 +99,7 @@ public class AlarmService extends Service {
 			Cursor c = dbAdapter.fetchAllAlarms();
 
 			if (c.getCount() > 0) {
+				c.moveToFirst();
 				schedule = nextAvailableSchedule(c);
 				if (schedule != null) {
 					timeFormat = Alarm.formatTime(schedule.get(schedule.HOUR_OF_DAY), schedule.get(schedule.MINUTE));
@@ -118,8 +120,9 @@ public class AlarmService extends Service {
 	/*
 	 * Schedule the alarm.
 	 */
-	private void setAlarm(Calendar c, Cursor cursor) {
+	private void setAlarm(Calendar c, Cursor cursor, boolean notifOn) {
 		
+		AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
 		Intent i = new Intent(this, AlarmReceiver.class);
 		int flag = 0;
 		
@@ -133,14 +136,19 @@ public class AlarmService extends Service {
 			i.putExtra("challenge_on", cursor.getInt(12));
 		
 		if (cursor.getInt(13) > 0)
-			i.putExtra("vibrate", true);
+			i.putExtra("vibrate", 1);
+		else 
+			i.putExtra("vibrate", 0);
 		
 		i.putExtra("sound", cursor.getString(14));
-			
+		i.putExtra("notifOn", notifOn);
+
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(
 				this.getApplicationContext(), 0, i, flag);
 		
 		Calendar calendar = Calendar.getInstance();
+		c.set(Calendar.SECOND, 0);
+		c.set(Calendar.MILLISECOND, 0);
 
 		long secondsDif = (c.getTimeInMillis() - calendar.getTimeInMillis()) / 1000;
         
@@ -149,11 +157,10 @@ public class AlarmService extends Service {
 		
 		// Testing purposes
 		//calendar.add(Calendar.SECOND, 5);
-		
-        AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
-        am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);	
+
+		am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);	
 	}
-	
+
 	/*
 	 * Finds the next available alarm time
 	 */
@@ -259,9 +266,9 @@ public class AlarmService extends Service {
 		
 		while(c.moveToNext()) {
 			if (c.getInt(16) > 0) {
-				
 				if (!assigned) {
 					bestDate = pickNextAlarmTime(c);
+					assigned = true;
 				} else {
 					temp = pickNextAlarmTime(c);
 					if (temp.compareTo(bestDate) == -1) {

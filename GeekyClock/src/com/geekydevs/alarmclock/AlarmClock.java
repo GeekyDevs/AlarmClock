@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -37,6 +38,23 @@ public class AlarmClock extends ListActivity {
 	private CursorAdapter curAdapter;
 	public Alarm alarm;
 	
+	private TextView labelText;
+	private TextView timeText;
+	private TextView periodText;
+	private TextView sunText;
+	private TextView monText;
+	private TextView tueText;
+	private TextView wedText;
+	private TextView thuText;
+	private TextView friText;
+	private TextView satText;
+	
+	private ImageView failsafeImage;
+	private ImageView challengeImage;
+	private ImageView soundImage;
+	
+	private CheckBox chkAlarmOn;
+	
 	private Context ctx;
 	
     /** Called when the activity is first created. */
@@ -47,7 +65,7 @@ public class AlarmClock extends ListActivity {
         
         dbAdapter = new AlarmDBAdapter(this);
         dbAdapter.open();
-        
+
         Cursor c = dbAdapter.fetchAllAlarms();
         
         startManagingCursor(c);
@@ -204,6 +222,7 @@ public class AlarmClock extends ListActivity {
 		Intent i = new Intent(this, AlarmService.class);
 		i.setAction(AlarmService.ACTION_SET_ALARM);
 		i.putExtra("_id", id);
+		i.putExtra("notifOn", notifOn);
 		startService(i);
 		
 	}
@@ -235,18 +254,9 @@ public class AlarmClock extends ListActivity {
 		@Override
 		public void bindView(View view, Context context, Cursor cursor) {
 			
-			//ImageView turnOnOffImage = (ImageView) view.findViewById(R.id.turn_onoff_icon);
-			
-			TextView labelText = (TextView) view.findViewById(R.id.label_row);
-			TextView timeText = (TextView) view.findViewById(R.id.time_row);
-			TextView repeatText = (TextView) view.findViewById(R.id.repeat_row);
+			//ImageView turnOnOffImage = (ImageView) view.v.findViewById(R.id.turn_onoff_icon);
 
-			//ImageView alarmImage = (ImageView) view.findViewById(R.id.alarm_icon);
-			ImageView failsafeImage = (ImageView) view.findViewById(R.id.failsafe_icon);
-			ImageView challengeImage = (ImageView) view.findViewById(R.id.challenge_icon);
-			ImageView soundImage = (ImageView) view.findViewById(R.id.sound_icon);
-			
-			CheckBox chkAlarmOn = (CheckBox) view.findViewById(R.id.alarm_enabled_row);
+			findViews(view);
 			
 			//Display the alarm label
 			String label = cursor.getString(3);
@@ -258,27 +268,18 @@ public class AlarmClock extends ListActivity {
 			
 			// Display the scheduled time
 			String time = Alarm.formatTime(cursor.getInt(1), cursor.getInt(2));
-			timeText.setText(time);
+			timeText.setText(time.substring(0, time.length()-3));	
+			periodText.setText(time.substring(time.length()-2).toUpperCase());
 			
-			// Display the repeat info
-			ContentValues values = new ContentValues();
-			
-			values.put("repeat_sun", cursor.getInt(4) > 0);
-			values.put("repeat_mon", cursor.getInt(5) > 0);
-			values.put("repeat_tue", cursor.getInt(6) > 0);
-			values.put("repeat_wed", cursor.getInt(7) > 0);
-			values.put("repeat_thu", cursor.getInt(8) > 0);
-			values.put("repeat_fri", cursor.getInt(9) > 0);
-			values.put("repeat_sat", cursor.getInt(10) > 0);
-			
-			repeatText.setText(Alarm.formatRepeat(values) + "");
-			
+			highlightRepeat(cursor);
+
 			// Icon images
 			//turnOnOffImage.setImageDrawable(getResources().getDrawable(R.drawable.icon));
 			
 			Boolean showFailSafe = (cursor.getInt(11) > 0);
 			Boolean showChallenge = (cursor.getInt(12) > 0);
 			Boolean vibrateOn = (cursor.getInt(13) > 0);
+			Boolean soundOff = (cursor.getString(14).equals("Silent"));
 			
 			//alarmImage.setImageDrawable(getResources().getDrawable(R.drawable.alarm_icon));
 			failsafeImage.setImageDrawable(getResources().getDrawable(R.drawable.failsafe_icon));
@@ -287,17 +288,7 @@ public class AlarmClock extends ListActivity {
 			
 			failsafeImage.setVisibility(ImageView.GONE);
 			challengeImage.setVisibility(ImageView.GONE);
-			
-			/*
-			if (!showFailSafe && !showChallenge) {
-				alarmImage.setVisibility(ImageView.VISIBLE);
-				failsafeImage.setVisibility(ImageView.GONE);
-				challengeImage.setVisibility(ImageView.GONE);
-			} else {
-				alarmImage.setVisibility(ImageView.GONE);
-			}
-			*/
-			
+
 			if (showFailSafe) {
 				failsafeImage.setVisibility(ImageView.VISIBLE);
 			}
@@ -306,8 +297,12 @@ public class AlarmClock extends ListActivity {
 				challengeImage.setVisibility(ImageView.VISIBLE);
 			}
 			
-			if (vibrateOn) {
+			if (soundOff && vibrateOn) {
 				soundImage.setImageDrawable(getResources().getDrawable(R.drawable.vibrate));
+			} else if (soundOff && !vibrateOn) {
+				soundImage.setImageDrawable(getResources().getDrawable(R.drawable.mute));
+			} else if (!soundOff && vibrateOn) {
+				soundImage.setImageDrawable(getResources().getDrawable(R.drawable.sound_vibrate));
 			}
 			
 			chkAlarmOn.setOnCheckedChangeListener(null);
@@ -345,5 +340,68 @@ public class AlarmClock extends ListActivity {
 			}
 			
 		};
+	}
+	
+	private void findViews(View v) {
+		
+		labelText = (TextView) v.findViewById(R.id.label_row);
+		timeText = (TextView) v.findViewById(R.id.time_row);
+		periodText = (TextView) v.findViewById(R.id.am_pm);
+		
+		sunText = (TextView) v.findViewById(R.id.sunday);
+		monText = (TextView) v.findViewById(R.id.monday);
+		tueText = (TextView) v.findViewById(R.id.tuesday);
+		wedText = (TextView) v.findViewById(R.id.wednesday);
+		thuText = (TextView) v.findViewById(R.id.thursday);
+		friText = (TextView) v.findViewById(R.id.friday);
+		satText = (TextView) v.findViewById(R.id.saturday);
+		
+		failsafeImage = (ImageView) v.findViewById(R.id.failsafe_icon);
+		challengeImage = (ImageView) v.findViewById(R.id.challenge_icon);
+		soundImage = (ImageView) v.findViewById(R.id.sound_icon);
+		
+		chkAlarmOn = (CheckBox) v.findViewById(R.id.alarm_enabled_row);
+	}
+	
+	/*
+	 * Highlight (in yellow) all the days in the alarm list screen with respect to the user's
+	 * repeat choices.
+	 */
+	private void highlightRepeat(Cursor cursor) {
+		
+		if (cursor.getInt(4)>0)
+			sunText.setTextColor(Color.YELLOW);
+		else
+			sunText.setTextColor(Color.WHITE);
+		
+		if (cursor.getInt(5)>0)
+			monText.setTextColor(Color.YELLOW);
+		else
+			monText.setTextColor(Color.WHITE);
+		
+		if (cursor.getInt(6)>0)
+			tueText.setTextColor(Color.YELLOW);
+		else
+			tueText.setTextColor(Color.WHITE);
+		
+		if (cursor.getInt(7)>0)
+			wedText.setTextColor(Color.YELLOW);
+		else
+			wedText.setTextColor(Color.WHITE);
+		
+		if (cursor.getInt(8)>0)
+			thuText.setTextColor(Color.YELLOW);
+		else
+			thuText.setTextColor(Color.WHITE);
+		
+		if (cursor.getInt(9)>0)
+			friText.setTextColor(Color.YELLOW);
+		else
+			friText.setTextColor(Color.WHITE);
+		
+		if (cursor.getInt(10)>0)
+			satText.setTextColor(Color.YELLOW);
+		else
+			satText.setTextColor(Color.WHITE);
 	}
 }

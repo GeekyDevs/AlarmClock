@@ -16,6 +16,14 @@
 	    android:focusable="false">
 	</CheckBox>
     
+   	<View          
+      android:layout_width="1dp" 
+      android:layout_height="fill_parent" 
+      android:background="#808080"
+      android:layout_marginLeft="10dip"
+      android:layout_marginRight="20dip">
+    </View>
+
 	<LinearLayout 
 	    android:orientation="vertical" 
 	    android:gravity="center_vertical" 
@@ -27,91 +35,152 @@
 		    android:layout_width="wrap_content" 
 		    android:layout_height="wrap_content" 
 		    android:id="@+id/label_row" 
-		    android:textSize="15dip">
+		    android:textSize="10dip">
 		</TextView>
 	    
-		<TextView 
+	    <LinearLayout 
+		    android:orientation="horizontal" 
 		    android:layout_width="wrap_content" 
-		    android:layout_height="wrap_content" 
-		    android:textColor="#FFF" 
-		    android:textSize="21dip" 
-		    android:id="@+id/time_row">
-		</TextView>
+		    android:layout_weight="1" 
+		    android:layout_height="wrap_content">
+		    
+			<TextView 
+			    android:layout_width="wrap_content" 
+			    android:layout_height="wrap_content" 
+			    android:textColor="#FFF" 
+			    android:textSize="26dip" 
+			    android:id="@+id/time_row">
+			</TextView>
+			
+			<TextView 
+			    android:layout_width="wrap_content" 
+			    android:layout_height="wrap_content" 
+			    android:textColor="#FFF" 
+			    android:textSize="12dip"
+			    android:id="@+id/am_pm">
+			</TextView>
+		</LinearLayout>
 		
-		<TextView 
+	    <LinearLayout 
+		    android:orientation="horizontal" 
 		    android:layout_width="wrap_content" 
-		    android:layout_height="wrap_content" 
-		    android:id="@+id/repeat_row" 
-		    android:textSize="12dip">
-		</TextView>
+		    android:layout_weight="1" 
+		    android:layout_height="wrap_content">	
+			
+			<TextView 
+			    android:layout_width="wrap_content" 
+			    android:layout_height="wrap_content" 
+			    android:id="@+id/sunday" 
+			    android:text="S"
+			    android:textSize="9dip"
+			    android:layout_marginRight="6dip">
+			</TextView>
+			
+			<TextView 
+			    android:layout_width="wrap_content" 
+			    android:layout_height="wrap_content" 
+			    android:id="@+id/monday"
+			    android:text="M" 
+			    android:textSize="9dip"
+			    android:layout_marginRight="6dip">
+			</TextView>
+			
+			<TextView 
+			    android:layout_width="wrap_content" 
+			    android:layout_height="wrap_content" 
+			    android:id="@+id/tuesday"
+			    android:text="T" 
+			    android:textSize="9dip"
+			    android:layout_marginRight="6dip">
+			</TextView>
+			
+			<TextView 
+			    android:layout_width="wrap_content" 
+			    android:layout_height="wrap_content" 
+			    android:id="@+id/wednesday"
+			    android:text="W" 
+			    android:textSize="9dip"
+			    android:layout_marginRight="6dip">
+			</TextView>
+			
+			<TextView 
+			    android:layout_width="wrap_content" 
+			    android:layout_height="wrap_content" 
+			    android:id="@+id/thursday"
+			    android:text="T" 
+			    android:textSize="9dip"
+			    android:layout_marginRight="6dip">
+			</TextView>
+			
+			<TextView 
+			    android:layout_width="wrap_content" 
+			    android:layout_height="wrap_content" 
+			    android:id="@+id/friday"
+			    android:text="F" 
+			    android:textSize="9dip"
+			    android:layout_marginRight="6dip">
+			</TextView>
+			
+			<TextView 
+			    android:layout_width="wrap_content" 
+			    android:layout_height="wrap_content" 
+			    android:id="@+id/saturday"
+			    android:text="S" 
+			    android:textSize="9dip"
+			    android:layout_marginRight="26dip">
+			</TextView>
+		</LinearLayout>
 	</LinearLayout>
 	
-	<LinearLayout 
-        android:layout_width="wrap_content" 
-        android:layout_height="wrap_content" 
-        android:layout_marginRight="5dip">
-		
-	    <ImageView 
-            android:layout_width="wrap_content" 
-            android:layout_height="wrap_content" 
-            android:id="@+id/sound_icon" 
-            android:adjustViewBounds="true" 
-            android:maxHeight="48dip" 
-            android:maxWidth="48dip" 
-            android:minHeight="48dip" 
-            android:minWidth="48dip">
-        </ImageView>
-	</LinearLayout>
-	
-	<LinearLayout 
-        android:layout_width="wrap_content" 
-        android:layout_height="wrap_content" 
-        android:layout_marginRight="5dip">
-        
-        <ImageView 
-            android:layout_width="wrap_content" 
-            android:layout_height="wrap_content" 
-            android:id="@+id/alarm_icon" 
-            android:adjustViewBounds="true" 
-            android:maxHeight="48dip" 
-            android:maxWidth="48dip" 
-            android:minHeight="48dip" 
-            android:minWidth="48dip">
-        </ImageView>
-    </LinearLayout>
-    
     <LinearLayout 
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
-        android:layout_marginRight="5dip">
+        android:layout_marginRight="15dip">
         
         <ImageView 
             android:layout_width="wrap_content" 
             android:layout_height="wrap_content" 
             android:id="@+id/failsafe_icon" 
             android:adjustViewBounds="true" 
-            android:maxHeight="48dip" 
-            android:maxWidth="48dip" 
-            android:minHeight="48dip" 
-            android:minWidth="48dip">
+            android:maxHeight="30dip" 
+            android:maxWidth="30dip" 
+            android:minHeight="30dip" 
+            android:minWidth="30dip">
         </ImageView>
     </LinearLayout>
     
     <LinearLayout 
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
-        android:layout_marginRight="5dip">
+        android:layout_marginRight="20dip">
         
         <ImageView 
             android:layout_width="wrap_content" 
             android:layout_height="wrap_content" 
             android:id="@+id/challenge_icon" 
             android:adjustViewBounds="true" 
-            android:maxHeight="48dip" 
-            android:maxWidth="48dip" 
-            android:minHeight="48dip" 
-            android:minWidth="48dip">
+            android:maxHeight="30dip" 
+            android:maxWidth="30dip" 
+            android:minHeight="30dip" 
+            android:minWidth="30dip">
         </ImageView>
     </LinearLayout>
+    
+   	<LinearLayout 
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_marginRight="20dip">
+		
+	    <ImageView 
+            android:layout_width="wrap_content" 
+            android:layout_height="wrap_content" 
+            android:id="@+id/sound_icon" 
+            android:adjustViewBounds="true" 
+            android:maxHeight="30dip" 
+            android:maxWidth="30dip" 
+            android:minHeight="30dip" 
+            android:minWidth="30dip">
+        </ImageView>
+	</LinearLayout>
 
 </LinearLayout>

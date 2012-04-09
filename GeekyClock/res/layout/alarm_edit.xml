@@ -346,11 +346,11 @@
 			</LinearLayout>
 			
 			<View android:layout_width="fill_parent" 
-				  android:layout_height="40dip">
+				  android:layout_height="50dip">
 			</View>
 		</LinearLayout>
 	</ScrollView>
-	
+
 	<LinearLayout 
 		    android:orientation="horizontal" 
 			android:layout_height="wrap_content" 
@@ -361,7 +361,9 @@
 		<Button 
 		    android:layout_width="fill_parent"
 	       	android:layout_height="wrap_content"
-	       	android:layout_weight="1" 
+	       	android:layout_weight="1"
+	       	android:layout_marginTop="4dip" 
+	       	android:textSize="15dip" 
 	       	android:text="@string/save_button" 
 	       	android:id="@+id/save_settings">
 		</Button>
@@ -369,7 +371,9 @@
 		<Button 
 		    android:layout_width="fill_parent" 
 	       	android:layout_height="wrap_content"
-	       	android:layout_weight="1" 
+	       	android:layout_weight="1"
+	       	android:layout_marginTop="4dip"  
+	       	android:textSize="15dip" 
 	       	android:text="@string/cancel_button" 
 	       	android:id="@+id/cancel_settings">
 	 	</Button>

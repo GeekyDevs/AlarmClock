@@ -7,6 +7,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Vibrator;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -22,6 +23,8 @@ public class FailSafe extends Activity {
 	
 	private Vibrator vibrate;
 	private static long[] pattern = {200, 500};
+	
+	private boolean vibrateOn = false;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +43,7 @@ public class FailSafe extends Activity {
 		amanager.setStreamVolume(AudioManager.STREAM_ALARM, 20, 0);
 		
 		String sound = getIntent().getExtras().getString("sound");
-		if (sound.equals("Default")) {
+		if (sound.equals("Silent") || sound.equals("Default")) {
 			mediaPlayer = MediaPlayer.create(this, R.raw.normal);
 		} else if (sound.equals("C'mon Man")) {
 			mediaPlayer = MediaPlayer.create(this, R.raw.cmon_man);
@@ -51,9 +54,11 @@ public class FailSafe extends Activity {
 		mediaPlayer.start();
 		mediaPlayer.setLooping(true);
 		
-		if (getIntent().hasExtra("vibrate"))
+		if (getIntent().getExtras().getInt("vibrate") == 1) {
+			vibrateOn = true;
 			vibrate = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
-			//vibrate.vibrate(pattern, 0);
+			vibrate.vibrate(pattern, 0);
+		}
 		
 		timer = new countDown(lockOutTime, interval);
 		timer.start();
@@ -100,7 +105,10 @@ public class FailSafe extends Activity {
 			timer.cancel();
 			mediaPlayer.stop();
 			mediaPlayer.release();
-			//vibrate.cancel();
+			if (vibrateOn) {
+				Log.d(ALARM_SERVICE, "SHOULD CANCEL HERE");
+				vibrate.cancel();
+			}
 			finish();
 		}
 		

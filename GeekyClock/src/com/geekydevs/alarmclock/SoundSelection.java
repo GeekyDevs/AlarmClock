@@ -12,6 +12,7 @@ public class SoundSelection extends Activity{
 	private RadioButton dfault;
 	private RadioButton cmon;
 	private RadioButton alert;
+	private RadioButton silent;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -20,6 +21,7 @@ public class SoundSelection extends Activity{
 		setContentView(R.layout.ring_selection);
 		setTitle("Alarm Sound...");
 		
+		silent = (RadioButton)findViewById(R.id.silent);
 		dfault = (RadioButton)findViewById(R.id.default_ring);
 		cmon = (RadioButton)findViewById(R.id.cmon_man_ring);
 		alert = (RadioButton)findViewById(R.id.red_alert_ring);
@@ -29,7 +31,9 @@ public class SoundSelection extends Activity{
 		
 		String sound = getIntent().getExtras().getString("sound");
 		
-		if (sound.equals("Default")) {
+		if (sound.equals("Silent")) {
+			silent.setChecked(true);
+		} else if (sound.equals("Default")) {
 			dfault.setChecked(true);
 		} else if (sound.equals("C'mon Man")) {
 			cmon.setChecked(true);
@@ -45,7 +49,9 @@ public class SoundSelection extends Activity{
 			
 			Intent i = new Intent();
 			
-			if (dfault.isChecked()) {
+			if (silent.isChecked()) {
+				i.putExtra("sound", "Silent");
+			} else if (dfault.isChecked()) {
 				i.putExtra("sound", "Default");
 			} else if (cmon.isChecked()) {
 				i.putExtra("sound", "C'mon Man");

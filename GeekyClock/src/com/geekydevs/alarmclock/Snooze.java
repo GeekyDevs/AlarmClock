@@ -16,20 +16,27 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 public class Snooze extends Activity {
 
+	private static long[] pattern = {200, 500};
+	private static final int SNOOZE_INTERVAL = 5;
+	
 	private MediaPlayer mediaPlayer;
 	private AudioManager amanager;
 	
-	private Vibrator vibrate;
-	private static long[] pattern = {200, 500};
-	
+	private Vibrator vibrate; 
 	private TextView snooze;
+	private SeekBar dismissBar;
 	
 	private boolean isNativeSnooze = true;
+	private boolean notificationOn = false;
+	private boolean soundOn = false;
 	private boolean challengeOn = false;
+	private boolean vibrateOn = false;
+	
 	private int snooze_flag = 0;
 	private int snooze_remaining;
 	
@@ -43,11 +50,16 @@ public class Snooze extends Activity {
 		
 		int snooze_cnt = 0;
 		
+		notificationOn = getIntent().getExtras().getBoolean("notifOn");
+		
 		if (getIntent().hasExtra("snooze_count"))
 			snooze_cnt = getIntent().getExtras().getInt("snooze_count"); 
 		
 		findViewById(R.id.snooze_button).setOnClickListener(snoozeOnClick);
-		findViewById(R.id.dismiss_button).setOnClickListener(dismissOnClick);
+		dismissBar = (SeekBar) findViewById(R.id.dismiss_bar);
+		dismissBar.setOnSeekBarChangeListener(bar);
+		dismissBar.setMax(100);
+		dismissBar.setProgress(1);
 		
 		snooze = (TextView)findViewById(R.id.snooze_remaining);
 		
@@ -66,21 +78,29 @@ public class Snooze extends Activity {
 		amanager.setStreamVolume(AudioManager.STREAM_ALARM, 20, 0);
 
 		String sound = getIntent().getExtras().getString("sound");
-		if (sound.equals("Default")) {
-			mediaPlayer = MediaPlayer.create(this, R.raw.normal);
-		} else if (sound.equals("C'mon Man")) {
-			mediaPlayer = MediaPlayer.create(this, R.raw.cmon_man);
-		} else if (sound.equals("Red Alert")) {
-			mediaPlayer = MediaPlayer.create(this, R.raw.red_alert);
+		if (!sound.equals("Silent")) {
+			soundOn = true;
+			if (sound.equals("Default")) {
+				mediaPlayer = MediaPlayer.create(this, R.raw.normal);
+			} else if (sound.equals("C'mon Man")) {
+				mediaPlayer = MediaPlayer.create(this, R.raw.cmon_man);
+			} else if (sound.equals("Red Alert")) {
+				mediaPlayer = MediaPlayer.create(this, R.raw.red_alert);
+			}
 		}
 
-		mediaPlayer.start();
-		mediaPlayer.setLooping(true);
+		if (soundOn) {
+			mediaPlayer.start();
+			mediaPlayer.setLooping(true);
+		}
 		
-		if (getIntent().getExtras().getInt("vibrate") > 0)
+		if (getIntent().getExtras().getInt("vibrate") > 0) {
+			vibrateOn = true;
 			snooze_flag = PendingIntent.FLAG_UPDATE_CURRENT;
 			vibrate = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
 			vibrate.vibrate(pattern, 0);
+		}
+			
 	}
 	
 	private Button.OnClickListener snoozeOnClick = new Button.OnClickListener() {
@@ -88,14 +108,19 @@ public class Snooze extends Activity {
 		@Override
 		public void onClick(View v) {
 
-			mediaPlayer.stop();
-			mediaPlayer.release();
-			vibrate.cancel();
+			if (soundOn) {
+				mediaPlayer.stop();
+				mediaPlayer.release();
+			}
 			
 			Intent i = new Intent(getBaseContext(), AlarmReceiver.class);
-			i.putExtra("vibrate", (getIntent().hasExtra("vibrate")));
 			i.putExtra("sound", getIntent().getExtras().getString("sound"));
 			
+			if (vibrateOn) {
+				vibrate.cancel();
+				i.putExtra("vibrate", getIntent().getExtras().getInt("vibrate"));
+			}
+
 			if (challengeOn) 
 				i.putExtra("challenge_on", getIntent().getExtras().getInt("challenge_on"));
 			
@@ -109,7 +134,7 @@ public class Snooze extends Activity {
 			
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTimeInMillis(System.currentTimeMillis());
-			calendar.add(Calendar.SECOND, 5);
+			calendar.add(Calendar.SECOND, SNOOZE_INTERVAL);
 			
 	        AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
 	        am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);	
@@ -121,20 +146,45 @@ public class Snooze extends Activity {
 	/*
 	 * Cancel the alarm entirely and release all resources tied to the alarm.
 	 */
-	private Button.OnClickListener dismissOnClick = new Button.OnClickListener() {
+	private SeekBar.OnSeekBarChangeListener bar = new SeekBar.OnSeekBarChangeListener() {
 		
 		@Override
-		public void onClick(View v) {
-
-			Intent i = new Intent(getBaseContext(), AlarmService.class);
-			i.setAction(AlarmService.ACTION_STOP_ALARM);
-			startService(i);
-
-			mediaPlayer.stop();
-			mediaPlayer.release();
-			vibrate.cancel();
+		public void onStopTrackingTouch(SeekBar seekBar) {
 			
-			finish();
+			if (seekBar.getProgress() < seekBar.getMax()) {
+				seekBar.setProgress(1);
+			}
+		}
+		
+		@Override
+		public void onStartTrackingTouch(SeekBar seekBar) {
+		}
+		
+		@Override
+		public void onProgressChanged(SeekBar seekBar, int progress,
+				boolean fromUser) {
+
+			if (progress == seekBar.getMax()) {
+				
+				Intent i = new Intent(getBaseContext(), AlarmService.class);
+				i.setAction(AlarmService.ACTION_STOP_ALARM);
+				startService(i);
+
+				if (soundOn) {
+					mediaPlayer.stop();
+					mediaPlayer.release();
+				}
+				if (vibrateOn) {
+					vibrate.cancel();
+				}
+				
+				if (notificationOn) {
+					Intent in = new Intent(getBaseContext(), AlarmService.class);
+					in.setAction(AlarmService.ACTION_SHOW_NOTIF);
+					startService(in);
+				}
+				finish();
+			}
 		}
 	};
 	

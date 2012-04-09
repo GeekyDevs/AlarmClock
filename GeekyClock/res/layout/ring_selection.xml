@@ -10,6 +10,16 @@
 		android:background="@android:drawable/divider_horizontal_dark">
 	</View>
   
+	<RadioButton 
+		android:layout_width="fill_parent" 
+	  	android:layout_height="wrap_content" 
+	  	android:id="@+id/silent"
+	  	android:text="Silent"
+	  	android:textSize="20dip"
+	  	android:focusable="false" 
+	  	android:focusableInTouchMode="false">
+	</RadioButton>
+	
   	<RadioButton 
   		android:checked="true"
 		android:layout_width="fill_parent" 
