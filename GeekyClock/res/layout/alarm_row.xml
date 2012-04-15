@@ -4,7 +4,7 @@
   	android:layout_height="wrap_content" 
   	android:layout_width="fill_parent" 
   	android:orientation="horizontal" 
-  	android:padding="10dip" 
+  	android:padding="5dip" 
   	android:id="@+id/ar_ll_selectable_row" 
   	android:gravity="center_vertical">
 	
@@ -19,7 +19,7 @@
    	<View          
       android:layout_width="1dp" 
       android:layout_height="fill_parent" 
-      android:background="#808080"
+      android:background="@color/vertical_bar_color"
       android:layout_marginLeft="10dip"
       android:layout_marginRight="20dip">
     </View>
@@ -27,9 +27,9 @@
 	<LinearLayout 
 	    android:orientation="vertical" 
 	    android:gravity="center_vertical" 
-	    android:layout_width="wrap_content" 
-	    android:layout_weight="1" 
-	    android:layout_height="wrap_content">
+	    android:layout_width="0dip"
+	    android:layout_height="wrap_content" 
+	    android:layout_weight="1">
         
 	    <TextView 
 		    android:layout_width="wrap_content" 
@@ -47,7 +47,7 @@
 			<TextView 
 			    android:layout_width="wrap_content" 
 			    android:layout_height="wrap_content" 
-			    android:textColor="#FFF" 
+			    android:textColor="@color/time_color" 
 			    android:textSize="26dip" 
 			    android:id="@+id/time_row">
 			</TextView>
@@ -55,8 +55,9 @@
 			<TextView 
 			    android:layout_width="wrap_content" 
 			    android:layout_height="wrap_content" 
-			    android:textColor="#FFF" 
+			    android:textColor="@color/period_color" 
 			    android:textSize="12dip"
+			    android:layout_marginLeft="6dip"
 			    android:id="@+id/am_pm">
 			</TextView>
 		</LinearLayout>
@@ -72,7 +73,8 @@
 			    android:layout_height="wrap_content" 
 			    android:id="@+id/sunday" 
 			    android:text="S"
-			    android:textSize="9dip"
+			    android:textSize="10dip"
+			    android:layout_marginLeft="3dip"
 			    android:layout_marginRight="6dip">
 			</TextView>
 			
@@ -81,7 +83,7 @@
 			    android:layout_height="wrap_content" 
 			    android:id="@+id/monday"
 			    android:text="M" 
-			    android:textSize="9dip"
+			    android:textSize="10dip"
 			    android:layout_marginRight="6dip">
 			</TextView>
 			
@@ -90,7 +92,7 @@
 			    android:layout_height="wrap_content" 
 			    android:id="@+id/tuesday"
 			    android:text="T" 
-			    android:textSize="9dip"
+			    android:textSize="10dip"
 			    android:layout_marginRight="6dip">
 			</TextView>
 			
@@ -99,7 +101,7 @@
 			    android:layout_height="wrap_content" 
 			    android:id="@+id/wednesday"
 			    android:text="W" 
-			    android:textSize="9dip"
+			    android:textSize="10dip"
 			    android:layout_marginRight="6dip">
 			</TextView>
 			
@@ -108,7 +110,7 @@
 			    android:layout_height="wrap_content" 
 			    android:id="@+id/thursday"
 			    android:text="T" 
-			    android:textSize="9dip"
+			    android:textSize="10dip"
 			    android:layout_marginRight="6dip">
 			</TextView>
 			
@@ -117,7 +119,7 @@
 			    android:layout_height="wrap_content" 
 			    android:id="@+id/friday"
 			    android:text="F" 
-			    android:textSize="9dip"
+			    android:textSize="10dip"
 			    android:layout_marginRight="6dip">
 			</TextView>
 			
@@ -126,8 +128,8 @@
 			    android:layout_height="wrap_content" 
 			    android:id="@+id/saturday"
 			    android:text="S" 
-			    android:textSize="9dip"
-			    android:layout_marginRight="26dip">
+			    android:textSize="10dip"
+			    android:layout_marginRight="5dip">
 			</TextView>
 		</LinearLayout>
 	</LinearLayout>
@@ -135,7 +137,7 @@
     <LinearLayout 
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
-        android:layout_marginRight="15dip">
+        android:layout_marginLeft="20dip">
         
         <ImageView 
             android:layout_width="wrap_content" 
@@ -152,7 +154,7 @@
     <LinearLayout 
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
-        android:layout_marginRight="20dip">
+        android:layout_marginLeft="20dip">
         
         <ImageView 
             android:layout_width="wrap_content" 
@@ -169,7 +171,7 @@
    	<LinearLayout 
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
-        android:layout_marginRight="20dip">
+        android:layout_marginLeft="20dip">
 		
 	    <ImageView 
             android:layout_width="wrap_content" 

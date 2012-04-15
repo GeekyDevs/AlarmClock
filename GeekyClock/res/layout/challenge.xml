@@ -9,76 +9,134 @@
 	<LinearLayout
 		xmlns:android="http://schemas.android.com/apk/res/android" 
 	    android:orientation="horizontal"  
-		android:layout_height="150px" 
+		android:layout_height="wrap_content" 
 		android:layout_width="fill_parent">
 		
-		<TextView 
-			android:layout_width="wrap_content" 
-			android:layout_height="wrap_content"
-			android:layout_gravity="center_vertical" 
-			android:textSize="40dip" 
-			android:textColor="#FFF" 
-			android:layout_weight="1" 
-			android:id="@+id/difficulty_level">
-		</TextView>
+		<ImageView 
+            android:layout_width="wrap_content" 
+            android:layout_height="wrap_content" 
+            android:id="@+id/refresh" 
+            android:adjustViewBounds="true" 
+            android:maxHeight="40dip" 
+            android:maxWidth="40dip"> 
+        </ImageView>
+
+	</LinearLayout>
 		
+	<LinearLayout
+		xmlns:android="http://schemas.android.com/apk/res/android" 
+	    android:orientation="horizontal"
+	    android:layout_gravity="center_horizontal" 
+		android:layout_height="wrap_content" 
+		android:layout_width="wrap_content">
+			
 		<TextView 
 			android:layout_width="wrap_content" 
 			android:layout_height="wrap_content" 
-			android:layout_gravity="center_vertical"
-			android:textSize="40dip" 
+			android:textSize="25dip" 
 			android:textColor="#FFF" 
-			android:layout_weight="1" 
+			android:layout_weight="1"
+			android:layout_marginRight="20dip"
+			android:layout_centerInParent="true" 
 			android:id="@+id/operand_a">
 		</TextView>
 		
 		<TextView 
 			android:layout_width="wrap_content" 
 			android:layout_height="wrap_content"
-			android:layout_gravity="center_vertical" 
-			android:textSize="40dip" 
+			android:textSize="25dip" 
 			android:textColor="#FFF" 
-			android:layout_weight="1" 
+			android:layout_weight="1"
+			android:layout_marginRight="20dip"
+			android:layout_centerInParent="true"   
 			android:id="@+id/operator">
 		</TextView>
 		
 		<TextView 
 			android:layout_width="wrap_content" 
 			android:layout_height="wrap_content"
-			android:layout_gravity="center_vertical" 
-			android:textSize="40dip" 
+			android:textSize="25dip" 
 			android:textColor="#FFF" 
-			android:layout_weight="1" 
+			android:layout_weight="1"
+			android:layout_centerInParent="true"  
 			android:id="@+id/operand_b">
 		</TextView>
+	</LinearLayout>
+	
+	<LinearLayout
+	    android:orientation="horizontal"  
+		android:layout_height="wrap_content" 
+		android:layout_width="fill_parent"
+		android:layout_marginTop="20dip">
 		
-		<TextView 
+	    <TextView 
 			android:layout_width="wrap_content" 
 			android:layout_height="wrap_content"
-			android:layout_gravity="center_vertical" 
-			android:textSize="40dip" 
+			android:layout_gravity="center_vertical"
+			android:layout_marginLeft="20dip" 
+			android:textSize="30dip" 
 			android:textColor="#FFF" 
-			android:layout_weight="1" 
+			android:layout_weight="0.3" 
 			android:text="=">
 		</TextView>
-		
+
 		<EditText
-			android:layout_width="55dip" 
-			android:layout_height="wrap_content"
-			android:layout_gravity="center_vertical" 
-			android:textSize="40dip"
-			android:inputType="phone" 
-			android:numeric="decimal"
-			android:maxLength="4"
-			android:layout_weight="1" 
-			android:id="@+id/answer">
+		    android:id="@+id/answer"
+		    android:layout_width="wrap_content"
+		    android:layout_height="60dip"
+		    android:layout_weight="2"
+		    android:layout_marginRight="20dip"
+		    android:inputType="phone"
+		    android:maxLength="4"
+		    android:numeric="decimal"
+		    android:textSize="25dip" >
+
 		</EditText>
+	</LinearLayout>
+	
+	<Button
+	    android:id="@+id/snooze_challenge_button"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_marginTop="5dip"
+	    android:layout_marginLeft="20dip"
+		android:layout_marginRight="20dip"
+		android:layout_marginBottom="5dip"
+		android:visibility="gone"
+	    android:text="@string/snooze"
+	    android:textSize="25dip"
+	    android:textStyle="bold" />
+	
+	<TextView 
+		android:layout_width="fill_parent" 
+		android:layout_height="wrap_content" 
+		android:textColor="#FFF"
+		android:textSize="20dip"  
+		android:gravity="center_horizontal|center_vertical"
+		android:paddingTop="5dip" 
+		android:paddingBottom="5dip"
+		android:visibility="gone" 
+		android:id="@+id/snooze_challenge_remaining">
+	</TextView>
 		
-		<TextView 
-			android:layout_width="wrap_content" 
-			android:layout_height="wrap_content"
-			android:layout_gravity="center_vertical" 
-			android:layout_weight="1">
-		</TextView>
+	<LinearLayout 
+		android:layout_height="wrap_content" 
+		android:background="#CCC" 
+		android:layout_width="fill_parent"
+		android:layout_marginTop="10dip"
+		android:layout_marginLeft="25dip"
+		android:layout_marginRight="25dip">
+		
+	    <SeekBar
+			android:id="@+id/dismiss_challenge_bar"
+			android:layout_weight="1"
+			android:layout_width="0dip"   
+			android:layout_height="wrap_content" 
+			android:layout_margin="3dip"  
+			android:minHeight="36dip"
+			android:maxHeight="36dip"
+			android:thumb="@drawable/thumb"
+			android:visibility="gone">
+		</SeekBar>	
 	</LinearLayout>
 </LinearLayout>

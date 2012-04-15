@@ -21,6 +21,7 @@ public class AlarmService extends Service {
 
 	public static final String ACTION_SET_ALARM = "set_alarm";
 	public static final String ACTION_STOP_ALARM = "stop_alarm";
+	public static final String ACTION_SET_NEXT_ALARM = "set_next_alarm";
 	public static final String ACTION_SHOW_NOTIF = "show_notif";
 	public static final String ACTION_CANCEL_NOTIF = "cancel_notif";
 	public static final String ACTION_LAUNCH_SNOOZE = "launch_snooze";
@@ -76,10 +77,21 @@ public class AlarmService extends Service {
 		if (action.equals(ACTION_SET_ALARM)) {
 
 			Cursor c = dbAdapter.fetchAlarmById((Integer) b.get("_id"));
+			//Cursor allCursors = dbAdapter.fetchAllAlarms();
+
+			if (c.moveToFirst()){
+				setAlarm(pickNextAlarmTime(c), c);
+			}
+			
+			
+		} else if (action.equals(ACTION_SET_NEXT_ALARM)) {
+		
+			Cursor c = dbAdapter.fetchAllAlarms();
 			
 			if (c.moveToFirst()) {
-				setAlarm(pickNextAlarmTime(c), c, b.getBoolean("notifOn"));
+				setAlarm(nextAvailableSchedule(c), c);
 			}
+				
 		} else if (action.equals(ACTION_STOP_ALARM)) {
 			
 			Intent stopIntent = new Intent(this, AlarmReceiver.class);
@@ -112,15 +124,13 @@ public class AlarmService extends Service {
 				cancelNotification();
 			}
 			
-		} else if (action.equals(ACTION_CANCEL_NOTIF)) {
-			cancelNotification();
 		}
 	}
 	
 	/*
 	 * Schedule the alarm.
 	 */
-	private void setAlarm(Calendar c, Cursor cursor, boolean notifOn) {
+	private void setAlarm(Calendar c, Cursor cursor) {
 		
 		AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
 		Intent i = new Intent(this, AlarmReceiver.class);
@@ -141,7 +151,7 @@ public class AlarmService extends Service {
 			i.putExtra("vibrate", 0);
 		
 		i.putExtra("sound", cursor.getString(14));
-		i.putExtra("notifOn", notifOn);
+		//i.putExtra("notifOn", notifOn);
 
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(
 				this.getApplicationContext(), 0, i, flag);
@@ -172,6 +182,7 @@ public class AlarmService extends Service {
 		// Future date and time
 		int fHour = c.getInt(1);
 		int fMinute = c.getInt(2);
+		int fSecond = 0;
 		int fDay = 0;
 		
 		// To-do: calculate if next schedule time will be the next month/year.
@@ -243,7 +254,7 @@ public class AlarmService extends Service {
 			fDay = fCalendar.get(Calendar.DAY_OF_MONTH) + Math.abs(fCalendar.get(Calendar.DAY_OF_WEEK) - fDay);
 		}
 		
-		fCalendar.set(fYear, fMonth, fDay, fHour, fMinute);
+		fCalendar.set(fYear, fMonth, fDay, fHour, fMinute, fSecond);
 		//Toast.makeText(this, "Scheduled for " + fCalendar.getTime().toString(), Toast.LENGTH_LONG).show();
 		
 		return fCalendar;

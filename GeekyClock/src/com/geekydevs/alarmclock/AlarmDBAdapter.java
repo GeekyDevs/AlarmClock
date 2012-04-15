@@ -92,8 +92,7 @@ public class AlarmDBAdapter {
 	 */
 	public Cursor fetchAllAlarms() {
 		
-		Cursor c = mDb.rawQuery("SELECT * FROM " + TABLE_NAME, null);
-		return c;
+		return mDb.rawQuery("SELECT * FROM " + TABLE_NAME, null);
 	}
 	
 	/*

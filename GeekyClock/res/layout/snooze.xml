@@ -45,8 +45,9 @@
 			android:layout_width="0dip"   
 			android:layout_height="wrap_content"   
 			android:layout_margin="5dip"
-			android:minHeight="30dip"
-			android:maxHeight="30dip">
+			android:minHeight="36dip"
+			android:maxHeight="36dip"
+			android:thumb="@drawable/thumb">
 		</SeekBar>
 		
 	</LinearLayout>

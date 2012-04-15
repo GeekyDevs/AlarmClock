@@ -23,18 +23,19 @@
 				  	android:background="@android:drawable/divider_horizontal_dark">
 				</View>
 			
-				<LinearLayout android:id="@+id/sr_ll_rpt_sun" 
-						  android:focusable="true" 
-						  android:orientation="horizontal" 
-						  android:layout_width="fill_parent" 
-						  android:background="@android:drawable/list_selector_background" 
-						  android:clickable="true" 
-						  android:layout_height="wrap_content" 
-						  android:gravity="center_vertical" 
-						  android:padding="10dip" 
-						  android:minHeight="70dip">
+				<LinearLayout 
+				    android:id="@+id/ll_repeat_sun" 
+					android:focusable="true" 
+					android:orientation="horizontal" 
+					android:layout_width="fill_parent" 
+					android:background="@android:drawable/list_selector_background" 
+					android:clickable="true" 
+					android:layout_height="wrap_content" 
+					android:gravity="center_vertical" 
+					android:padding="10dip" 
+					android:minHeight="60dip">
 						  
-					<TextView android:layout_width="wrap_content" 
+					<TextView android:layout_width="0dip" 
 						  android:layout_height="wrap_content" 
 						  android:textSize="18dip" 
 						  android:textColor="#FFF" 
@@ -55,18 +56,19 @@
 				  	android:background="@android:drawable/divider_horizontal_dark">
 				</View>
 			    
-				<LinearLayout android:id="@+id/sr_ll_rpt_mon" 
-							  android:focusable="true" 
-							  android:orientation="horizontal" 
-							  android:layout_width="fill_parent" 
-							  android:background="@android:drawable/list_selector_background" 
-							  android:clickable="true" 
-							  android:layout_height="wrap_content" 
-							  android:gravity="center_vertical" 
-							  android:padding="10dip" 
-							  android:minHeight="70dip">
+				<LinearLayout 
+				    android:id="@+id/ll_repeat_mon" 
+					android:focusable="true" 
+					android:orientation="horizontal" 
+					android:layout_width="fill_parent" 
+					android:background="@android:drawable/list_selector_background" 
+					android:clickable="true" 
+					android:layout_height="wrap_content" 
+					android:gravity="center_vertical" 
+					android:padding="10dip" 
+					android:minHeight="60dip">
 							  
-					<TextView android:layout_width="wrap_content" 
+					<TextView android:layout_width="0dip" 
 							  android:layout_height="wrap_content" 
 							  android:textSize="18dip" 
 							  android:textColor="#FFF" 
@@ -87,18 +89,19 @@
 				  android:background="@android:drawable/divider_horizontal_dark">
 			</View>
 
-			<LinearLayout android:id="@+id/sr_ll_rpt_tues" 
-						  android:focusable="true" 
-						  android:orientation="horizontal" 
-						  android:layout_width="fill_parent" 
-						  android:background="@android:drawable/list_selector_background" 
-						  android:clickable="true" 
-						  android:layout_height="wrap_content" 
-						  android:gravity="center_vertical" 
-						  android:padding="10dip" 
-						  android:minHeight="70dip">
+			<LinearLayout 
+			    android:id="@+id/ll_repeat_tues" 
+				android:focusable="true" 
+				android:orientation="horizontal" 
+				android:layout_width="fill_parent" 
+				android:background="@android:drawable/list_selector_background" 
+				android:clickable="true" 
+				android:layout_height="wrap_content" 
+				android:gravity="center_vertical" 
+				android:padding="10dip" 
+				android:minHeight="60dip">
 						  
-				<TextView android:layout_width="wrap_content" 
+				<TextView android:layout_width="0dip" 
 						  android:layout_height="wrap_content" 
 						  android:textSize="18dip" 
 						  android:textColor="#FFF" 
@@ -119,18 +122,19 @@
 				  android:background="@android:drawable/divider_horizontal_dark">
 			</View>
 			
-			<LinearLayout android:id="@+id/sr_ll_rpt_wed" 
-						  android:focusable="true" 
-						  android:orientation="horizontal" 
-						  android:layout_width="fill_parent" 
-						  android:background="@android:drawable/list_selector_background" 
-						  android:clickable="true" 
-						  android:layout_height="wrap_content" 
-						  android:gravity="center_vertical" 
-						  android:padding="10dip" 
-						  android:minHeight="70dip">
+			<LinearLayout 
+			    android:id="@+id/ll_repeat_wed" 
+				android:focusable="true" 
+				android:orientation="horizontal" 
+				android:layout_width="fill_parent" 
+				android:background="@android:drawable/list_selector_background" 
+				android:clickable="true" 
+				android:layout_height="wrap_content" 
+				android:gravity="center_vertical" 
+				android:padding="10dip" 
+				android:minHeight="60dip">
 						  
-				<TextView android:layout_width="wrap_content" 
+				<TextView android:layout_width="0dip" 
 						  android:layout_height="wrap_content" 
 						  android:textSize="18dip" 
 						  android:textColor="#FFF" 
@@ -151,16 +155,17 @@
 				  android:background="@android:drawable/divider_horizontal_dark">
 			</View>
 			
-			<LinearLayout android:id="@+id/sr_ll_rpt_thur" 
-						  android:focusable="true" 
-						  android:orientation="horizontal" 
-						  android:layout_width="fill_parent" 
-						  android:background="@android:drawable/list_selector_background" 
-						  android:clickable="true" 
-						  android:layout_height="wrap_content" 
-						  android:gravity="center_vertical" 
-						  android:padding="10dip" 
-						  android:minHeight="70dip">
+			<LinearLayout 
+			    android:id="@+id/ll_repeat_thur" 
+				android:focusable="true" 
+				android:orientation="horizontal" 
+				android:layout_width="fill_parent" 
+				android:background="@android:drawable/list_selector_background" 
+				android:clickable="true" 
+				android:layout_height="wrap_content" 
+				android:gravity="center_vertical" 
+				android:padding="10dip" 
+				android:minHeight="60dip">
 						  
 				<TextView android:layout_width="0dip" 
 						  android:layout_height="wrap_content" 
@@ -183,18 +188,19 @@
 				  android:background="@android:drawable/divider_horizontal_dark">
 			</View>
 			
-			<LinearLayout android:id="@+id/sr_ll_rpt_fri" 
-						  android:focusable="true" 
-						  android:orientation="horizontal" 
-						  android:layout_width="fill_parent" 
-						  android:background="@android:drawable/list_selector_background" 
-						  android:clickable="true" 
-						  android:layout_height="wrap_content" 
-						  android:gravity="center_vertical" 
-						  android:padding="10dip" 
-						  android:minHeight="70dip">
+			<LinearLayout 
+			    android:id="@+id/ll_repeat_fri" 
+				android:focusable="true" 
+				android:orientation="horizontal" 
+				android:layout_width="fill_parent" 
+				android:background="@android:drawable/list_selector_background" 
+				android:clickable="true" 
+				android:layout_height="wrap_content" 
+				android:gravity="center_vertical" 
+				android:padding="10dip" 
+				android:minHeight="60dip">
 						  
-				<TextView android:layout_width="wrap_content" 
+				<TextView android:layout_width="0dip" 
 						  android:layout_height="wrap_content" 
 						  android:textSize="18dip" 
 						  android:textColor="#FFF" 
@@ -215,18 +221,19 @@
 				  android:background="@android:drawable/divider_horizontal_dark">
 			</View>
 			
-			<LinearLayout android:id="@+id/sr_ll_rpt_sat" 
-						  android:focusable="true" 
-						  android:orientation="horizontal" 
-						  android:layout_width="fill_parent" 
-						  android:background="@android:drawable/list_selector_background" 
-						  android:clickable="true" 
-						  android:layout_height="wrap_content" 
-						  android:gravity="center_vertical" 
-						  android:padding="10dip" 
-						  android:minHeight="70dip">
+			<LinearLayout 
+			    android:id="@+id/ll_repeat_sat" 
+				android:focusable="true" 
+				android:orientation="horizontal" 
+				android:layout_width="fill_parent" 
+				android:background="@android:drawable/list_selector_background" 
+				android:clickable="true" 
+				android:layout_height="wrap_content" 
+				android:gravity="center_vertical" 
+				android:padding="10dip" 
+				android:minHeight="60dip">
 						  
-				<TextView android:layout_width="wrap_content" 
+				<TextView android:layout_width="0dip" 
 						  android:layout_height="wrap_content" 
 						  android:textSize="18dip" 
 						  android:textColor="#FFF" 

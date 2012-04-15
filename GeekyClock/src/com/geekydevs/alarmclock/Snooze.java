@@ -32,7 +32,7 @@ public class Snooze extends Activity {
 	private SeekBar dismissBar;
 	
 	private boolean isNativeSnooze = true;
-	private boolean notificationOn = false;
+	//private boolean notificationOn = false;
 	private boolean soundOn = false;
 	private boolean challengeOn = false;
 	private boolean vibrateOn = false;
@@ -50,16 +50,13 @@ public class Snooze extends Activity {
 		
 		int snooze_cnt = 0;
 		
-		notificationOn = getIntent().getExtras().getBoolean("notifOn");
-		
 		if (getIntent().hasExtra("snooze_count"))
 			snooze_cnt = getIntent().getExtras().getInt("snooze_count"); 
 		
 		findViewById(R.id.snooze_button).setOnClickListener(snoozeOnClick);
 		dismissBar = (SeekBar) findViewById(R.id.dismiss_bar);
 		dismissBar.setOnSeekBarChangeListener(bar);
-		dismissBar.setMax(100);
-		dismissBar.setProgress(1);
+		dismissBar.setProgress(3);
 		
 		snooze = (TextView)findViewById(R.id.snooze_remaining);
 		
@@ -152,7 +149,7 @@ public class Snooze extends Activity {
 		public void onStopTrackingTouch(SeekBar seekBar) {
 			
 			if (seekBar.getProgress() < seekBar.getMax()) {
-				seekBar.setProgress(1);
+				seekBar.setProgress(3);
 			}
 		}
 		
@@ -165,7 +162,7 @@ public class Snooze extends Activity {
 				boolean fromUser) {
 
 			if (progress == seekBar.getMax()) {
-				
+
 				Intent i = new Intent(getBaseContext(), AlarmService.class);
 				i.setAction(AlarmService.ACTION_STOP_ALARM);
 				startService(i);
@@ -177,12 +174,15 @@ public class Snooze extends Activity {
 				if (vibrateOn) {
 					vibrate.cancel();
 				}
+
+				Intent j = new Intent(getBaseContext(), AlarmService.class);
+				j.setAction(AlarmService.ACTION_SHOW_NOTIF);
+				startService(j);
 				
-				if (notificationOn) {
-					Intent in = new Intent(getBaseContext(), AlarmService.class);
-					in.setAction(AlarmService.ACTION_SHOW_NOTIF);
-					startService(in);
-				}
+				//Intent k = new Intent(getBaseContext(), AlarmService.class);
+				//k.setAction(AlarmService.ACTION_SET_NEXT_ALARM);;
+				//startService(k);
+
 				finish();
 			}
 		}

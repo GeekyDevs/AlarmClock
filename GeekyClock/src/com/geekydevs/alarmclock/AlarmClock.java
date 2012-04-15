@@ -1,7 +1,10 @@
 package com.geekydevs.alarmclock;
 
+import com.google.ads.AdRequest;
+import com.google.ads.AdSize;
+import com.google.ads.AdView;
+
 import android.app.ListActivity;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -22,9 +25,9 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class AlarmClock extends ListActivity {
 	
@@ -32,7 +35,10 @@ public class AlarmClock extends ListActivity {
 	private static final int DELETE_ALARM = Menu.FIRST+2;
 	private static final int TURN_ALARM_ON = Menu.FIRST+3;
 	
-	private boolean notifOn = false;
+	private static final String AD_UNIT_ID = "a14d7f7d2180609";
+	
+	private static final int REPEAT_DEFAULT_COLOR = Color.GRAY;
+	private static final int REPEAT_SELECTED_COLOR = Color.YELLOW;
 	
 	private AlarmDBAdapter dbAdapter;
 	private CursorAdapter curAdapter;
@@ -55,7 +61,7 @@ public class AlarmClock extends ListActivity {
 	
 	private CheckBox chkAlarmOn;
 	
-	private Context ctx;
+	private AdView adView;
 	
     /** Called when the activity is first created. */
     @Override
@@ -73,6 +79,13 @@ public class AlarmClock extends ListActivity {
 
         assignListeners();
         
+        Intent i = new Intent(getBaseContext(), AlarmService.class);
+		i.setAction(AlarmService.ACTION_SHOW_NOTIF);
+		startService(i);
+		
+		//AdRequest request = new AdRequest();
+		//request.addTestDevice("3334DE9B8EA200EC");
+
     }
     
     private void assignListeners() {
@@ -82,12 +95,11 @@ public class AlarmClock extends ListActivity {
     	listV.setOnCreateContextMenuListener(createItemContext);
     	
     	((Button)findViewById(R.id.m_btn_add_new)).setOnClickListener(onAddNewAlarmClick);
-    	((Button)findViewById(R.id.notif_on)).setOnClickListener(onToggleNotifOn);
-    	((Button)findViewById(R.id.notif_off)).setOnClickListener(onToggleNotifOff);
     }
     
     @Override
     protected void onDestroy() {
+
     	dbAdapter.close();
     	super.onDestroy();
     }
@@ -115,7 +127,7 @@ public class AlarmClock extends ListActivity {
     private void launchAlarmEdit(long id) {
     	Intent i = new Intent(this, AlarmEdit.class);
 		i.putExtra("_id", id);
-		i.putExtra("notifOn", notifOn);
+		//i.putExtra("notifOn", notifOn);
 		startActivity(i);
     }
     
@@ -127,36 +139,8 @@ public class AlarmClock extends ListActivity {
 		@Override
 		public void onClick(View v) {
 			Intent i = new Intent (getBaseContext(), AlarmEdit.class);
-			i.putExtra("notifOn", notifOn);
+			//i.putExtra("notifOn", notifOn);
 			startActivity(i);
-		}
-		
-	};
-	
-	/*
-     * Turn on the notification to alert the user an alarm has been enabled.
-     */
-    private final View.OnClickListener onToggleNotifOn = new View.OnClickListener() {
-
-		@Override
-		public void onClick(View v) {
-			notifOn = true;
-			toggleNotif();
-		}
-		
-	};
-	
-	/*
-     * Turn off the notification which alerts the user an alarm has been enabled.
-     */
-    private final View.OnClickListener onToggleNotifOff = new View.OnClickListener() {
-
-		@Override
-		public void onClick(View v) {
-			notifOn = false;
-			Intent i = new Intent(getBaseContext(), AlarmService.class);
-			i.setAction(AlarmService.ACTION_CANCEL_NOTIF);
-			startService(i);
 		}
 		
 	};
@@ -164,15 +148,12 @@ public class AlarmClock extends ListActivity {
 	/*
 	 * Helper method to start service for notification. 
 	 */
-	private void toggleNotif () {
-		
-		if (notifOn) {
-			Intent i = new Intent(getBaseContext(), AlarmService.class);
-			i.setAction(AlarmService.ACTION_SHOW_NOTIF);
-			startService(i);
-		}
+	private void toggleNotif() {
+
+		Intent i = new Intent(getBaseContext(), AlarmService.class);
+		i.setAction(AlarmService.ACTION_SHOW_NOTIF);
+		startService(i);
 	}
-	
 	/*
 	 * Listens for user's key hold on alarm row to bring up context menu of alarm actions.
 	 */
@@ -222,7 +203,6 @@ public class AlarmClock extends ListActivity {
 		Intent i = new Intent(this, AlarmService.class);
 		i.setAction(AlarmService.ACTION_SET_ALARM);
 		i.putExtra("_id", id);
-		i.putExtra("notifOn", notifOn);
 		startService(i);
 		
 	}
@@ -336,6 +316,7 @@ public class AlarmClock extends ListActivity {
 				} else {
 					turnOffAlarm();
 				}
+				
 				toggleNotif();
 			}
 			
@@ -370,38 +351,38 @@ public class AlarmClock extends ListActivity {
 	private void highlightRepeat(Cursor cursor) {
 		
 		if (cursor.getInt(4)>0)
-			sunText.setTextColor(Color.YELLOW);
+			sunText.setTextColor(REPEAT_SELECTED_COLOR);
 		else
-			sunText.setTextColor(Color.WHITE);
+			sunText.setTextColor(REPEAT_DEFAULT_COLOR);
 		
 		if (cursor.getInt(5)>0)
-			monText.setTextColor(Color.YELLOW);
+			monText.setTextColor(REPEAT_SELECTED_COLOR);
 		else
-			monText.setTextColor(Color.WHITE);
+			monText.setTextColor(REPEAT_DEFAULT_COLOR);
 		
 		if (cursor.getInt(6)>0)
-			tueText.setTextColor(Color.YELLOW);
+			tueText.setTextColor(REPEAT_SELECTED_COLOR);
 		else
-			tueText.setTextColor(Color.WHITE);
+			tueText.setTextColor(REPEAT_DEFAULT_COLOR);
 		
 		if (cursor.getInt(7)>0)
-			wedText.setTextColor(Color.YELLOW);
+			wedText.setTextColor(REPEAT_SELECTED_COLOR);
 		else
-			wedText.setTextColor(Color.WHITE);
+			wedText.setTextColor(REPEAT_DEFAULT_COLOR);
 		
 		if (cursor.getInt(8)>0)
-			thuText.setTextColor(Color.YELLOW);
+			thuText.setTextColor(REPEAT_SELECTED_COLOR);
 		else
-			thuText.setTextColor(Color.WHITE);
+			thuText.setTextColor(REPEAT_DEFAULT_COLOR);
 		
 		if (cursor.getInt(9)>0)
-			friText.setTextColor(Color.YELLOW);
+			friText.setTextColor(REPEAT_SELECTED_COLOR);
 		else
-			friText.setTextColor(Color.WHITE);
+			friText.setTextColor(REPEAT_DEFAULT_COLOR);
 		
 		if (cursor.getInt(10)>0)
-			satText.setTextColor(Color.YELLOW);
+			satText.setTextColor(REPEAT_SELECTED_COLOR);
 		else
-			satText.setTextColor(Color.WHITE);
+			satText.setTextColor(REPEAT_DEFAULT_COLOR);
 	}
 }

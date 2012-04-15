@@ -8,6 +8,7 @@ import android.app.TimePickerDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -27,6 +28,9 @@ public class AlarmEdit extends Activity {
 	private static final int ACTION_CHOOSE_SOUND = 2;
 	private static final int ACTION_CHOOSE_REPEAT = 3;
 	
+	private static final int SNOOZE_OFF_COLOR = Color.DKGRAY;
+	private static final int SNOOZE_ON_COLOR = Color.WHITE;
+	
 	private Button saveButton;
 	private Button cancelButton;
 	
@@ -34,6 +38,10 @@ public class AlarmEdit extends Activity {
 	private LinearLayout lLTime;
 	private LinearLayout lLLabel;
 	private LinearLayout lLSound;
+	
+	private LinearLayout lLFailSafe;
+	private LinearLayout lLChallenge;
+	private LinearLayout lLVibrate;
 	
 	private CheckBox failSafe;
 	private SeekBar seekBar;
@@ -44,6 +52,7 @@ public class AlarmEdit extends Activity {
 	private TextView repeatView;
 	private TextView labelView;
 	private TextView snoozeView;
+	private TextView snoozeLabel;
 	private TextView soundView;
 	
 	private AlarmDBAdapter dbAdapter;
@@ -52,7 +61,7 @@ public class AlarmEdit extends Activity {
 	private Context ctx;
 	
 	private Boolean newAlarm = true;
-	private Boolean notifOn = false;
+	//private Boolean notifOn = false;
 	
 	/*
 	 * Automatically called when AlarmEdit was created and launches the UI to
@@ -110,10 +119,15 @@ public class AlarmEdit extends Activity {
 		lLRepeat = (LinearLayout)findViewById(R.id.ea_ll_alarm_repeat);
 		lLTime = (LinearLayout)findViewById(R.id.ea_ll_alarm_time);
 	
+		lLFailSafe = (LinearLayout)findViewById(R.id.failsafe_section);
+		lLChallenge = (LinearLayout)findViewById(R.id.challenge_section);
+		lLVibrate = (LinearLayout)findViewById(R.id.vibrate_section);
+		
 		timeView = (TextView)findViewById(R.id.time_selection);
 		repeatView = (TextView)findViewById(R.id.repeat_selection);
 		labelView = (TextView)findViewById(R.id.label_view);
 		
+		snoozeLabel = (TextView)findViewById(R.id.snooze_label);
 		snoozeView = (TextView)findViewById(R.id.snooze_limit);
 		snoozeView.setVisibility(TextView.GONE);
 		
@@ -143,11 +157,16 @@ public class AlarmEdit extends Activity {
 		lLTime.setOnClickListener(timeOnClick);
 		
 		failSafe.setOnClickListener(failSafeOnClick);
+		lLFailSafe.setOnClickListener(failSafeScreenOnClick);
+		
 		seekBar.setOnSeekBarChangeListener(bar);
 		wakeUp.setOnClickListener(challengeOnClick);
+		lLChallenge.setOnClickListener(challengeScreenOnClick);
+		
+		lLSound.setOnClickListener(soundOnClick);
 		
 		vibrate.setOnClickListener(vibrateOnClick);
-		lLSound.setOnClickListener(soundOnClick);
+		lLVibrate.setOnClickListener(vibrateScreenOnClick);
 		
 		saveButton.setOnClickListener(saveOnClick);
 		cancelButton.setOnClickListener(cancelOnClick);
@@ -161,7 +180,7 @@ public class AlarmEdit extends Activity {
 			
 			Bundle b = getIntent().getExtras();
 			int id = (int) b.getLong("_id");
-			notifOn = b.getBoolean("notifOn");
+			//notifOn = b.getBoolean("notifOn");
 
 			alarm = dbAdapter.getAlarmById(id);
 			
@@ -173,9 +192,12 @@ public class AlarmEdit extends Activity {
 			updateSoundView(values.get("sound") + "");
 			
 			if ((Boolean) values.get("failsafe_on")) {
+				snoozeLabel.setTextColor(SNOOZE_ON_COLOR);
 				snoozeView.setVisibility(TextView.VISIBLE);
 				snoozeView.setText("Limit: " + values.get("snooze_value"));
 				seekBar.setVisibility(SeekBar.VISIBLE);
+			} else {
+				seekBar.setProgress(5);
 			}
 			failSafe.setChecked((Boolean) values.get("failsafe_on"));
 			seekBar.setProgress((Integer) values.get("snooze_value"));
@@ -184,7 +206,7 @@ public class AlarmEdit extends Activity {
 			
 		} else {
 			Bundle b = getIntent().getExtras();
-			notifOn = b.getBoolean("notifOn");
+			//notifOn = b.getBoolean("notifOn");
 			
 			alarm = new Alarm(dbAdapter.getNewId());
 			dbAdapter.initialise(alarm);
@@ -352,14 +374,40 @@ public class AlarmEdit extends Activity {
 		public void onClick(View v) {
 			
 			if (failSafe.isChecked()) {
+				snoozeLabel.setTextColor(SNOOZE_ON_COLOR);
 				snoozeView.setVisibility(TextView.VISIBLE);
 				seekBar.setVisibility(SeekBar.VISIBLE);
 				if (newAlarm) {
 					seekBar.setProgress(5);
 				}
 			} else {
+				snoozeLabel.setTextColor(SNOOZE_OFF_COLOR);
 				seekBar.setVisibility(SeekBar.GONE);
 				snoozeView.setVisibility(TextView.GONE);
+			}
+			
+			alarm.assign("failsafe_on", failSafe.isChecked());
+		}
+	};
+	
+	private View.OnClickListener failSafeScreenOnClick = new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			
+			if (failSafe.isChecked()) {
+				failSafe.setChecked(false);
+				seekBar.setVisibility(SeekBar.GONE);
+				snoozeLabel.setTextColor(SNOOZE_OFF_COLOR);
+				snoozeView.setVisibility(TextView.GONE);
+			} else {
+				failSafe.setChecked(true);
+				snoozeLabel.setTextColor(SNOOZE_ON_COLOR);
+				snoozeView.setVisibility(TextView.VISIBLE);
+				seekBar.setVisibility(SeekBar.VISIBLE);
+				if (newAlarm) {
+					seekBar.setProgress(5);
+				}
 			}
 			
 			alarm.assign("failsafe_on", failSafe.isChecked());
@@ -400,6 +448,16 @@ public class AlarmEdit extends Activity {
 		}
 	};
 	
+	private View.OnClickListener challengeScreenOnClick = new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+		
+			wakeUp.setChecked(!wakeUp.isChecked());
+			alarm.assign("wakeup_on", wakeUp.isChecked());
+		}
+	};
+	
 	/*
 	 * Listens for user's check to enable/disable Wake-Up challenge mode.
 	 */
@@ -408,6 +466,16 @@ public class AlarmEdit extends Activity {
 		@Override
 		public void onClick(View v) {
 		
+			alarm.assign("vibrate_on", vibrate.isChecked());
+		}
+	};
+	
+	private View.OnClickListener vibrateScreenOnClick = new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+		
+			vibrate.setChecked(!vibrate.isChecked());
 			alarm.assign("vibrate_on", vibrate.isChecked());
 		}
 	};
@@ -435,12 +503,10 @@ public class AlarmEdit extends Activity {
 			
 			dbAdapter.close();
 			
-			if (notifOn) {
-				Intent i = new Intent(getBaseContext(), AlarmService.class);
-				i.setAction(AlarmService.ACTION_SHOW_NOTIF);
-				startService(i);
-			}
-			
+			Intent i = new Intent(getBaseContext(), AlarmService.class);
+			i.setAction(AlarmService.ACTION_SHOW_NOTIF);
+			startService(i);
+
 			setResult(Activity.RESULT_OK);
 			finish();
 			
@@ -452,7 +518,7 @@ public class AlarmEdit extends Activity {
 		Intent i = new Intent(this, AlarmService.class);
 		i.setAction(AlarmService.ACTION_SET_ALARM);
 		i.putExtra("_id", id);
-		i.putExtra("notifOn", notifOn);
+		//i.putExtra("notifOn", notifOn);
 		startService(i);
 	}
 	

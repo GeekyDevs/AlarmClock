@@ -34,7 +34,7 @@
 				<TextView android:layout_width="wrap_content" 
 						  android:layout_height="wrap_content" 
 						  android:textSize="18dip" 
-						  android:textColor="#FFF" 
+						  android:textColor="@color/label_color" 
 						  android:text="@string/alarm_time">
 				</TextView>
 				
@@ -61,7 +61,7 @@
 			
 				<TextView android:layout_width="wrap_content" 
 						  android:layout_height="wrap_content" 
-						  android:textColor="#FFF" 
+						  android:textColor="@color/label_color" 
 						  android:textSize="18dip" 
 						  android:text="@string/alarm_repeat">
 				</TextView>
@@ -90,7 +90,7 @@
 						  
 				<TextView android:layout_width="wrap_content" 
 						  android:layout_height="wrap_content" 
-						  android:textColor="#FFF" 
+						  android:textColor="@color/label_color" 
 						  android:textSize="18dip" 
 						  android:text="@string/label">
 				</TextView>
@@ -113,7 +113,7 @@
 						  
 				<TextView android:layout_width="wrap_content" 
 						  android:layout_height="wrap_content" 
-						  android:textColor="#FFF" 
+						  android:textColor="@color/label_color" 
 						  android:padding="2dip" 
 						  android:textStyle="bold" 
 						  android:text="@string/alarm_mode_header">
@@ -125,16 +125,17 @@
 				  android:background="@android:drawable/divider_horizontal_dark">
 			</View>
 			
-			<LinearLayout android:focusable="true" 
-						  android:orientation="horizontal" 
-						  android:layout_width="fill_parent" 
-						  android:background="@android:drawable/list_selector_background" 
-						  android:clickable="true" 
-						  android:layout_height="wrap_content" 
-						  android:gravity="center_vertical" 
-						  android:padding="10dip" 
-						  android:minHeight="70dip" 
-						  android:id="@+id/enable_failsafe">
+			<LinearLayout 
+			    android:id="@+id/failsafe_section"
+	    		android:focusable="true" 
+				android:orientation="horizontal" 
+				android:layout_width="fill_parent" 
+				android:background="@android:drawable/list_selector_background" 
+				android:clickable="true" 
+				android:layout_height="wrap_content" 
+				android:gravity="center_vertical" 
+				android:padding="10dip" 
+				android:minHeight="70dip">
 						  
 				<LinearLayout android:layout_height="wrap_content" 
 							  android:orientation="vertical" 
@@ -144,7 +145,7 @@
 					<TextView android:layout_width="wrap_content" 
 							  android:layout_height="fill_parent" 
 							  android:textSize="18dip" 
-							  android:textColor="#FFF" 
+							  android:textColor="@color/label_color" 
 							  android:text="@string/failsafe_mode">
 					</TextView>
 					
@@ -180,21 +181,24 @@
 						  
 				<LinearLayout android:layout_height="wrap_content" 
 							  android:orientation="vertical" 
-							  android:layout_width="0dip" 
+							  android:layout_width="0dip"
+							  android:clickable="false"
 							  android:layout_weight="1">
 
-					<TextView android:layout_width="wrap_content" 
-							  android:layout_height="0dip" 
-							  android:textSize="18dip" 
-							  android:textColor="#FFF" 
-							  android:layout_weight="1" 
-							  android:text="@string/snooze_limit">
+					<TextView
+					    android:id="@+id/snooze_label" 
+					    android:layout_width="wrap_content" 
+						android:layout_height="0dip" 
+						android:textSize="18dip"
+						android:textColor="@color/snooze_off_color"  
+						android:layout_weight="1" 
+						android:text="@string/snooze_limit">
 					</TextView>
 
 					<SeekBar
 						android:id="@+id/seekbar"
 						android:layout_width="fill_parent"   
-						android:layout_height="wrap_content"   
+						android:layout_height="wrap_content"  
 						android:layout_margin="10dip">
 					</SeekBar>
 					
@@ -212,16 +216,17 @@
 				  android:background="@android:drawable/divider_horizontal_dark">
 			</View>
 			
-			<LinearLayout android:focusable="true" 
-						  android:orientation="horizontal" 
-						  android:layout_width="fill_parent" 
-						  android:background="@android:drawable/list_selector_background" 
-						  android:clickable="true" 
-						  android:layout_height="wrap_content" 
-						  android:gravity="center_vertical" 
-						  android:padding="10dip" 
-						  android:minHeight="70dip" 
-						  android:id="@+id/enable_challenge">
+			<LinearLayout
+			    android:id="@+id/challenge_section" 
+			    android:focusable="true" 
+			  	android:orientation="horizontal" 
+			  	android:layout_width="fill_parent" 
+				android:background="@android:drawable/list_selector_background" 
+				android:clickable="true" 
+				android:layout_height="wrap_content" 
+				android:gravity="center_vertical" 
+				android:padding="10dip" 
+				android:minHeight="70dip">
 						  
 				<LinearLayout android:layout_height="wrap_content" 
 							  android:orientation="vertical" 
@@ -231,7 +236,7 @@
 					<TextView android:layout_width="wrap_content" 
 							  android:layout_height="0dip" 
 							  android:textSize="18dip" 
-							  android:textColor="#FFF" 
+							  android:textColor="@color/label_color" 
 							  android:layout_weight="1" 
 							  android:text="@string/challenge_mode">
 					</TextView>
@@ -261,7 +266,7 @@
 						  
 				<TextView android:layout_width="wrap_content" 
 						  android:layout_height="wrap_content" 
-						  android:textColor="#FFF" 
+						  android:textColor="@color/label_color" 
 						  android:padding="2dip" 
 						  android:textStyle="bold" 
 						  android:text="@string/alarm_settings_header">
@@ -293,7 +298,7 @@
 					<TextView android:layout_width="wrap_content" 
 							  android:layout_height="0dip" 
 							  android:textSize="18dip" 
-							  android:textColor="#FFF" 
+							  android:textColor="@color/label_color" 
 							  android:layout_weight="1" 
 							  android:text="@string/alarm_sound">
 					</TextView>
@@ -312,15 +317,17 @@
 				  android:background="@android:drawable/divider_horizontal_dark">
 			</View>
 			
-			<LinearLayout android:focusable="true" 
-						  android:orientation="horizontal" 
-						  android:layout_width="fill_parent" 
-						  android:background="@android:drawable/list_selector_background" 
-						  android:clickable="true" 
-						  android:layout_height="wrap_content" 
-						  android:gravity="center_vertical" 
-						  android:padding="10dip" 
-						  android:minHeight="70dip">
+			<LinearLayout
+			    android:id="@+id/vibrate_section" 
+			    android:focusable="true" 
+				android:orientation="horizontal" 
+				android:layout_width="fill_parent" 
+				android:background="@android:drawable/list_selector_background" 
+				android:clickable="true" 
+				android:layout_height="wrap_content" 
+				android:gravity="center_vertical" 
+				android:padding="10dip" 
+				android:minHeight="70dip">
 						  
 				<LinearLayout android:layout_height="wrap_content" 
 							  android:orientation="vertical" 
@@ -330,7 +337,7 @@
 					<TextView android:layout_width="wrap_content" 
 							  android:layout_height="0dip" 
 							  android:textSize="18dip" 
-							  android:textColor="#FFF" 
+							  android:textColor="@color/label_color" 
 							  android:layout_weight="1" 
 							  android:text="@string/alarm_vibrate">
 					</TextView>
@@ -355,7 +362,7 @@
 		    android:orientation="horizontal" 
 			android:layout_height="wrap_content" 
 			android:layout_width="fill_parent"
-			android:background="#848484"
+			android:background="@color/buttons_background_color"
 			android:layout_alignParentBottom="true">
 		
 		<Button 

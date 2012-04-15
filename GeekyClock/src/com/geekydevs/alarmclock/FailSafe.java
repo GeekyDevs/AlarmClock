@@ -2,6 +2,7 @@ package com.geekydevs.alarmclock;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -109,6 +110,11 @@ public class FailSafe extends Activity {
 				Log.d(ALARM_SERVICE, "SHOULD CANCEL HERE");
 				vibrate.cancel();
 			}
+			
+			Intent j = new Intent(getBaseContext(), AlarmService.class);
+			j.setAction(AlarmService.ACTION_SHOW_NOTIF);
+			startService(j);
+			
 			finish();
 		}
 		

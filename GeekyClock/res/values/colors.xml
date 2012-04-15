@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    
+    <color name="vertical_bar_color">#41383C</color>
+  	<color name="time_color">#FFFFFF</color>
+  	<color name="period_color">#FFFFFF</color>
+
+    <color name="label_color">#FFFFFF</color>
+    <color name="snooze_off_color">#4A4344</color>
+    <color name="buttons_background_color">#848484</color>
+</resources>
