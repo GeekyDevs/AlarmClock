@@ -207,6 +207,10 @@ public class Challenge extends Activity{
 				j.setAction(AlarmService.ACTION_SHOW_NOTIF);
 				startService(j);
 				
+				Intent k = new Intent(getBaseContext(), AlarmService.class);
+				k.setAction(AlarmService.ACTION_SET_ALARM);;
+				startService(k);
+				
 				finish();
 			}
 		}

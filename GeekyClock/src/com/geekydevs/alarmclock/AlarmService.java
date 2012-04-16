@@ -63,35 +63,36 @@ public class AlarmService extends Service {
 	public void onStart(Intent intent, int startId) {
 		
 		super.onStart(intent, startId);
-		performAction(intent, intent.getExtras());
+		performAction(intent);
 	}
 	
 	/*
 	 * Reads in the intent and the id of the alarm selected and perform the 
 	 * required action (E.g. set alarm, set up snooze, ...) 
 	 */
-	private void performAction(Intent intent, Bundle b) {
+	private void performAction(Intent intent) {
 		
 		String action = intent.getAction();
 
 		if (action.equals(ACTION_SET_ALARM)) {
 
-			Cursor c = dbAdapter.fetchAlarmById((Integer) b.get("_id"));
-			//Cursor allCursors = dbAdapter.fetchAllAlarms();
-
-			if (c.moveToFirst()){
-				setAlarm(pickNextAlarmTime(c), c);
-			}
+			Cursor enabledCursors = dbAdapter.fetchEnabledAlarms();
+			Log.d(null, enabledCursors.getCount() + " rows");
 			
-			
-		} else if (action.equals(ACTION_SET_NEXT_ALARM)) {
-		
-			Cursor c = dbAdapter.fetchAllAlarms();
-			
-			if (c.moveToFirst()) {
-				setAlarm(nextAvailableSchedule(c), c);
-			}
+			if (enabledCursors.moveToFirst()) {
 				
+				Calendar toSchedule = nextAvailableSchedule(enabledCursors);
+				int alarmPos = 0;
+				
+				if (toSchedule != null) {
+					alarmPos = alarmPosition(enabledCursors);
+					
+					Cursor c = dbAdapter.fetchAlarmById(alarmPos);
+					c.moveToFirst();
+					setAlarm(toSchedule, c);
+				}
+			}
+
 		} else if (action.equals(ACTION_STOP_ALARM)) {
 			
 			Intent stopIntent = new Intent(this, AlarmReceiver.class);
@@ -102,13 +103,15 @@ public class AlarmService extends Service {
 			AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
 			alarmManager.cancel(pendingIntent);	
 			
+			performAction(new Intent().setAction(ACTION_SET_ALARM));
+			
 		} else if (action.equals(ACTION_SHOW_NOTIF)) {
 			
 			Calendar schedule = Calendar.getInstance();
 			String dateFormat = "";
 			String timeFormat = "";
 			
-			Cursor c = dbAdapter.fetchAllAlarms();
+			Cursor c = dbAdapter.fetchEnabledAlarms();
 
 			if (c.getCount() > 0) {
 				c.moveToFirst();
@@ -270,21 +273,19 @@ public class AlarmService extends Service {
 
 		boolean assigned = false;
 		
-		if (c.moveToFirst() && (c.getInt(16) > 0)) {
+		if (c.moveToFirst()) {
 			bestDate = pickNextAlarmTime(c);
 			assigned = true;
 		}
 		
 		while(c.moveToNext()) {
-			if (c.getInt(16) > 0) {
-				if (!assigned) {
-					bestDate = pickNextAlarmTime(c);
-					assigned = true;
-				} else {
-					temp = pickNextAlarmTime(c);
-					if (temp.compareTo(bestDate) == -1) {
-						bestDate = temp;
-					}
+			if (!assigned) {
+				bestDate = pickNextAlarmTime(c);
+				assigned = true;
+			} else {
+				temp = pickNextAlarmTime(c);
+				if (temp.compareTo(bestDate) == -1) {
+					bestDate = temp;
 				}
 			}
 		}
@@ -294,6 +295,41 @@ public class AlarmService extends Service {
 		} else {
 			return null;
 		}
+	}
+	
+	private int alarmPosition (Cursor c) {
+		
+		Calendar bestDate = Calendar.getInstance();
+		Calendar temp = Calendar.getInstance();
+
+		int position = 0;
+		int bestPosition = -1;
+		
+		boolean assigned = false;
+		
+		if (c.moveToFirst()) {
+			bestDate = pickNextAlarmTime(c);
+			bestPosition = 0;
+			assigned = true;
+		}
+		
+		while(c.moveToNext()) {
+			position += 1;
+			if (!assigned) {
+				bestDate = pickNextAlarmTime(c);
+				bestPosition = 1;
+				assigned = true;
+			} else {
+				temp = pickNextAlarmTime(c);
+				if (temp.compareTo(bestDate) == -1) {
+					bestDate = temp;
+					bestPosition = position;
+				}
+			}
+			
+		}
+		
+		return bestPosition;
 	}
 	
 	/*

@@ -107,7 +107,7 @@ public class AlarmDBAdapter {
 	 * Retrieve all alarms that have been enabled (i.e. check box been checked)
 	 */
 	public Cursor fetchEnabledAlarms() {
-		return mDb.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE alarm_enabled=true", null);
+		return mDb.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE alarm_enabled=1", null);
 	}
 	
 	/*

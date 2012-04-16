@@ -198,11 +198,10 @@ public class AlarmClock extends ListActivity {
 	/*
 	 * Request that the alarm service be started.
 	 */
-	private void setUpAlarm(int id) {
+	private void setUpAlarm() {
 		
 		Intent i = new Intent(this, AlarmService.class);
 		i.setAction(AlarmService.ACTION_SET_ALARM);
-		i.putExtra("_id", id);
 		startService(i);
 		
 	}
@@ -266,8 +265,8 @@ public class AlarmClock extends ListActivity {
 			challengeImage.setImageDrawable(getResources().getDrawable(R.drawable.challenge_icon));
 			soundImage.setImageDrawable(getResources().getDrawable(R.drawable.sound));
 			
-			failsafeImage.setVisibility(ImageView.GONE);
-			challengeImage.setVisibility(ImageView.GONE);
+			failsafeImage.setVisibility(ImageView.INVISIBLE);
+			challengeImage.setVisibility(ImageView.INVISIBLE);
 
 			if (showFailSafe) {
 				failsafeImage.setVisibility(ImageView.VISIBLE);
@@ -312,7 +311,7 @@ public class AlarmClock extends ListActivity {
 				curAdapter.getCursor().requery();
 
 				if (arg1) { 
-					setUpAlarm(alarmId);
+					setUpAlarm();
 				} else {
 					turnOffAlarm();
 				}
