@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RadioGroup
+  	xmlns:android="http://schemas.android.com/apk/res/android"
+  	android:layout_width="fill_parent"
+  	android:orientation="vertical" 
+  	android:layout_height="fill_parent">
+  		
+	<View android:layout_width="fill_parent" 
+		android:layout_height="1dip" 
+		android:background="@android:drawable/divider_horizontal_dark">
+	</View>
+  
+	<RadioButton 
+		android:layout_width="fill_parent" 
+	  	android:layout_height="wrap_content" 
+	  	android:id="@+id/easy"
+	  	android:text="Easy"
+	  	android:textSize="20dip"
+	  	android:focusable="false" 
+	  	android:focusableInTouchMode="false">
+	</RadioButton>
+  
+  	<RadioButton 
+		android:layout_width="fill_parent" 
+	  	android:layout_height="wrap_content" 
+	  	android:id="@+id/medium" 
+	  	android:text="Medium"
+	  	android:textSize="20dip"
+	  	android:focusable="false" 
+	  	android:focusableInTouchMode="false">
+	</RadioButton>
+	
+	<RadioButton 
+		android:layout_width="fill_parent" 
+	    android:layout_height="wrap_content" 
+	  	android:id="@+id/hard" 
+	  	android:text="Hard"
+	  	android:textSize="20dip"
+	  	android:focusable="false" 
+	  	android:focusableInTouchMode="false">
+	</RadioButton>
+ 	
+	<View android:layout_width="fill_parent" 
+		  android:layout_height="1dip" 
+		  android:background="@android:drawable/divider_horizontal_dark">
+	</View>
+
+	<LinearLayout android:orientation="horizontal" 
+				  android:layout_weight="1" 
+				  android:layout_width="wrap_content" 
+				  android:gravity="center_horizontal" 
+				  android:background="#CCC">
+				  
+		<Button android:layout_width="wrap_content" 
+				android:layout_height="wrap_content" 
+				android:id="@+id/level_ok" 
+				android:text="Ok" 
+				android:width="100dip" 
+				android:layout_margin="10dip">
+		</Button>
+		
+		<Button android:layout_width="wrap_content" 
+				android:layout_height="wrap_content" 
+				android:id="@+id/level_cancel" 
+				android:text="@string/cancel_button" 
+				android:width="100dip" 
+				android:layout_margin="10dip">
+		</Button>
+	</LinearLayout>
+</RadioGroup>

@@ -4,12 +4,16 @@ import java.util.Calendar;
 
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.KeyguardManager;
+import android.app.KeyguardManager.KeyguardLock;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
 import android.os.Vibrator;
 import android.view.KeyEvent;
 import android.view.View;
@@ -32,13 +36,15 @@ public class Snooze extends Activity {
 	private SeekBar dismissBar;
 	
 	private boolean isNativeSnooze = true;
-	//private boolean notificationOn = false;
 	private boolean soundOn = false;
 	private boolean challengeOn = false;
 	private boolean vibrateOn = false;
 	
 	private int snooze_flag = 0;
 	private int snooze_remaining;
+
+	private WakeLock wakeLock;
+	private KeyguardLock keyguardLock;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -47,6 +53,14 @@ public class Snooze extends Activity {
 		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.snooze);
+
+		PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
+        wakeLock = pm.newWakeLock((PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP), "TAG");
+        wakeLock.acquire();
+        
+        KeyguardManager keyguardManager = (KeyguardManager) getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE); 
+        keyguardLock =  keyguardManager.newKeyguardLock("TAG");
+        keyguardLock.disableKeyguard();
 		
 		int snooze_cnt = 0;
 		
@@ -100,6 +114,13 @@ public class Snooze extends Activity {
 			
 	}
 	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		wakeLock.release();
+		//keyguardLock.reenableKeyguard();
+	}
+	
 	private Button.OnClickListener snoozeOnClick = new Button.OnClickListener() {
 		
 		@Override
@@ -120,6 +141,7 @@ public class Snooze extends Activity {
 
 			if (challengeOn) 
 				i.putExtra("challenge_on", getIntent().getExtras().getInt("challenge_on"));
+				i.putExtra("challenge_level", getIntent().getExtras().getInt("challenge_level"));
 			
 			if (!isNativeSnooze) {
 				i.putExtra("failsafe_on", 1);
@@ -179,10 +201,12 @@ public class Snooze extends Activity {
 				j.setAction(AlarmService.ACTION_SHOW_NOTIF);
 				startService(j);
 				
+				
 				Intent k = new Intent(getBaseContext(), AlarmService.class);
 				k.setAction(AlarmService.ACTION_SET_ALARM);;
 				startService(k);
-
+				
+				
 				finish();
 			}
 		}

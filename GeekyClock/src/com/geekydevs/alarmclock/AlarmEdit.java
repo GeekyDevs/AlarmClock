@@ -27,9 +27,10 @@ public class AlarmEdit extends Activity {
 	private static final int ACTION_INPUT_LABEL = 1;
 	private static final int ACTION_CHOOSE_SOUND = 2;
 	private static final int ACTION_CHOOSE_REPEAT = 3;
+	private static final int ACTION_CHOOSE_LEVEL = 4;
 	
-	private static final int SNOOZE_OFF_COLOR = Color.DKGRAY;
-	private static final int SNOOZE_ON_COLOR = Color.WHITE;
+	private static final int OFF_COLOR = Color.DKGRAY;
+	private static final int ON_COLOR = Color.WHITE;
 	
 	private Button saveButton;
 	private Button cancelButton;
@@ -41,6 +42,7 @@ public class AlarmEdit extends Activity {
 	
 	private LinearLayout lLFailSafe;
 	private LinearLayout lLChallenge;
+	private LinearLayout lLDifficulty;
 	private LinearLayout lLVibrate;
 	
 	private CheckBox failSafe;
@@ -53,6 +55,8 @@ public class AlarmEdit extends Activity {
 	private TextView labelView;
 	private TextView snoozeView;
 	private TextView snoozeLabel;
+	private TextView difficultyLabel;
+	private TextView difficultyView;
 	private TextView soundView;
 	
 	private AlarmDBAdapter dbAdapter;
@@ -138,6 +142,10 @@ public class AlarmEdit extends Activity {
 		seekBar.setMax(10);
 		seekBar.setVisibility(SeekBar.GONE);
 		
+		lLDifficulty = (LinearLayout)findViewById(R.id.difficulty_section);
+		difficultyLabel = (TextView)findViewById(R.id.difficulty_label);
+		difficultyView = (TextView)findViewById(R.id.difficulty_level);
+		
 		vibrate = (CheckBox)findViewById(R.id.chk_alarm_vibrate);
 		lLSound = (LinearLayout)findViewById(R.id.ll_alarm_sound);
 		soundView = (TextView)findViewById(R.id.sound_pick);
@@ -162,6 +170,7 @@ public class AlarmEdit extends Activity {
 		seekBar.setOnSeekBarChangeListener(bar);
 		wakeUp.setOnClickListener(challengeOnClick);
 		lLChallenge.setOnClickListener(challengeScreenOnClick);
+		lLDifficulty.setOnClickListener(difficultyScreenOnClick);
 		
 		lLSound.setOnClickListener(soundOnClick);
 		
@@ -180,7 +189,6 @@ public class AlarmEdit extends Activity {
 			
 			Bundle b = getIntent().getExtras();
 			int id = (int) b.getLong("_id");
-			//notifOn = b.getBoolean("notifOn");
 
 			alarm = dbAdapter.getAlarmById(id);
 			
@@ -189,10 +197,11 @@ public class AlarmEdit extends Activity {
 			updateTimeView(Alarm.formatTime((Integer) values.get("hour"), (Integer) values.get("minute")));
 			updateRepeatView(Alarm.formatRepeat(alarm.getAll()));
 			updateLabelView(values.get("name") + "");
+			
 			updateSoundView(values.get("sound") + "");
 			
 			if ((Boolean) values.get("failsafe_on")) {
-				snoozeLabel.setTextColor(SNOOZE_ON_COLOR);
+				snoozeLabel.setTextColor(ON_COLOR);
 				snoozeView.setVisibility(TextView.VISIBLE);
 				snoozeView.setText("Limit: " + values.get("snooze_value"));
 				seekBar.setVisibility(SeekBar.VISIBLE);
@@ -201,12 +210,18 @@ public class AlarmEdit extends Activity {
 			}
 			failSafe.setChecked((Boolean) values.get("failsafe_on"));
 			seekBar.setProgress((Integer) values.get("snooze_value"));
+			
+			if ((Boolean) values.get("wakeup_on")) {
+				updateDifficultyView(values.get("challenge_level") + "");
+				difficultyView.setVisibility(TextView.VISIBLE);
+				difficultyLabel.setTextColor(ON_COLOR);
+			}
+
 			wakeUp.setChecked((Boolean) values.get("wakeup_on"));
 			vibrate.setChecked((Boolean) values.get("vibrate_on"));
 			
 		} else {
 			Bundle b = getIntent().getExtras();
-			//notifOn = b.getBoolean("notifOn");
 			
 			alarm = new Alarm(dbAdapter.getNewId());
 			dbAdapter.initialise(alarm);
@@ -230,6 +245,10 @@ public class AlarmEdit extends Activity {
 	
 	private void updateLabelView(String label) {
 		labelView.setText(label);
+	}
+	
+	private void updateDifficultyView (String level) {
+		difficultyView.setText(level);
 	}
 	
 	private void updateSoundView(String sound) {
@@ -259,6 +278,12 @@ public class AlarmEdit extends Activity {
 				alarm.assign("repeat_sat", data.getBooleanExtra("Saturday", false));
 
 				updateRepeatView(Alarm.formatRepeat(alarm.getAll()));
+				break;
+			case ACTION_CHOOSE_LEVEL:
+				
+				String difficulty = data.getStringExtra("level");
+				alarm.assign("challenge_level", difficulty);
+				updateDifficultyView(difficulty);
 				break;
 			case ACTION_CHOOSE_SOUND:
 				
@@ -374,14 +399,14 @@ public class AlarmEdit extends Activity {
 		public void onClick(View v) {
 			
 			if (failSafe.isChecked()) {
-				snoozeLabel.setTextColor(SNOOZE_ON_COLOR);
+				snoozeLabel.setTextColor(ON_COLOR);
 				snoozeView.setVisibility(TextView.VISIBLE);
 				seekBar.setVisibility(SeekBar.VISIBLE);
 				if (newAlarm) {
 					seekBar.setProgress(5);
 				}
 			} else {
-				snoozeLabel.setTextColor(SNOOZE_OFF_COLOR);
+				snoozeLabel.setTextColor(OFF_COLOR);
 				seekBar.setVisibility(SeekBar.GONE);
 				snoozeView.setVisibility(TextView.GONE);
 			}
@@ -398,11 +423,11 @@ public class AlarmEdit extends Activity {
 			if (failSafe.isChecked()) {
 				failSafe.setChecked(false);
 				seekBar.setVisibility(SeekBar.GONE);
-				snoozeLabel.setTextColor(SNOOZE_OFF_COLOR);
+				snoozeLabel.setTextColor(OFF_COLOR);
 				snoozeView.setVisibility(TextView.GONE);
 			} else {
 				failSafe.setChecked(true);
-				snoozeLabel.setTextColor(SNOOZE_ON_COLOR);
+				snoozeLabel.setTextColor(ON_COLOR);
 				snoozeView.setVisibility(TextView.VISIBLE);
 				seekBar.setVisibility(SeekBar.VISIBLE);
 				if (newAlarm) {
@@ -445,6 +470,13 @@ public class AlarmEdit extends Activity {
 		public void onClick(View v) {
 		
 			alarm.assign("wakeup_on", wakeUp.isChecked());
+			if (wakeUp.isChecked()) {
+				difficultyView.setVisibility(View.VISIBLE);
+				difficultyLabel.setTextColor(ON_COLOR);
+			} else {
+				difficultyView.setVisibility(View.GONE);
+				difficultyLabel.setTextColor(OFF_COLOR);
+			}
 		}
 	};
 	
@@ -454,7 +486,24 @@ public class AlarmEdit extends Activity {
 		public void onClick(View v) {
 		
 			wakeUp.setChecked(!wakeUp.isChecked());
+			if (wakeUp.isChecked()) {
+				difficultyView.setVisibility(View.VISIBLE);
+				difficultyLabel.setTextColor(ON_COLOR);
+			} else {
+				difficultyView.setVisibility(View.GONE);
+				difficultyLabel.setTextColor(OFF_COLOR);
+			}
 			alarm.assign("wakeup_on", wakeUp.isChecked());
+		}
+	};
+	
+	private View.OnClickListener difficultyScreenOnClick = new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			Intent i = new Intent(AlarmEdit.this, DifficultySelection.class);
+			i.putExtra("level", difficultyView.getText());
+			startActivityForResult(i, ACTION_CHOOSE_LEVEL);	
 		}
 	};
 	
@@ -518,7 +567,6 @@ public class AlarmEdit extends Activity {
 		Intent i = new Intent(this, AlarmService.class);
 		i.setAction(AlarmService.ACTION_SET_ALARM);
 		i.putExtra("_id", id);
-		//i.putExtra("notifOn", notifOn);
 		startService(i);
 	}
 	

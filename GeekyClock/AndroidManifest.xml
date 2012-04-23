@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest 
+    xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.geekydevs.alarmclock"
     android:versionCode="1"
     android:versionName="1.0" >
-    <uses-sdk android:minSdkVersion="7" />
+    
+    <uses-sdk android:minSdkVersion="7" android:targetSdkVersion="13"/>
+    
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
   	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+  	<uses-permission android:name="android.permission.WAKE_LOCK" />
+ 	<uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     
     <application
         android:debuggable="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name" >
-        
+
         <activity
+            android:theme="@android:style/Theme.NoTitleBar"
             android:name=".AlarmClock"
             android:label="@string/app_name" >
             <intent-filter>
@@ -23,6 +29,12 @@
         </activity>
         
         <activity 
+            android:name="com.google.ads.AdActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize">
+        </activity>
+        
+        <activity 
+            android:theme="@android:style/Theme.NoTitleBar"
             android:configChanges="keyboard|keyboardHidden|orientation" 
             android:name=".AlarmEdit" 
             android:label="@string/edit_alarm_title">
@@ -49,13 +61,20 @@
             android:theme="@android:style/Theme.Dialog">   
         </activity>
         
+        <activity 
+            android:name=".DifficultySelection"
+            android:theme="@android:style/Theme.Dialog">   
+        </activity>
+        
         <activity
+            android:theme="@android:style/Theme.NoTitleBar"
             android:name=".FailSafe"
             android:configChanges="keyboard|keyboardHidden|orientation"
             android:screenOrientation="portrait">
         </activity>
         
         <activity
+            android:theme="@android:style/Theme.NoTitleBar"
             android:name=".Challenge"
             android:windowSoftInputMode="stateAlwaysVisible"
             android:screenOrientation="portrait">

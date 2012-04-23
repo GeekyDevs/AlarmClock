@@ -177,7 +177,7 @@
 			    android:layout_height="wrap_content" 
 			    android:gravity="center_vertical" 
 			    android:padding="10dip" 
-			    android:minHeight="70dip">
+			    android:minHeight="60dip">
 						  
 				<LinearLayout android:layout_height="wrap_content" 
 							  android:orientation="vertical" 
@@ -260,6 +260,49 @@
 				  android:background="@android:drawable/divider_horizontal_dark">
 			</View>
 			
+			<LinearLayout 
+			    android:id="@+id/difficulty_section"
+			    android:baselineAligned="false"
+				android:orientation="horizontal" 
+				android:layout_width="fill_parent" 
+				android:background="@android:drawable/list_selector_background" 
+				android:clickable="false" 
+				android:layout_height="wrap_content" 
+				android:gravity="center_vertical" 
+				android:padding="10dip" 
+				android:minHeight="60dip">
+					  
+				<LinearLayout android:layout_height="wrap_content" 
+							  android:orientation="vertical" 
+							  android:layout_width="0dip" 
+							  android:layout_weight="1">
+
+					<TextView
+					    android:id="@+id/difficulty_label"
+					    android:layout_width="wrap_content" 
+					  	android:layout_height="0dip" 
+					  	android:textSize="18dip"
+					  	android:layout_weight="1"
+					  	android:textColor="@color/snooze_off_color"
+					  	android:text="@string/difficulty_options">
+					</TextView>
+					
+					<TextView 
+						android:layout_width="wrap_content" 
+					  	android:layout_height="wrap_content"
+					  	android:visibility="gone" 
+					  	android:id="@+id/difficulty_level"
+					  	android:text="@string/difficulty_default">
+					</TextView>
+					
+				</LinearLayout>
+			</LinearLayout>
+			
+			<View android:layout_width="fill_parent" 
+				  android:layout_height="1dip" 
+				  android:background="@android:drawable/divider_horizontal_dark">
+			</View>
+			
 			<LinearLayout android:layout_height="wrap_content" 
 						  android:layout_width="fill_parent" 
 						  android:background="@android:drawable/dark_header">
@@ -280,6 +323,7 @@
 			
 			<LinearLayout 
 			    android:id="@+id/ll_alarm_sound"
+			    android:baselineAligned="false"
 		    	android:focusable="true" 
 				android:orientation="horizontal" 
 				android:layout_width="fill_parent" 

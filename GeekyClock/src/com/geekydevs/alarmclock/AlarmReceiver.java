@@ -25,6 +25,7 @@ public class AlarmReceiver extends BroadcastReceiver{
 		
 		if (challengeOn) {
 			i = new Intent(ctx, Challenge.class);
+			i.putExtra("challenge_level", arg1.getExtras().getString("challenge_level"));
 			if (failSafeOn) {
 				int snoozeCount = arg1.getExtras().getInt("snooze_count");
 				if (snoozeCount > 0) {

@@ -24,6 +24,8 @@
     <string name="challenge_desc">
         Solve a problem that helps focus your brain before you can turn off the alarm
     </string>
+    <string name="difficulty_options"> Difficulty Level</string>
+    <string name="difficulty_default"> Medium </string>
     
     <string name="alarm_settings_header">Alarm Settings</string>
     <string name="alarm_sound">Sound</string>

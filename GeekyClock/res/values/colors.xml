@@ -7,5 +7,6 @@
 
     <color name="label_color">#FFFFFF</color>
     <color name="snooze_off_color">#4A4344</color>
+    <color name="challenge_off_color">#4A4344</color>
     <color name="buttons_background_color">#848484</color>
 </resources>

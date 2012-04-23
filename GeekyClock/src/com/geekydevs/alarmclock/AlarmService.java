@@ -103,6 +103,7 @@ public class AlarmService extends Service {
 			AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
 			alarmManager.cancel(pendingIntent);	
 			
+			// Commented out for testing purposes!!!!!!!!!
 			performAction(new Intent().setAction(ACTION_SET_ALARM));
 			
 		} else if (action.equals(ACTION_SHOW_NOTIF)) {
@@ -147,6 +148,7 @@ public class AlarmService extends Service {
 		
 		if (cursor.getInt(12) > 0)
 			i.putExtra("challenge_on", cursor.getInt(12));
+			i.putExtra("challenge_level", cursor.getString(17));
 		
 		if (cursor.getInt(13) > 0)
 			i.putExtra("vibrate", 1);
@@ -154,7 +156,6 @@ public class AlarmService extends Service {
 			i.putExtra("vibrate", 0);
 		
 		i.putExtra("sound", cursor.getString(14));
-		//i.putExtra("notifOn", notifOn);
 
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(
 				this.getApplicationContext(), 0, i, flag);

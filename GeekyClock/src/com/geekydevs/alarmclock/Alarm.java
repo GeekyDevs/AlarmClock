@@ -9,7 +9,7 @@ public class Alarm {
 
 	private static final String[] allKeys = new String [] {"_id", "hour", "minute", "name", "repeat_sun", "repeat_mon", "repeat_tue", "repeat_wed",
 		   "repeat_thu", "repeat_fri", "repeat_sat", "failsafe_on",
-		   "wakeup_on", "vibrate_on", "sound", "snooze_value", "alarm_enabled"};
+		   "wakeup_on", "vibrate_on", "sound", "snooze_value", "alarm_enabled", "challenge_level"};
 	
 	public static final int ALARM_SUNDAY = 4;
 	public static final int ALARM_MONDAY = 5;
@@ -43,6 +43,7 @@ public class Alarm {
 		alarmProperty.put("sound", "Default");
 		alarmProperty.put("snooze_value", 5); // 15
 		alarmProperty.put("alarm_enabled", true);
+		alarmProperty.put("challenge_level", "Medium");
 	}
 	
 	public Alarm (Cursor cursor) {
@@ -58,6 +59,7 @@ public class Alarm {
 				break;
 			case 3: 
 			case 14:
+			case 17:
 				alarmProperty.put(allKeys[i], cursor.getString(i));
 				break;
 			default:

@@ -1,13 +1,17 @@
 package com.geekydevs.alarmclock;
 
 import android.app.Activity;
+import android.app.KeyguardManager;
+import android.app.KeyguardManager.KeyguardLock;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.PowerManager;
 import android.os.Vibrator;
+import android.os.PowerManager.WakeLock;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.WindowManager;
@@ -27,11 +31,22 @@ public class FailSafe extends Activity {
 	
 	private boolean vibrateOn = false;
 	
+	private WakeLock wakeLock;
+	private KeyguardLock keyguardLock;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.failsafe_layout);
+		
+		PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
+        wakeLock = pm.newWakeLock((PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP), "TAG");
+        wakeLock.acquire();
+        
+        KeyguardManager keyguardManager = (KeyguardManager) getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE); 
+        keyguardLock =  keyguardManager.newKeyguardLock("TAG");
+        keyguardLock.disableKeyguard();
 		
 		// Assigning views
 		ImageView lockImage = (ImageView) findViewById(R.id.failsafe_screen);
@@ -63,6 +78,13 @@ public class FailSafe extends Activity {
 		
 		timer = new countDown(lockOutTime, interval);
 		timer.start();
+	}
+	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		wakeLock.release();
+		//keyguardLock.reenableKeyguard();
 	}
 	
 	/*
@@ -114,6 +136,7 @@ public class FailSafe extends Activity {
 			Intent j = new Intent(getBaseContext(), AlarmService.class);
 			j.setAction(AlarmService.ACTION_SHOW_NOTIF);
 			startService(j);
+			
 			
 			Intent k = new Intent(getBaseContext(), AlarmService.class);
 			k.setAction(AlarmService.ACTION_SET_ALARM);;

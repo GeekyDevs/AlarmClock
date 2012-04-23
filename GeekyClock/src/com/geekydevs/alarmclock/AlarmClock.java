@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.View.OnCreateContextMenuListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView.AdapterContextMenuInfo;
@@ -68,6 +69,25 @@ public class AlarmClock extends ListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
+        // Create an ad.
+        adView = new AdView(this, AdSize.BANNER, "a14f8cdc40486f5");
+        
+        // Add the AdView to the view hierarchy. The view will have no size
+        // until the ad is loaded.
+        LinearLayout layout = (LinearLayout) findViewById(R.id.ad);
+        layout.addView(adView);
+        
+        // Create an ad request. Check logcat output for the hashed device ID to
+        // get test ads on a physical device.
+        AdRequest request = new AdRequest();
+        request.addTestDevice(AdRequest.TEST_EMULATOR);
+        
+        // Testing on real device
+        //request.addTestDevice("3334DE9B8EA200EC");
+        
+        // Start loading the ad in the background.
+        adView.loadAd(request);
         
         dbAdapter = new AlarmDBAdapter(this);
         dbAdapter.open();
@@ -83,9 +103,6 @@ public class AlarmClock extends ListActivity {
 		i.setAction(AlarmService.ACTION_SHOW_NOTIF);
 		startService(i);
 		
-		//AdRequest request = new AdRequest();
-		//request.addTestDevice("3334DE9B8EA200EC");
-
     }
     
     private void assignListeners() {
@@ -100,6 +117,11 @@ public class AlarmClock extends ListActivity {
     @Override
     protected void onDestroy() {
 
+    	// Destroy the AdView.
+    	if (adView != null) {
+	      adView.destroy();
+	    }
+    	
     	dbAdapter.close();
     	super.onDestroy();
     }
@@ -139,7 +161,6 @@ public class AlarmClock extends ListActivity {
 		@Override
 		public void onClick(View v) {
 			Intent i = new Intent (getBaseContext(), AlarmEdit.class);
-			//i.putExtra("notifOn", notifOn);
 			startActivity(i);
 		}
 		
@@ -164,7 +185,6 @@ public class AlarmClock extends ListActivity {
 			
 			menu.add(0, EDIT_ALARM, 0, "Edit Alarm");
 			menu.add(0, DELETE_ALARM, 1, "Delete Alarm");
-			//menu.add(0, TURN_ALARM_ON, 2, "Turn Alarm On");
 		}
 	};
 	
@@ -189,7 +209,6 @@ public class AlarmClock extends ListActivity {
 			toggleNotif();
 			
 			break;
-		//case TURN_ALARM_ON:
 		}
 		
 		return super.onContextItemSelected(item);
