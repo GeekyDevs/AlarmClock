@@ -122,9 +122,13 @@ public class Alarm {
 		
 		if (hour > 12) {
 			timeFormat += (hour-12) + ":" ;
+		} else if (hour == 12) {
+			timeFormat += 12 + ":";
+			ap = " pm";
 		} else if (hour == 0) {
 			timeFormat += 12 + ":";
-		} else {
+			ap = " am";
+		} else if (hour < 12) {
 			timeFormat += hour + ":";
 			ap = " am";
 		}

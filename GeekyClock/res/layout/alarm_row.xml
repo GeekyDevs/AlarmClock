@@ -129,7 +129,7 @@
 			    android:id="@+id/saturday"
 			    android:text="S" 
 			    android:textSize="10dip"
-			    android:layout_marginRight="5dip">
+			    android:layout_marginRight="3dip">
 			</TextView>
 		</LinearLayout>
 	</LinearLayout>

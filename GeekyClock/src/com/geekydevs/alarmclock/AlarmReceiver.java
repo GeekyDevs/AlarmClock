@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.util.Log;
 import android.widget.Toast;
 
 public class AlarmReceiver extends BroadcastReceiver{
@@ -13,11 +14,10 @@ public class AlarmReceiver extends BroadcastReceiver{
 	public void onReceive(Context ctx, Intent arg1) {
 		
 		/*
-		PowerManager pm = (PowerManager) ctx.getSystemService(Context.POWER_SERVICE);
-		PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "AppAlarmReceiver");
-		wl.acquire(120000);
+		if (arg1.getAction().equals(Intent.ACTION_TIME_CHANGED)) {
+	      Log.d("AlarmReceiver: ", " ACTION_TIME_CHANGED received");
+	    }
 		*/
-		
 		Intent i = new Intent(ctx, Snooze.class);
 		
 		boolean challengeOn = arg1.getExtras().getInt("challenge_on") > 0;

@@ -196,17 +196,23 @@ public class Snooze extends Activity {
 				if (vibrateOn) {
 					vibrate.cancel();
 				}
+				
 
 				Intent j = new Intent(getBaseContext(), AlarmService.class);
 				j.setAction(AlarmService.ACTION_SHOW_NOTIF);
+				j.putExtra("continuousAlarm", 1);
 				startService(j);
 				
-				
 				Intent k = new Intent(getBaseContext(), AlarmService.class);
-				k.setAction(AlarmService.ACTION_SET_ALARM);;
+				k.setAction(AlarmService.ACTION_SET_ALARM);
+				k.putExtra("continuousAlarm", 1);
 				startService(k);
-				
-				
+		        
+				Intent refresh = new Intent(getBaseContext(), AlarmClock.class);
+				refresh.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+				refresh.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				startActivity(refresh);
+
 				finish();
 			}
 		}

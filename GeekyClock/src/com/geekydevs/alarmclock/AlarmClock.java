@@ -69,7 +69,8 @@ public class AlarmClock extends ListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-
+        
+        
         // Create an ad.
         adView = new AdView(this, AdSize.BANNER, "a14f8cdc40486f5");
         
@@ -84,10 +85,11 @@ public class AlarmClock extends ListActivity {
         request.addTestDevice(AdRequest.TEST_EMULATOR);
         
         // Testing on real device
-        //request.addTestDevice("3334DE9B8EA200EC");
+        request.addTestDevice("3334DE9B8EA200EC");
         
         // Start loading the ad in the background.
         adView.loadAd(request);
+        
         
         dbAdapter = new AlarmDBAdapter(this);
         dbAdapter.open();
@@ -96,7 +98,7 @@ public class AlarmClock extends ListActivity {
         
         startManagingCursor(c);
         curAdapter = new AlarmListAdapter(this, c, true);
-
+        
         assignListeners();
         
         Intent i = new Intent(getBaseContext(), AlarmService.class);
@@ -118,6 +120,7 @@ public class AlarmClock extends ListActivity {
     protected void onDestroy() {
 
     	// Destroy the AdView.
+    	
     	if (adView != null) {
 	      adView.destroy();
 	    }
@@ -131,6 +134,7 @@ public class AlarmClock extends ListActivity {
 		super.onConfigurationChanged(newConfig);
 		setContentView(R.layout.main);
 		
+		curAdapter.getCursor().requery();
 		assignListeners();
 	}
     
@@ -149,7 +153,6 @@ public class AlarmClock extends ListActivity {
     private void launchAlarmEdit(long id) {
     	Intent i = new Intent(this, AlarmEdit.class);
 		i.putExtra("_id", id);
-		//i.putExtra("notifOn", notifOn);
 		startActivity(i);
     }
     

@@ -89,7 +89,11 @@ public class AlarmService extends Service {
 					
 					Cursor c = dbAdapter.fetchAlarmById(alarmPos);
 					c.moveToFirst();
-					setAlarm(toSchedule, c);
+					if (intent.hasExtra("continuousAlarm") && !haveRepeat(c)) {
+						dbAdapter.setAlarmToDB(alarmPos, false);
+					} else {
+						setAlarm(toSchedule, c);
+					}
 				}
 			}
 
@@ -103,8 +107,8 @@ public class AlarmService extends Service {
 			AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
 			alarmManager.cancel(pendingIntent);	
 			
-			// Commented out for testing purposes!!!!!!!!!
-			performAction(new Intent().setAction(ACTION_SET_ALARM));
+			// Comment out for testing purposes!!!!!!!!!
+			//performAction(new Intent().setAction(ACTION_SET_ALARM));
 			
 		} else if (action.equals(ACTION_SHOW_NOTIF)) {
 			
@@ -114,7 +118,7 @@ public class AlarmService extends Service {
 			
 			Cursor c = dbAdapter.fetchEnabledAlarms();
 
-			if (c.getCount() > 0) {
+			if ((c.getCount() > 0)) {
 				c.moveToFirst();
 				schedule = nextAvailableSchedule(c);
 				if (schedule != null) {
@@ -199,20 +203,12 @@ public class AlarmService extends Service {
 		int hour = cCalendar.get(Calendar.HOUR_OF_DAY);
 		int minute = cCalendar.get(Calendar.MINUTE);
 
-		Boolean repeatFlag = false;
-		
-		// Check if there are any repeat days.
-		for (int j = Alarm.ALARM_SUNDAY; j <= Alarm.ALARM_SATURDAY; j++) {
-			if (c.getInt(j) > 0) {
-				repeatFlag = true;
-				break;
-			}
-		}
-		
+		Boolean repeatFlag = haveRepeat(c);
+
 		// Staring index
 		int daysInWeek = 7;
 		int i = Alarm.ALARM_SUNDAY;
-		int dif = Alarm.ALARM_SATURDAY - daysInWeek;
+		int dif = Alarm.ALARM_SATURDAY - daysInWeek; //3
 		
 		int temp = 0;
 		
@@ -223,15 +219,17 @@ public class AlarmService extends Service {
 				if (c.getInt(i) > 0) { // if the day has a repeat
 					if (i-dif < day) {
 						// Keep only the first day before current day
-						if (temp == 0) { temp = i-3; } 
+						if (i-dif < day) { 
+							temp = i-dif; 
+						} 
 					} else if (i-dif == day) {
 						// Keep day same as current day if time scheduled hasn't pass yet
 						if ((fHour > hour) || ((fHour == hour) && (fMinute > minute))) {
 							fDay = i-dif;
+							break;
 						} else {
 							temp = i-dif;
 						}
-						break;
 					// Grab the first day after current day
 					} else if (i-dif > day) {
 						fDay = i-dif;
@@ -251,15 +249,15 @@ public class AlarmService extends Service {
 				}
 			}
 		}
-		
-		if (fDay == 0){
+		if (fDay == fCalendar.get(Calendar.DAY_OF_WEEK)) {
+			fDay = fCalendar.get(Calendar.DAY_OF_MONTH);
+		} else if (fDay == 0){
 			fDay = fCalendar.get(Calendar.DAY_OF_MONTH) + (daysInWeek - fCalendar.get(Calendar.DAY_OF_WEEK) + temp);
 		} else {
 			fDay = fCalendar.get(Calendar.DAY_OF_MONTH) + Math.abs(fCalendar.get(Calendar.DAY_OF_WEEK) - fDay);
 		}
-		
+	
 		fCalendar.set(fYear, fMonth, fDay, fHour, fMinute, fSecond);
-		//Toast.makeText(this, "Scheduled for " + fCalendar.getTime().toString(), Toast.LENGTH_LONG).show();
 		
 		return fCalendar;
 	}
@@ -296,6 +294,18 @@ public class AlarmService extends Service {
 		} else {
 			return null;
 		}
+	}
+	
+	private boolean haveRepeat(Cursor c) {
+		
+		// Check if there are any repeat days.
+		for (int j = Alarm.ALARM_SUNDAY; j <= Alarm.ALARM_SATURDAY; j++) {
+			if (c.getInt(j) > 0) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	private int alarmPosition (Cursor c) {
@@ -339,7 +349,9 @@ public class AlarmService extends Service {
 	private void setNotification(String timeString) {
 
 		String message = "Next alarm: " + timeString; 
-		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, AlarmClock.class), 0);
+		
+		Intent intent = new Intent();
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, 0);
 		Notification notif = new Notification(R.drawable.alarm_icon, message, System.currentTimeMillis());
 		notif.setLatestEventInfo(this, "GeekyAlarm Scheduled", timeString, contentIntent);
 		notif.flags = Notification.FLAG_ONGOING_EVENT;

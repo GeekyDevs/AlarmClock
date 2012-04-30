@@ -189,6 +189,7 @@ public class Challenge extends Activity{
 			Intent i = new Intent(getBaseContext(), AlarmReceiver.class);
 			i.putExtra("sound", getIntent().getExtras().getString("sound"));
 			i.putExtra("challenge_on", 1);
+			i.putExtra("challenge_level", difficultyLevel);
 			
 
 			if (vibrateOn) {
@@ -287,8 +288,15 @@ public class Challenge extends Activity{
 					snoozeRemaining.setVisibility(TextView.VISIBLE);
 					snoozeRemaining.setText("Snooze Remaining: " + snooze_remaining);
 				}
+			} else {
+				
+				snoozeButton.setVisibility(Button.GONE);
+				dismissBar.setVisibility(SeekBar.GONE);
+				snoozeRemaining.setVisibility(TextView.GONE);
+				refreshImage.setVisibility(ImageView.VISIBLE);
+				
 			}
-		}
+		} 
 	}
 	
 	private boolean isInteger(String value){
@@ -414,20 +422,21 @@ public class Challenge extends Activity{
 		Random r = new Random();
 		
 		String operator = operators[r.nextInt(operators.length)];
+		while (operator == "*") {
+			operator = operators[r.nextInt(operators.length)];
+		}
 		int operandA = 0;
 		int operandB = 0;
 
-		if ((operator == "+") || (operator == "-") || (operator == "*")) {
+		if ((operator == "+") || (operator == "-")) {
 			generateMedium();
 			operatorView.setText(operator + "");
 			generateEasy();
 			
 			if (operator == "+") {
-				correctAnswer = correctOperandBAnswer + correctOperandAAnswer;
+				correctAnswer = correctOperandAAnswer + correctOperandBAnswer;
 			} else if (operator == "-") {
-				correctAnswer = correctOperandBAnswer - correctOperandAAnswer;
-			} else if (operator == "*") {
-				correctAnswer = correctOperandBAnswer * correctOperandAAnswer;
+				correctAnswer = correctOperandAAnswer - correctOperandBAnswer;
 			}
 			
 		} else if (operator == "/") {
