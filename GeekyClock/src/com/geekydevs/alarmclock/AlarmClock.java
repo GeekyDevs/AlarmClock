@@ -70,7 +70,7 @@ public class AlarmClock extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
-        
+        /*
         // Create an ad.
         adView = new AdView(this, AdSize.BANNER, "a14f8cdc40486f5");
         
@@ -89,7 +89,7 @@ public class AlarmClock extends ListActivity {
         
         // Start loading the ad in the background.
         adView.loadAd(request);
-        
+        */
         
         dbAdapter = new AlarmDBAdapter(this);
         dbAdapter.open();
@@ -120,11 +120,11 @@ public class AlarmClock extends ListActivity {
     protected void onDestroy() {
 
     	// Destroy the AdView.
-    	
+    	/*
     	if (adView != null) {
 	      adView.destroy();
 	    }
-    	
+    	*/
     	dbAdapter.close();
     	super.onDestroy();
     }

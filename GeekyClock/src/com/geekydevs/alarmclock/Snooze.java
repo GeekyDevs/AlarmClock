@@ -187,6 +187,7 @@ public class Snooze extends Activity {
 
 				Intent i = new Intent(getBaseContext(), AlarmService.class);
 				i.setAction(AlarmService.ACTION_STOP_ALARM);
+				i.putExtra("continuousAlarm", 1);
 				startService(i);
 
 				if (soundOn) {
@@ -197,17 +198,18 @@ public class Snooze extends Activity {
 					vibrate.cancel();
 				}
 				
-
+				/*
 				Intent j = new Intent(getBaseContext(), AlarmService.class);
 				j.setAction(AlarmService.ACTION_SHOW_NOTIF);
-				j.putExtra("continuousAlarm", 1);
 				startService(j);
+				
 				
 				Intent k = new Intent(getBaseContext(), AlarmService.class);
 				k.setAction(AlarmService.ACTION_SET_ALARM);
 				k.putExtra("continuousAlarm", 1);
 				startService(k);
-		        
+		        */
+				
 				Intent refresh = new Intent(getBaseContext(), AlarmClock.class);
 				refresh.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
 				refresh.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

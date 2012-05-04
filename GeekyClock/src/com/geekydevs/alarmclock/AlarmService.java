@@ -77,23 +77,32 @@ public class AlarmService extends Service {
 		if (action.equals(ACTION_SET_ALARM)) {
 
 			Cursor enabledCursors = dbAdapter.fetchEnabledAlarms();
-			Log.d(null, enabledCursors.getCount() + " rows");
 			
 			if (enabledCursors.moveToFirst()) {
 				
 				Calendar toSchedule = nextAvailableSchedule(enabledCursors);
-				int alarmPos = 0;
 				
 				if (toSchedule != null) {
-					alarmPos = alarmPosition(enabledCursors);
+					
+					int alarmPos = alarmPosition(enabledCursors)[1];
+					int previous = alarmPosition(enabledCursors)[0];
 					
 					Cursor c = dbAdapter.fetchAlarmById(alarmPos);
 					c.moveToFirst();
-					if (intent.hasExtra("continuousAlarm") && !haveRepeat(c)) {
-						dbAdapter.setAlarmToDB(alarmPos, false);
-					} else {
-						setAlarm(toSchedule, c);
+					
+					Cursor old = dbAdapter.fetchAlarmById(previous);
+					old.moveToFirst();
+					
+					if (intent.hasExtra("continuousAlarm") && !haveRepeat(old)) {
+						dbAdapter.setAlarmToDB(previous, false);
+						Log.d("Checking", "Turned off Alarm " + previous);
 					}
+					Log.d("Checking", "Scheduling Alarm " + alarmPos);
+					//if (!isActive(toSchedule, c)) {
+					setAlarm(toSchedule, c);
+					//}
+					
+					performAction(new Intent().setAction(ACTION_SHOW_NOTIF));
 				}
 			}
 
@@ -108,7 +117,15 @@ public class AlarmService extends Service {
 			alarmManager.cancel(pendingIntent);	
 			
 			// Comment out for testing purposes!!!!!!!!!
-			//performAction(new Intent().setAction(ACTION_SET_ALARM));
+			
+			Intent restartIntent = new Intent();
+			restartIntent.setAction(ACTION_SET_ALARM);
+			
+			if (intent.hasExtra("continuousAlarm")) {
+				restartIntent.putExtra("continuousAlarm", 1);
+			}
+			performAction(restartIntent);
+			
 			
 		} else if (action.equals(ACTION_SHOW_NOTIF)) {
 			
@@ -122,7 +139,7 @@ public class AlarmService extends Service {
 				c.moveToFirst();
 				schedule = nextAvailableSchedule(c);
 				if (schedule != null) {
-					timeFormat = Alarm.formatTime(schedule.get(schedule.HOUR_OF_DAY), schedule.get(schedule.MINUTE));
+					timeFormat = Alarm.formatTime(schedule.get(Calendar.HOUR_OF_DAY), schedule.get(Calendar.MINUTE));
 					dateFormat = schedule.getTime().toString().substring(0, 11) + timeFormat;
 					setNotification(dateFormat);
 				} else {
@@ -133,6 +150,32 @@ public class AlarmService extends Service {
 			}
 			
 		}
+	}
+	
+	private boolean isActive(Calendar c, Cursor cursor) {
+		
+		Intent i = new Intent(this, AlarmReceiver.class);
+		
+		// Check if failSafe mode has been enabled. If yes, pass the snooze limit to broadcast receiver.
+		if (cursor.getInt(11) > 0)
+			i.putExtra("failsafe_on", cursor.getInt(11));
+			i.putExtra("snooze_count", cursor.getInt(15));
+		
+		if (cursor.getInt(12) > 0)
+			i.putExtra("challenge_on", cursor.getInt(12));
+			i.putExtra("challenge_level", cursor.getString(17));
+		
+		if (cursor.getInt(13) > 0)
+			i.putExtra("vibrate", 1);
+		else 
+			i.putExtra("vibrate", 0);
+		
+		i.putExtra("sound", cursor.getString(14));
+
+		boolean active = (PendingIntent.getBroadcast(
+				this.getApplicationContext(), 0, i, PendingIntent.FLAG_NO_CREATE) != null);
+		
+		return active;
 	}
 	
 	/*
@@ -308,39 +351,45 @@ public class AlarmService extends Service {
 		return false;
 	}
 	
-	private int alarmPosition (Cursor c) {
-		
+	/*
+	 * Returns the position of the alarm in the list to be scheduled next.
+	 */
+	private int[] alarmPosition (Cursor c) {
+
 		Calendar bestDate = Calendar.getInstance();
 		Calendar temp = Calendar.getInstance();
 
-		int position = 0;
+		int secondBestPosition = -1;
 		int bestPosition = -1;
 		
 		boolean assigned = false;
 		
 		if (c.moveToFirst()) {
 			bestDate = pickNextAlarmTime(c);
-			bestPosition = 0;
+			bestPosition = c.getInt(0);
+			secondBestPosition = bestPosition;
 			assigned = true;
 		}
 		
 		while(c.moveToNext()) {
-			position += 1;
 			if (!assigned) {
 				bestDate = pickNextAlarmTime(c);
-				bestPosition = 1;
+				bestPosition = c.getInt(0);
+				secondBestPosition = bestPosition;
 				assigned = true;
 			} else {
 				temp = pickNextAlarmTime(c);
 				if (temp.compareTo(bestDate) == -1) {
 					bestDate = temp;
-					bestPosition = position;
+					secondBestPosition = bestPosition;
+					bestPosition = c.getInt(0);	
 				}
-			}
-			
+			}	
 		}
 		
-		return bestPosition;
+		int[] positions = new int [] {secondBestPosition, bestPosition}; 
+		
+		return positions;
 	}
 	
 	/*

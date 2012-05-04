@@ -251,17 +251,20 @@ public class Challenge extends Activity{
 				
 				Intent i = new Intent(getBaseContext(), AlarmService.class);
 				i.setAction(AlarmService.ACTION_STOP_ALARM);
+				i.putExtra("continuousAlarm", 1);
 				startService(i);
 
+				/*
 				Intent j = new Intent(getBaseContext(), AlarmService.class);
 				j.setAction(AlarmService.ACTION_SHOW_NOTIF);
 				startService(j);
 				
 				
 				Intent k = new Intent(getBaseContext(), AlarmService.class);
-				k.setAction(AlarmService.ACTION_SET_ALARM);;
+				k.setAction(AlarmService.ACTION_SET_ALARM);
+				k.putExtra("continuousAlarm", 1);
 				startService(k);
-				
+				*/
 				
 				finish();
 			}

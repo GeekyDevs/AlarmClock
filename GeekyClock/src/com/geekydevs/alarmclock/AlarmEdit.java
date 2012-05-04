@@ -552,10 +552,12 @@ public class AlarmEdit extends Activity {
 			
 			dbAdapter.close();
 			
+			/*
 			Intent i = new Intent(getBaseContext(), AlarmService.class);
 			i.setAction(AlarmService.ACTION_SHOW_NOTIF);
 			startService(i);
-
+			*/
+	
 			setResult(Activity.RESULT_OK);
 			finish();
 			
