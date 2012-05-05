@@ -18,6 +18,9 @@ public class AlarmReceiver extends BroadcastReceiver{
 	      Log.d("AlarmReceiver: ", " ACTION_TIME_CHANGED received");
 	    }
 		*/
+		AlarmDBAdapter dbAdapter = new AlarmDBAdapter(ctx);
+		dbAdapter.open();
+		
 		Intent i = new Intent(ctx, Snooze.class);
 		
 		boolean challengeOn = arg1.getExtras().getInt("challenge_on") > 0;
@@ -45,11 +48,17 @@ public class AlarmReceiver extends BroadcastReceiver{
 				i = new Intent(ctx, FailSafe.class);
 			}
 		}
-		
+
 		i.putExtra("vibrate", arg1.getExtras().getInt("vibrate"));
 		i.putExtra("sound", arg1.getExtras().getString("sound"));
 		i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		ctx.startActivity(i);
+		
+		if (!arg1.getExtras().getBoolean("has_repeat")) {
+			dbAdapter.setAlarmToDB(arg1.getExtras().getInt("id"), false);
+			Log.d("Checking", "Turned off Alarm " + arg1.getExtras().getInt("id"));
+		}
+		dbAdapter.close();
 
 	}
 }

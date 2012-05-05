@@ -33,7 +33,7 @@ public class RepeatSelection extends Activity {
 		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.repeat_selection);
-		setTitle("Alarm repeat");
+		setTitle("Repeat");
 		
 		findViews();
 

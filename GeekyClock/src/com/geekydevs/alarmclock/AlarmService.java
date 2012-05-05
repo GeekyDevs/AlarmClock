@@ -89,14 +89,19 @@ public class AlarmService extends Service {
 					
 					Cursor c = dbAdapter.fetchAlarmById(alarmPos);
 					c.moveToFirst();
+						
+					/*
+					Cursor old;
+					if (previous >= 0) {
+						old = dbAdapter.fetchAlarmById(previous);
+						old.moveToFirst();
+					}
 					
-					Cursor old = dbAdapter.fetchAlarmById(previous);
-					old.moveToFirst();
-					
-					if (intent.hasExtra("continuousAlarm") && !haveRepeat(old)) {
+					if (intent.hasExtra("continuousAlarm") && previous >= 0) {
 						dbAdapter.setAlarmToDB(previous, false);
 						Log.d("Checking", "Turned off Alarm " + previous);
 					}
+					*/
 					Log.d("Checking", "Scheduling Alarm " + alarmPos);
 					//if (!isActive(toSchedule, c)) {
 					setAlarm(toSchedule, c);
@@ -203,7 +208,9 @@ public class AlarmService extends Service {
 			i.putExtra("vibrate", 0);
 		
 		i.putExtra("sound", cursor.getString(14));
-
+		i.putExtra("id", cursor.getInt(0));
+		i.putExtra("has_repeat", haveRepeat(cursor));
+		
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(
 				this.getApplicationContext(), 0, i, flag);
 		
@@ -362,29 +369,27 @@ public class AlarmService extends Service {
 		int secondBestPosition = -1;
 		int bestPosition = -1;
 		
-		boolean assigned = false;
+		int pos = -1;
 		
 		if (c.moveToFirst()) {
 			bestDate = pickNextAlarmTime(c);
 			bestPosition = c.getInt(0);
-			secondBestPosition = bestPosition;
-			assigned = true;
+			/*
+			if (!haveRepeat(c)) {
+				secondBestPosition = bestPosition;
+			}
+			*/
+			pos = 0;
 		}
 		
 		while(c.moveToNext()) {
-			if (!assigned) {
-				bestDate = pickNextAlarmTime(c);
-				bestPosition = c.getInt(0);
-				secondBestPosition = bestPosition;
-				assigned = true;
-			} else {
-				temp = pickNextAlarmTime(c);
-				if (temp.compareTo(bestDate) == -1) {
-					bestDate = temp;
-					secondBestPosition = bestPosition;
-					bestPosition = c.getInt(0);	
-				}
-			}	
+			pos += 1;
+			temp = pickNextAlarmTime(c);
+			if (temp.compareTo(bestDate) == -1) {
+				bestDate = temp;
+				//secondBestPosition = bestPosition;
+				bestPosition = c.getInt(0);	
+			}
 		}
 		
 		int[] positions = new int [] {secondBestPosition, bestPosition}; 
