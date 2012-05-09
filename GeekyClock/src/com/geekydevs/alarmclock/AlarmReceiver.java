@@ -18,47 +18,49 @@ public class AlarmReceiver extends BroadcastReceiver{
 	      Log.d("AlarmReceiver: ", " ACTION_TIME_CHANGED received");
 	    }
 		*/
-		AlarmDBAdapter dbAdapter = new AlarmDBAdapter(ctx);
-		dbAdapter.open();
 		
-		Intent i = new Intent(ctx, Snooze.class);
+		boolean challengeOn = arg1.hasExtra("challenge_on");
+		boolean failSafeOn = arg1.hasExtra("failsafe_on");
 		
-		boolean challengeOn = arg1.getExtras().getInt("challenge_on") > 0;
-		boolean failSafeOn = arg1.getExtras().getInt("failsafe_on") > 0;
-		
-		if (challengeOn) {
-			i = new Intent(ctx, Challenge.class);
-			i.putExtra("challenge_level", arg1.getExtras().getString("challenge_level"));
-			if (failSafeOn) {
+		if (arg1 != null) {
+			AlarmDBAdapter dbAdapter = new AlarmDBAdapter(ctx);
+			dbAdapter.open();
+			
+			Intent i = new Intent(ctx, Snooze.class);
+			
+			if (challengeOn) {
+				i = new Intent(ctx, Challenge.class);
+				i.putExtra("challenge_level", arg1.getExtras().getString("challenge_level"));
+				if (failSafeOn) {
+					int snoozeCount = arg1.getExtras().getInt("snooze_count");
+					if (snoozeCount > 0) {
+						i.putExtra("snooze_count", snoozeCount);
+					} else {
+						i = new Intent(ctx, FailSafe.class);
+					}
+				}
+			} 
+			else if (failSafeOn) 
+			{
 				int snoozeCount = arg1.getExtras().getInt("snooze_count");
 				if (snoozeCount > 0) {
-					i.putExtra("snooze_count", snoozeCount);
+					i = new Intent(ctx, Snooze.class);
+					i.putExtra("snooze_count", snoozeCount); 
 				} else {
 					i = new Intent(ctx, FailSafe.class);
 				}
 			}
-		} 
-		else if (failSafeOn) 
-		{
-			int snoozeCount = arg1.getExtras().getInt("snooze_count");
-			if (snoozeCount > 0) {
-				i = new Intent(ctx, Snooze.class);
-				i.putExtra("snooze_count", snoozeCount); 
-			} else {
-				i = new Intent(ctx, FailSafe.class);
+	
+			i.putExtra("vibrate", arg1.getExtras().getInt("vibrate"));
+			i.putExtra("sound", arg1.getExtras().getString("sound"));
+			i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			ctx.startActivity(i);
+			
+			if (!arg1.getExtras().getBoolean("has_repeat")) {
+				dbAdapter.setAlarmToDB(arg1.getExtras().getInt("id"), false);
+				Log.d("Checking", "Turned off Alarm " + arg1.getExtras().getInt("id"));
 			}
+			dbAdapter.close();
 		}
-
-		i.putExtra("vibrate", arg1.getExtras().getInt("vibrate"));
-		i.putExtra("sound", arg1.getExtras().getString("sound"));
-		i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		ctx.startActivity(i);
-		
-		if (!arg1.getExtras().getBoolean("has_repeat")) {
-			dbAdapter.setAlarmToDB(arg1.getExtras().getInt("id"), false);
-			Log.d("Checking", "Turned off Alarm " + arg1.getExtras().getInt("id"));
-		}
-		dbAdapter.close();
-
 	}
 }

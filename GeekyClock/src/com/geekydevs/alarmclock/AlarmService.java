@@ -21,14 +21,11 @@ public class AlarmService extends Service {
 
 	public static final String ACTION_SET_ALARM = "set_alarm";
 	public static final String ACTION_STOP_ALARM = "stop_alarm";
-	public static final String ACTION_SET_NEXT_ALARM = "set_next_alarm";
 	public static final String ACTION_SHOW_NOTIF = "show_notif";
-	public static final String ACTION_CANCEL_NOTIF = "cancel_notif";
 	public static final String ACTION_LAUNCH_SNOOZE = "launch_snooze";
 	
 	public static final String EXTRA_DONT_DISABLE = "don't disable";
-	
-	private static final int NOTIFY_MAIN = R.layout.main;
+
 	private static final int NOTIFY_ALARM_SET = R.layout.alarm_edit;
 	
 	private NotificationManager notifManager;
@@ -85,25 +82,13 @@ public class AlarmService extends Service {
 				if (toSchedule != null) {
 					
 					int alarmPos = alarmPosition(enabledCursors)[1];
-					int previous = alarmPosition(enabledCursors)[0];
 					
 					Cursor c = dbAdapter.fetchAlarmById(alarmPos);
 					c.moveToFirst();
-						
-					/*
-					Cursor old;
-					if (previous >= 0) {
-						old = dbAdapter.fetchAlarmById(previous);
-						old.moveToFirst();
-					}
-					
-					if (intent.hasExtra("continuousAlarm") && previous >= 0) {
-						dbAdapter.setAlarmToDB(previous, false);
-						Log.d("Checking", "Turned off Alarm " + previous);
-					}
-					*/
+
 					Log.d("Checking", "Scheduling Alarm " + alarmPos);
 					//if (!isActive(toSchedule, c)) {
+						//Log.d("Checking", "Alarm " + alarmPos + " is not active");
 					setAlarm(toSchedule, c);
 					//}
 					
@@ -121,16 +106,11 @@ public class AlarmService extends Service {
 			AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
 			alarmManager.cancel(pendingIntent);	
 			
-			// Comment out for testing purposes!!!!!!!!!
+			Cursor enabledCursors = dbAdapter.fetchEnabledAlarms();
 			
-			Intent restartIntent = new Intent();
-			restartIntent.setAction(ACTION_SET_ALARM);
-			
-			if (intent.hasExtra("continuousAlarm")) {
-				restartIntent.putExtra("continuousAlarm", 1);
+			if (enabledCursors.getCount() > 0) {
+				performAction(new Intent().setAction(ACTION_SET_ALARM));
 			}
-			performAction(restartIntent);
-			
 			
 		} else if (action.equals(ACTION_SHOW_NOTIF)) {
 			
@@ -156,7 +136,7 @@ public class AlarmService extends Service {
 			
 		}
 	}
-	
+	/*
 	private boolean isActive(Calendar c, Cursor cursor) {
 		
 		Intent i = new Intent(this, AlarmReceiver.class);
@@ -182,7 +162,7 @@ public class AlarmService extends Service {
 		
 		return active;
 	}
-	
+	*/
 	/*
 	 * Schedule the alarm.
 	 */
@@ -202,10 +182,11 @@ public class AlarmService extends Service {
 			i.putExtra("challenge_on", cursor.getInt(12));
 			i.putExtra("challenge_level", cursor.getString(17));
 		
-		if (cursor.getInt(13) > 0)
+		if (cursor.getInt(13) > 0) {
 			i.putExtra("vibrate", 1);
-		else 
+		} else {
 			i.putExtra("vibrate", 0);
+		}
 		
 		i.putExtra("sound", cursor.getString(14));
 		i.putExtra("id", cursor.getInt(0));

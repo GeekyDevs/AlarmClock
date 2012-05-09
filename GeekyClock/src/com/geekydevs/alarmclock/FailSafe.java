@@ -129,18 +129,12 @@ public class FailSafe extends Activity {
 			mediaPlayer.stop();
 			mediaPlayer.release();
 			if (vibrateOn) {
-				Log.d(ALARM_SERVICE, "SHOULD CANCEL HERE");
 				vibrate.cancel();
 			}
 			
-			Intent j = new Intent(getBaseContext(), AlarmService.class);
-			j.setAction(AlarmService.ACTION_SHOW_NOTIF);
-			startService(j);
-			
-			
-			Intent k = new Intent(getBaseContext(), AlarmService.class);
-			k.setAction(AlarmService.ACTION_SET_ALARM);;
-			startService(k);
+			Intent i = new Intent(getBaseContext(), AlarmService.class);
+			i.setAction(AlarmService.ACTION_STOP_ALARM);
+			startService(i);
 			
 			finish();
 		}

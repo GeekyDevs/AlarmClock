@@ -282,7 +282,7 @@ public class Challenge extends Activity{
 				
 				snoozeButton.setVisibility(Button.VISIBLE);
 				dismissBar.setVisibility(SeekBar.VISIBLE);
-				refreshImage.setVisibility(ImageView.INVISIBLE);
+				//refreshImage.setVisibility(ImageView.INVISIBLE);
 				
 				InputMethodManager mgr = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 				mgr.hideSoftInputFromWindow(answerEdit.getWindowToken(), 0);
@@ -296,7 +296,7 @@ public class Challenge extends Activity{
 				snoozeButton.setVisibility(Button.GONE);
 				dismissBar.setVisibility(SeekBar.GONE);
 				snoozeRemaining.setVisibility(TextView.GONE);
-				refreshImage.setVisibility(ImageView.VISIBLE);
+				//refreshImage.setVisibility(ImageView.VISIBLE);
 				
 			}
 		} 
@@ -346,10 +346,16 @@ public class Challenge extends Activity{
 		String operator = operators[r.nextInt(operators.length - 2)];
 
 		int operandA = r.nextInt(EASY_ADD_DIFFERENCE * 2 + 1) - EASY_ADD_DIFFERENCE;
-		int operandB = 0;
+		while (operandA == 0) {
+			operandA = r.nextInt(EASY_ADD_DIFFERENCE * 2 + 1) - EASY_ADD_DIFFERENCE;
+		}
+		
+		int operandB = r.nextInt(EASY_ADD_DIFFERENCE * 2 + 1) - EASY_ADD_DIFFERENCE;
+		while (operandB == 0) {
+			operandB = r.nextInt(EASY_ADD_DIFFERENCE * 2 + 1) - EASY_ADD_DIFFERENCE;
+		}
 		
 		if (operator == "+") {
-			operandB = r.nextInt(EASY_ADD_DIFFERENCE * 2 + 1) - EASY_ADD_DIFFERENCE;
 			if (isHard) {
 				correctOperandBAnswer = operandA + operandB;
 			} else {
@@ -358,7 +364,6 @@ public class Challenge extends Activity{
 		} 
 		else if (operator == "-") 
 		{
-			operandB = r.nextInt(EASY_ADD_DIFFERENCE * 2 + 1) - EASY_ADD_DIFFERENCE;
 			if (isHard) {
 				correctOperandBAnswer = operandA - operandB;
 			} else {
@@ -445,7 +450,12 @@ public class Challenge extends Activity{
 		} else if (operator == "/") {
 			
 			int quotient = r.nextInt(QUOTIENT_DIFFERENCE * 2 + 1) - QUOTIENT_DIFFERENCE;
-			operandB = r.nextInt(DIVISOR_DIFFERENCE * 2 + 1) - DIVISOR_DIFFERENCE;
+			while (quotient == 0) {
+				quotient = r.nextInt(QUOTIENT_DIFFERENCE * 2 + 1) - QUOTIENT_DIFFERENCE;
+			}
+			while (operandB == 0) {
+				operandB = r.nextInt(DIVISOR_DIFFERENCE * 2 + 1) - DIVISOR_DIFFERENCE;
+			}
 			operandA = operandB * quotient;
 	
 			correctAnswer = quotient;

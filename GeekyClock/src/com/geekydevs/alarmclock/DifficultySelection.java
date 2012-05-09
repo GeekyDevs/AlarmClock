@@ -18,7 +18,7 @@ public class DifficultySelection extends Activity {
 		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.level_selection);
-		setTitle("Difficulty Level...");
+		setTitle("Difficulty Level");
 		
 		easy = (RadioButton)findViewById(R.id.easy);
 		medium = (RadioButton)findViewById(R.id.medium);

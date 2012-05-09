@@ -187,7 +187,6 @@ public class Snooze extends Activity {
 
 				Intent i = new Intent(getBaseContext(), AlarmService.class);
 				i.setAction(AlarmService.ACTION_STOP_ALARM);
-				i.putExtra("continuousAlarm", 1);
 				startService(i);
 
 				if (soundOn) {

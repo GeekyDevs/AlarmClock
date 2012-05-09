@@ -19,7 +19,7 @@ public class SoundSelection extends Activity{
 		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ring_selection);
-		setTitle("Alarm Sound...");
+		setTitle("Alarm Sound");
 		
 		silent = (RadioButton)findViewById(R.id.silent);
 		dfault = (RadioButton)findViewById(R.id.default_ring);
