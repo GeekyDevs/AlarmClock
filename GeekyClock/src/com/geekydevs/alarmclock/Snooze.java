@@ -64,8 +64,8 @@ public class Snooze extends Activity {
 		
 		int snooze_cnt = 0;
 		
-		if (getIntent().hasExtra("snooze_count"))
-			snooze_cnt = getIntent().getExtras().getInt("snooze_count"); 
+		if (getIntent().hasExtra(Alarm.PACKAGE_PREFIX + ".snooze_count"))
+			snooze_cnt = getIntent().getExtras().getInt(Alarm.PACKAGE_PREFIX + ".snooze_count"); 
 		
 		findViewById(R.id.snooze_button).setOnClickListener(snoozeOnClick);
 		dismissBar = (SeekBar) findViewById(R.id.dismiss_bar);
@@ -82,13 +82,13 @@ public class Snooze extends Activity {
 			snooze_remaining = snooze_cnt;
 		}
 		
-		if (getIntent().hasExtra("challenge_on"))
-			challengeOn = getIntent().getExtras().getInt("challenge_on") > 0;
+		if (getIntent().hasExtra(Alarm.PACKAGE_PREFIX + ".challenge_on"))
+			challengeOn = getIntent().getExtras().getInt(Alarm.PACKAGE_PREFIX + ".challenge_on") > 0;
 		
 		amanager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		amanager.setStreamVolume(AudioManager.STREAM_ALARM, 20, 0);
 
-		String sound = getIntent().getExtras().getString("sound");
+		String sound = getIntent().getExtras().getString(Alarm.PACKAGE_PREFIX + ".sound");
 		if (!sound.equals("Silent")) {
 			soundOn = true;
 			if (sound.equals("Default")) {
@@ -105,7 +105,7 @@ public class Snooze extends Activity {
 			mediaPlayer.setLooping(true);
 		}
 		
-		if (getIntent().getExtras().getInt("vibrate") > 0) {
+		if (getIntent().getExtras().getInt(Alarm.PACKAGE_PREFIX + ".vibrate") > 0) {
 			vibrateOn = true;
 			snooze_flag = PendingIntent.FLAG_UPDATE_CURRENT;
 			vibrate = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
@@ -132,20 +132,21 @@ public class Snooze extends Activity {
 			}
 			
 			Intent i = new Intent(getBaseContext(), AlarmReceiver.class);
-			i.putExtra("sound", getIntent().getExtras().getString("sound"));
+			i.putExtra(Alarm.PACKAGE_PREFIX + ".sound", getIntent().getExtras().getString(Alarm.PACKAGE_PREFIX + ".sound"));
+			i.putExtra(Alarm.PACKAGE_PREFIX + ".has_repeat", getIntent().getExtras().getBoolean(Alarm.PACKAGE_PREFIX + ".has_repeat"));
 			
 			if (vibrateOn) {
 				vibrate.cancel();
-				i.putExtra("vibrate", getIntent().getExtras().getInt("vibrate"));
+				i.putExtra(Alarm.PACKAGE_PREFIX + ".vibrate", getIntent().getExtras().getInt(Alarm.PACKAGE_PREFIX + ".vibrate"));
 			}
 
 			if (challengeOn) 
-				i.putExtra("challenge_on", getIntent().getExtras().getInt("challenge_on"));
-				i.putExtra("challenge_level", getIntent().getExtras().getInt("challenge_level"));
+				i.putExtra(Alarm.PACKAGE_PREFIX + ".challenge_on", getIntent().getExtras().getInt(Alarm.PACKAGE_PREFIX + ".challenge_on"));
+				i.putExtra(Alarm.PACKAGE_PREFIX + ".challenge_level", getIntent().getExtras().getInt(Alarm.PACKAGE_PREFIX + ".challenge_level"));
 			
 			if (!isNativeSnooze) {
-				i.putExtra("failsafe_on", 1);
-				i.putExtra("snooze_count", snooze_remaining - 1);
+				i.putExtra(Alarm.PACKAGE_PREFIX + ".failsafe_on", 1);
+				i.putExtra(Alarm.PACKAGE_PREFIX + ".snooze_count", snooze_remaining - 1);
 			}
 
 			PendingIntent pendingIntent = PendingIntent.getBroadcast(

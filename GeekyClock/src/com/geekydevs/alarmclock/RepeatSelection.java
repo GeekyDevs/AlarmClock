@@ -40,7 +40,7 @@ public class RepeatSelection extends Activity {
 		String oldSetting = "";
 		
 		Bundle b = getIntent().getExtras();
-		oldSetting = b.getString("days");
+		oldSetting = b.getString(Alarm.PACKAGE_PREFIX + ".days");
 		
 		if (oldSetting.indexOf("Sunday") >= 0) {chkSun.setChecked(true);}
 		if (oldSetting.indexOf("Monday") >= 0) {chkMon.setChecked(true);}
@@ -140,13 +140,13 @@ public class RepeatSelection extends Activity {
 			
 			Intent i = new Intent();
 			
-			i.putExtra("Sunday", chkSun.isChecked());
-			i.putExtra("Monday", chkMon.isChecked());
-			i.putExtra("Tuesday", chkTue.isChecked());
-			i.putExtra("Wednesday", chkWed.isChecked());
-			i.putExtra("Thursday", chkThu.isChecked());
-			i.putExtra("Friday", chkFri.isChecked());
-			i.putExtra("Saturday", chkSat.isChecked());
+			i.putExtra(Alarm.PACKAGE_PREFIX + ".Sunday", chkSun.isChecked());
+			i.putExtra(Alarm.PACKAGE_PREFIX + ".Monday", chkMon.isChecked());
+			i.putExtra(Alarm.PACKAGE_PREFIX + ".Tuesday", chkTue.isChecked());
+			i.putExtra(Alarm.PACKAGE_PREFIX + ".Wednesday", chkWed.isChecked());
+			i.putExtra(Alarm.PACKAGE_PREFIX + ".Thursday", chkThu.isChecked());
+			i.putExtra(Alarm.PACKAGE_PREFIX + ".Friday", chkFri.isChecked());
+			i.putExtra(Alarm.PACKAGE_PREFIX + ".Saturday", chkSat.isChecked());
 			
 			setResult(Activity.RESULT_OK, i);
 			finish();

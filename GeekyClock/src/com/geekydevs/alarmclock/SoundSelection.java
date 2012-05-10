@@ -29,7 +29,7 @@ public class SoundSelection extends Activity{
 		findViewById(R.id.ring_ok).setOnClickListener(okOnClick);
 		findViewById(R.id.ring_cancel).setOnClickListener(cancelOnClick);
 		
-		String sound = getIntent().getExtras().getString("sound");
+		String sound = getIntent().getExtras().getString(Alarm.PACKAGE_PREFIX + ".sound");
 		
 		if (sound.equals("Silent")) {
 			silent.setChecked(true);
@@ -50,13 +50,13 @@ public class SoundSelection extends Activity{
 			Intent i = new Intent();
 			
 			if (silent.isChecked()) {
-				i.putExtra("sound", "Silent");
+				i.putExtra(Alarm.PACKAGE_PREFIX + ".sound", "Silent");
 			} else if (dfault.isChecked()) {
-				i.putExtra("sound", "Default");
+				i.putExtra(Alarm.PACKAGE_PREFIX + ".sound", "Default");
 			} else if (cmon.isChecked()) {
-				i.putExtra("sound", "C'mon Man");
+				i.putExtra(Alarm.PACKAGE_PREFIX + ".sound", "C'mon Man");
 			} else if (alert.isChecked()) {
-				i.putExtra("sound", "Red Alert");
+				i.putExtra(Alarm.PACKAGE_PREFIX + ".sound", "Red Alert");
 			}
 
 			setResult(Activity.RESULT_OK, i);

@@ -69,71 +69,74 @@ public class AlarmService extends Service {
 	 */
 	private void performAction(Intent intent) {
 		
-		String action = intent.getAction();
-
-		if (action.equals(ACTION_SET_ALARM)) {
-
-			Cursor enabledCursors = dbAdapter.fetchEnabledAlarms();
-			
-			if (enabledCursors.moveToFirst()) {
+		if (intent != null) {
+		
+			String action = intent.getAction();
+	
+			if (action.equals(ACTION_SET_ALARM)) {
+	
+				Cursor enabledCursors = dbAdapter.fetchEnabledAlarms();
 				
-				Calendar toSchedule = nextAvailableSchedule(enabledCursors);
+				if (enabledCursors.moveToFirst()) {
+					
+					Calendar toSchedule = nextAvailableSchedule(enabledCursors);
+					
+					if (toSchedule != null) {
+						
+						int alarmPos = alarmPosition(enabledCursors)[1];
+						
+						Cursor c = dbAdapter.fetchAlarmById(alarmPos);
+						c.moveToFirst();
+	
+						Log.d("Checking", "Scheduling Alarm " + alarmPos);
+						//if (!isActive(toSchedule, c)) {
+							//Log.d("Checking", "Alarm " + alarmPos + " is not active");
+						setAlarm(toSchedule, c);
+						//}
+						
+						performAction(new Intent().setAction(ACTION_SHOW_NOTIF));
+					}
+				}
+
+			} else if (action.equals(ACTION_STOP_ALARM)) {
 				
-				if (toSchedule != null) {
-					
-					int alarmPos = alarmPosition(enabledCursors)[1];
-					
-					Cursor c = dbAdapter.fetchAlarmById(alarmPos);
+				Intent stopIntent = new Intent(this, AlarmReceiver.class);
+				
+				PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(),
+												0, stopIntent, 0);
+	
+				AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
+				alarmManager.cancel(pendingIntent);	
+				
+				Cursor enabledCursors = dbAdapter.fetchEnabledAlarms();
+				
+				if (enabledCursors.getCount() > 0) {
+					performAction(new Intent().setAction(ACTION_SET_ALARM));
+				}
+				
+			} else if (action.equals(ACTION_SHOW_NOTIF)) {
+				
+				Calendar schedule = Calendar.getInstance();
+				String dateFormat = "";
+				String timeFormat = "";
+				
+				Cursor c = dbAdapter.fetchEnabledAlarms();
+	
+				if ((c.getCount() > 0)) {
 					c.moveToFirst();
-
-					Log.d("Checking", "Scheduling Alarm " + alarmPos);
-					//if (!isActive(toSchedule, c)) {
-						//Log.d("Checking", "Alarm " + alarmPos + " is not active");
-					setAlarm(toSchedule, c);
-					//}
-					
-					performAction(new Intent().setAction(ACTION_SHOW_NOTIF));
-				}
-			}
-
-		} else if (action.equals(ACTION_STOP_ALARM)) {
-			
-			Intent stopIntent = new Intent(this, AlarmReceiver.class);
-			
-			PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(),
-											0, stopIntent, 0);
-
-			AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
-			alarmManager.cancel(pendingIntent);	
-			
-			Cursor enabledCursors = dbAdapter.fetchEnabledAlarms();
-			
-			if (enabledCursors.getCount() > 0) {
-				performAction(new Intent().setAction(ACTION_SET_ALARM));
-			}
-			
-		} else if (action.equals(ACTION_SHOW_NOTIF)) {
-			
-			Calendar schedule = Calendar.getInstance();
-			String dateFormat = "";
-			String timeFormat = "";
-			
-			Cursor c = dbAdapter.fetchEnabledAlarms();
-
-			if ((c.getCount() > 0)) {
-				c.moveToFirst();
-				schedule = nextAvailableSchedule(c);
-				if (schedule != null) {
-					timeFormat = Alarm.formatTime(schedule.get(Calendar.HOUR_OF_DAY), schedule.get(Calendar.MINUTE));
-					dateFormat = schedule.getTime().toString().substring(0, 11) + timeFormat;
-					setNotification(dateFormat);
+					schedule = nextAvailableSchedule(c);
+					if (schedule != null) {
+						timeFormat = Alarm.formatTime(schedule.get(Calendar.HOUR_OF_DAY), schedule.get(Calendar.MINUTE));
+						dateFormat = schedule.getTime().toString().substring(0, 11) + timeFormat;
+						setNotification(dateFormat);
+					} else {
+						setNotification("None");
+					}
 				} else {
-					setNotification("None");
+					cancelNotification();
 				}
-			} else {
-				cancelNotification();
+				
 			}
-			
 		}
 	}
 	/*
@@ -174,23 +177,23 @@ public class AlarmService extends Service {
 		
 		// Check if failSafe mode has been enabled. If yes, pass the snooze limit to broadcast receiver.
 		if (cursor.getInt(11) > 0)
-			i.putExtra("failsafe_on", cursor.getInt(11));
-			i.putExtra("snooze_count", cursor.getInt(15));
+			i.putExtra(Alarm.PACKAGE_PREFIX + ".failsafe_on", cursor.getInt(11));
+			i.putExtra(Alarm.PACKAGE_PREFIX + ".snooze_count", cursor.getInt(15));
 			flag = PendingIntent.FLAG_UPDATE_CURRENT;
 		
 		if (cursor.getInt(12) > 0)
-			i.putExtra("challenge_on", cursor.getInt(12));
-			i.putExtra("challenge_level", cursor.getString(17));
+			i.putExtra(Alarm.PACKAGE_PREFIX + ".challenge_on", cursor.getInt(12));
+			i.putExtra(Alarm.PACKAGE_PREFIX + ".challenge_level", cursor.getString(17));
 		
 		if (cursor.getInt(13) > 0) {
-			i.putExtra("vibrate", 1);
+			i.putExtra(Alarm.PACKAGE_PREFIX + ".vibrate", 1);
 		} else {
-			i.putExtra("vibrate", 0);
+			i.putExtra(Alarm.PACKAGE_PREFIX + ".vibrate", 0);
 		}
 		
-		i.putExtra("sound", cursor.getString(14));
-		i.putExtra("id", cursor.getInt(0));
-		i.putExtra("has_repeat", haveRepeat(cursor));
+		i.putExtra(Alarm.PACKAGE_PREFIX + ".sound", cursor.getString(14));
+		i.putExtra(Alarm.PACKAGE_PREFIX + ".id", cursor.getInt(0));
+		i.putExtra(Alarm.PACKAGE_PREFIX + ".has_repeat", haveRepeat(cursor));
 		
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(
 				this.getApplicationContext(), 0, i, flag);
@@ -385,8 +388,11 @@ public class AlarmService extends Service {
 
 		String message = "Next alarm: " + timeString; 
 		
-		Intent intent = new Intent();
+		Intent intent = new Intent(this, AlarmClock.class);
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, 0);
+		
 		Notification notif = new Notification(R.drawable.alarm_icon, message, System.currentTimeMillis());
 		notif.setLatestEventInfo(this, "GeekyAlarm Scheduled", timeString, contentIntent);
 		notif.flags = Notification.FLAG_ONGOING_EVENT;

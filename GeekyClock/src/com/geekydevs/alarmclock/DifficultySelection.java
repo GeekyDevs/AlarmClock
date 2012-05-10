@@ -27,7 +27,7 @@ public class DifficultySelection extends Activity {
 		findViewById(R.id.level_ok).setOnClickListener(okOnClick);
 		findViewById(R.id.level_cancel).setOnClickListener(cancelOnClick);
 		
-		String sound = getIntent().getExtras().getString("level");
+		String sound = getIntent().getExtras().getString(Alarm.PACKAGE_PREFIX + ".level");
 		
 		if (sound.equals("Easy")) {
 			easy.setChecked(true);
@@ -46,11 +46,11 @@ public class DifficultySelection extends Activity {
 			Intent i = new Intent();
 			
 			if (easy.isChecked()) {
-				i.putExtra("level", "Easy");
+				i.putExtra(Alarm.PACKAGE_PREFIX + ".level", "Easy");
 			} else if (medium.isChecked()) {
-				i.putExtra("level", "Medium");
+				i.putExtra(Alarm.PACKAGE_PREFIX + ".level", "Medium");
 			} else if (hard.isChecked()) {
-				i.putExtra("level", "Hard");
+				i.putExtra(Alarm.PACKAGE_PREFIX + ".level", "Hard");
 			}
 
 			setResult(Activity.RESULT_OK, i);

@@ -88,7 +88,7 @@ public class Challenge extends Activity{
         keyguardLock =  keyguardManager.newKeyguardLock("TAG");
         keyguardLock.disableKeyguard();
 		
-		difficultyLevel = getIntent().getExtras().getString("challenge_level");
+		difficultyLevel = getIntent().getExtras().getString(Alarm.PACKAGE_PREFIX + ".challenge_level");
 		
 		findViews();
 		
@@ -113,8 +113,8 @@ public class Challenge extends Activity{
 			
 		int snooze_cnt = 0;
 		
-		if (getIntent().hasExtra("snooze_count"))
-			snooze_cnt = getIntent().getExtras().getInt("snooze_count");
+		if (getIntent().hasExtra(Alarm.PACKAGE_PREFIX + ".snooze_count"))
+			snooze_cnt = getIntent().getExtras().getInt(Alarm.PACKAGE_PREFIX + ".snooze_count");
 		
 		if (snooze_cnt > 0) {
 			isNativeSnooze = false;
@@ -187,21 +187,21 @@ public class Challenge extends Activity{
 			}
 
 			Intent i = new Intent(getBaseContext(), AlarmReceiver.class);
-			i.putExtra("sound", getIntent().getExtras().getString("sound"));
-			i.putExtra("challenge_on", 1);
-			i.putExtra("challenge_level", difficultyLevel);
+			i.putExtra(Alarm.PACKAGE_PREFIX + ".sound", getIntent().getExtras().getString(Alarm.PACKAGE_PREFIX + ".sound"));
+			i.putExtra(Alarm.PACKAGE_PREFIX + ".challenge_on", 1);
+			i.putExtra(Alarm.PACKAGE_PREFIX + ".challenge_level", difficultyLevel);
 			
 
 			if (vibrateOn) {
 				vibrate.cancel();
-				i.putExtra("vibrate", 1);
+				i.putExtra(Alarm.PACKAGE_PREFIX + ".vibrate", 1);
 			} else {
-				i.putExtra("vibrate", 0);
+				i.putExtra(Alarm.PACKAGE_PREFIX + ".vibrate", 0);
 			}
 
 			if (!isNativeSnooze) {
-				i.putExtra("failsafe_on", 1);
-				i.putExtra("snooze_count", snooze_remaining - 1);
+				i.putExtra(Alarm.PACKAGE_PREFIX + ".failsafe_on", 1);
+				i.putExtra(Alarm.PACKAGE_PREFIX + ".snooze_count", snooze_remaining - 1);
 			}
 
 			PendingIntent pendingIntent = PendingIntent.getBroadcast(
@@ -251,20 +251,7 @@ public class Challenge extends Activity{
 				
 				Intent i = new Intent(getBaseContext(), AlarmService.class);
 				i.setAction(AlarmService.ACTION_STOP_ALARM);
-				i.putExtra("continuousAlarm", 1);
 				startService(i);
-
-				/*
-				Intent j = new Intent(getBaseContext(), AlarmService.class);
-				j.setAction(AlarmService.ACTION_SHOW_NOTIF);
-				startService(j);
-				
-				
-				Intent k = new Intent(getBaseContext(), AlarmService.class);
-				k.setAction(AlarmService.ACTION_SET_ALARM);
-				k.putExtra("continuousAlarm", 1);
-				startService(k);
-				*/
 				
 				finish();
 			}
@@ -282,7 +269,6 @@ public class Challenge extends Activity{
 				
 				snoozeButton.setVisibility(Button.VISIBLE);
 				dismissBar.setVisibility(SeekBar.VISIBLE);
-				//refreshImage.setVisibility(ImageView.INVISIBLE);
 				
 				InputMethodManager mgr = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 				mgr.hideSoftInputFromWindow(answerEdit.getWindowToken(), 0);
@@ -296,8 +282,6 @@ public class Challenge extends Activity{
 				snoozeButton.setVisibility(Button.GONE);
 				dismissBar.setVisibility(SeekBar.GONE);
 				snoozeRemaining.setVisibility(TextView.GONE);
-				//refreshImage.setVisibility(ImageView.VISIBLE);
-				
 			}
 		} 
 	}
@@ -315,7 +299,7 @@ public class Challenge extends Activity{
 	
 	private void generateSoundVibrate() {
 		
-		String sound = getIntent().getExtras().getString("sound");
+		String sound = getIntent().getExtras().getString(Alarm.PACKAGE_PREFIX + ".sound");
 		if (!sound.equals("Silent")) {
 			soundOn = true;
 			if (sound.equals("Default")) {
@@ -332,7 +316,7 @@ public class Challenge extends Activity{
 			mediaPlayer.setLooping(true);
 		}
 		
-		if (getIntent().getExtras().getInt("vibrate") > 0) {
+		if (getIntent().getExtras().getInt(Alarm.PACKAGE_PREFIX + ".vibrate") > 0) {
 			vibrateOn = true;
 			vibrate = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
 			vibrate.vibrate(pattern, 0);

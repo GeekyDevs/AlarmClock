@@ -58,7 +58,7 @@ public class FailSafe extends Activity {
 		AudioManager amanager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		amanager.setStreamVolume(AudioManager.STREAM_ALARM, 20, 0);
 		
-		String sound = getIntent().getExtras().getString("sound");
+		String sound = getIntent().getExtras().getString(Alarm.PACKAGE_PREFIX + ".sound");
 		if (sound.equals("Silent") || sound.equals("Default")) {
 			mediaPlayer = MediaPlayer.create(this, R.raw.normal);
 		} else if (sound.equals("C'mon Man")) {
@@ -70,7 +70,7 @@ public class FailSafe extends Activity {
 		mediaPlayer.start();
 		mediaPlayer.setLooping(true);
 		
-		if (getIntent().getExtras().getInt("vibrate") == 1) {
+		if (getIntent().getExtras().getInt(Alarm.PACKAGE_PREFIX + ".vibrate") == 1) {
 			vibrateOn = true;
 			vibrate = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
 			vibrate.vibrate(pattern, 0);

@@ -20,6 +20,7 @@
 
         <activity
             android:theme="@android:style/Theme.NoTitleBar"
+            android:launchMode="singleInstance" 
             android:name=".AlarmClock"
             android:label="@string/app_name">
             <intent-filter>
@@ -35,7 +36,7 @@
         
         <activity 
             android:theme="@android:style/Theme.NoTitleBar"
-            android:configChanges="keyboard|keyboardHidden|orientation" 
+            android:configChanges="keyboard|keyboardHidden|orientation"
             android:name=".AlarmEdit" 
             android:label="@string/edit_alarm_title">
         </activity>

@@ -23,10 +23,10 @@ public class StringInputDialog extends Activity {
 		
 		Bundle b = getIntent().getExtras();
 		
-		if (b.getString("label").contains("Enter a custom label for your alarm")) {
+		if (b.getString(Alarm.PACKAGE_PREFIX + ".label").contains("Enter a custom label for your alarm")) {
 			labelText.setText("");
 		} else {
-			labelText.setText(b.getString("label"));
+			labelText.setText(b.getString(Alarm.PACKAGE_PREFIX + ".label"));
 		}
 	}
 	
@@ -36,7 +36,7 @@ public class StringInputDialog extends Activity {
 		public void onClick(View v) {
 			
 			Intent i = new Intent();
-			i.putExtra("label", labelText.getText() + "");
+			i.putExtra(Alarm.PACKAGE_PREFIX + ".label", labelText.getText() + "");
 			
 			setResult(Activity.RESULT_OK, i);
 			finish();

@@ -183,12 +183,12 @@ public class AlarmEdit extends Activity {
 	
 	private void loadAlarmFromIntent() {
 		Intent i = getIntent();
-		if (i.hasExtra("_id")){
+		if (i.hasExtra(Alarm.PACKAGE_PREFIX + "._id")){
 			
 			newAlarm = false;
 			
 			Bundle b = getIntent().getExtras();
-			int id = (int) b.getLong("_id");
+			int id = (int) b.getLong(Alarm.PACKAGE_PREFIX + "._id");
 
 			alarm = dbAdapter.getAlarmById(id);
 			
@@ -262,32 +262,32 @@ public class AlarmEdit extends Activity {
 			switch (requestCode) {
 			case ACTION_INPUT_LABEL:
 				
-				String label = data.getStringExtra("label");
+				String label = data.getStringExtra(Alarm.PACKAGE_PREFIX + ".label");
 				
 				alarm.assign("name", label);
 				updateLabelView(label);
 				break;
 			case ACTION_CHOOSE_REPEAT:
 				
-				alarm.assign("repeat_sun", data.getBooleanExtra("Sunday", false));
-				alarm.assign("repeat_mon", data.getBooleanExtra("Monday", false));
-				alarm.assign("repeat_tue", data.getBooleanExtra("Tuesday", false));
-				alarm.assign("repeat_wed", data.getBooleanExtra("Wednesday", false));
-				alarm.assign("repeat_thu", data.getBooleanExtra("Thursday", false));
-				alarm.assign("repeat_fri", data.getBooleanExtra("Friday", false));
-				alarm.assign("repeat_sat", data.getBooleanExtra("Saturday", false));
+				alarm.assign("repeat_sun", data.getBooleanExtra(Alarm.PACKAGE_PREFIX + ".Sunday", false));
+				alarm.assign("repeat_mon", data.getBooleanExtra(Alarm.PACKAGE_PREFIX + ".Monday", false));
+				alarm.assign("repeat_tue", data.getBooleanExtra(Alarm.PACKAGE_PREFIX + ".Tuesday", false));
+				alarm.assign("repeat_wed", data.getBooleanExtra(Alarm.PACKAGE_PREFIX + ".Wednesday", false));
+				alarm.assign("repeat_thu", data.getBooleanExtra(Alarm.PACKAGE_PREFIX + ".Thursday", false));
+				alarm.assign("repeat_fri", data.getBooleanExtra(Alarm.PACKAGE_PREFIX + ".Friday", false));
+				alarm.assign("repeat_sat", data.getBooleanExtra(Alarm.PACKAGE_PREFIX + ".Saturday", false));
 
 				updateRepeatView(Alarm.formatRepeat(alarm.getAll()));
 				break;
 			case ACTION_CHOOSE_LEVEL:
 				
-				String difficulty = data.getStringExtra("level");
+				String difficulty = data.getStringExtra(Alarm.PACKAGE_PREFIX + ".level");
 				alarm.assign("challenge_level", difficulty);
 				updateDifficultyView(difficulty);
 				break;
 			case ACTION_CHOOSE_SOUND:
 				
-				String sound = data.getStringExtra("sound");
+				String sound = data.getStringExtra(Alarm.PACKAGE_PREFIX + ".sound");
 				alarm.assign("sound", sound);
 				updateSoundView(sound);
 				break;
@@ -358,7 +358,7 @@ public class AlarmEdit extends Activity {
 		@Override
 		public void onClick(View v) {
 			Intent i = new Intent(getBaseContext(), RepeatSelection.class);
-			i.putExtra("days", repeatView.getText());
+			i.putExtra(Alarm.PACKAGE_PREFIX + ".days", repeatView.getText());
 			startActivityForResult(i, ACTION_CHOOSE_REPEAT);
 		}
 	};
@@ -371,7 +371,7 @@ public class AlarmEdit extends Activity {
 		@Override
 		public void onClick(View v) {
 			Intent i = new Intent(AlarmEdit.this, StringInputDialog.class);
-			i.putExtra("label", labelView.getText());
+			i.putExtra(Alarm.PACKAGE_PREFIX + ".label", labelView.getText());
 			startActivityForResult(i, ACTION_INPUT_LABEL);
 		}
 	};
@@ -384,7 +384,7 @@ public class AlarmEdit extends Activity {
 		@Override
 		public void onClick(View v) {
 			Intent i = new Intent(AlarmEdit.this, SoundSelection.class);
-			i.putExtra("sound", soundView.getText());
+			i.putExtra(Alarm.PACKAGE_PREFIX + ".sound", soundView.getText());
 			startActivityForResult(i, ACTION_CHOOSE_SOUND);
 		}
 	};
@@ -502,7 +502,7 @@ public class AlarmEdit extends Activity {
 		@Override
 		public void onClick(View v) {
 			Intent i = new Intent(AlarmEdit.this, DifficultySelection.class);
-			i.putExtra("level", difficultyView.getText());
+			i.putExtra(Alarm.PACKAGE_PREFIX + ".level", difficultyView.getText());
 			startActivityForResult(i, ACTION_CHOOSE_LEVEL);	
 		}
 	};
@@ -568,7 +568,7 @@ public class AlarmEdit extends Activity {
 		
 		Intent i = new Intent(this, AlarmService.class);
 		i.setAction(AlarmService.ACTION_SET_ALARM);
-		i.putExtra("_id", id);
+		i.putExtra(Alarm.PACKAGE_PREFIX + "._id", id);
 		startService(i);
 	}
 	

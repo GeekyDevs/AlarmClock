@@ -152,7 +152,7 @@ public class AlarmClock extends ListActivity {
      */
     private void launchAlarmEdit(long id) {
     	Intent i = new Intent(this, AlarmEdit.class);
-		i.putExtra("_id", id);
+		i.putExtra(Alarm.PACKAGE_PREFIX + "._id", id);
 		startActivity(i);
     }
     

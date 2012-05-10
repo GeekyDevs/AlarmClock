@@ -19,6 +19,8 @@ public class Alarm {
 	public static final int ALARM_FRIDAY = 9;
 	public static final int ALARM_SATURDAY = 10;
 	
+	public static final String PACKAGE_PREFIX = "com.geekydevs.alarmclock";
+	
 
 	private ContentValues alarmProperty = new ContentValues();
 	
