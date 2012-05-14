@@ -11,21 +11,38 @@
 		android:layout_width="fill_parent"
 		android:layout_marginBottom="52dip">
     
-	    <LinearLayout android:id="@+id/LinearLayout01" 
+	    <LinearLayout android:id="@+id/add_alarm_row" 
 	   		  android:layout_height="wrap_content" 
 	   		  android:layout_width="fill_parent" 
 	   		  android:orientation="horizontal" 
 	   		  android:padding="2dip" 
 	   		  android:gravity="center">
-	   		  
-		    <Button android:layout_width="wrap_content" 
-		        	android:layout_height="wrap_content" 
-		        	android:layout_marginLeft="5dip" 
-		        	android:layout_marginRight="5dip" 
-		        	android:text="@string/menu_add" 
-		        	android:id="@+id/m_btn_add_new">
-		    </Button>
+	   		
+	        <ImageView 
+	            android:layout_width="wrap_content" 
+	            android:layout_height="wrap_content" 
+	            android:id="@+id/add_new_alarm" 
+	            android:adjustViewBounds="true"
+	            android:maxHeight="54dip" 
+	            android:maxWidth="54dip" 
+	            android:minHeight="54dip" 
+	            android:minWidth="54dip">
+	        </ImageView>
+	        
+	        <TextView
+	          	android:textColor="#FFF" 
+	          	android:layout_width="0dip" 
+	          	android:textSize="18dip" 
+	          	android:layout_height="wrap_content" 
+	          	android:layout_weight="1"
+	          	android:layout_marginLeft="14dip"
+	         	android:text="Add alarm" />
 		 </LinearLayout>
+		 
+	    <View android:layout_width="fill_parent" 
+			  android:layout_height="2dip" 
+			  android:background="@android:drawable/divider_horizontal_dark">
+		</View>
 	    
 	    <ListView android:id="@+id/android:list"
 	          android:layout_height="wrap_content" 

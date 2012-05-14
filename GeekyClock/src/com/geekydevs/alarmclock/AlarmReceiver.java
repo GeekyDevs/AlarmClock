@@ -41,6 +41,8 @@ public class AlarmReceiver extends BroadcastReceiver{
 						hasSnooze = false;
 						i = new Intent(ctx, FailSafe.class);
 					}
+				} else {
+					hasSnooze = false;
 				}
 			} 
 			else if (failSafeOn) 

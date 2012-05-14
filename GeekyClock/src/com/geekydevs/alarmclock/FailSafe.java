@@ -50,7 +50,7 @@ public class FailSafe extends Activity {
 		
 		// Assigning views
 		ImageView lockImage = (ImageView) findViewById(R.id.failsafe_screen);
-		lockImage.setImageDrawable(getResources().getDrawable(R.drawable.lock));
+		lockImage.setImageDrawable(getResources().getDrawable(R.drawable.failsafe_lock));
 		
 		timeRemaining = (TextView) findViewById(R.id.time_remaining);
 		
@@ -135,6 +135,11 @@ public class FailSafe extends Activity {
 			Intent i = new Intent(getBaseContext(), AlarmService.class);
 			i.setAction(AlarmService.ACTION_STOP_ALARM);
 			startService(i);
+			
+			Intent refresh = new Intent(getBaseContext(), AlarmClock.class);
+			refresh.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+			refresh.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			startActivity(refresh);
 			
 			finish();
 		}

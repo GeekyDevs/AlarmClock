@@ -39,6 +39,7 @@ public class Snooze extends Activity {
 	private boolean soundOn = false;
 	private boolean challengeOn = false;
 	private boolean vibrateOn = false;
+	private boolean emptyIntent = false;
 	
 	private int snooze_flag = 0;
 	private int snooze_remaining;
@@ -87,29 +88,33 @@ public class Snooze extends Activity {
 		
 		amanager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		amanager.setStreamVolume(AudioManager.STREAM_ALARM, 20, 0);
-
-		String sound = getIntent().getExtras().getString(Alarm.PACKAGE_PREFIX + ".sound");
-		if (!sound.equals("Silent")) {
-			soundOn = true;
-			if (sound.equals("Default")) {
-				mediaPlayer = MediaPlayer.create(this, R.raw.normal);
-			} else if (sound.equals("C'mon Man")) {
-				mediaPlayer = MediaPlayer.create(this, R.raw.cmon_man);
-			} else if (sound.equals("Red Alert")) {
-				mediaPlayer = MediaPlayer.create(this, R.raw.red_alert);
-			}
-		}
-
-		if (soundOn) {
-			mediaPlayer.start();
-			mediaPlayer.setLooping(true);
-		}
 		
-		if (getIntent().getExtras().getInt(Alarm.PACKAGE_PREFIX + ".vibrate") > 0) {
-			vibrateOn = true;
-			snooze_flag = PendingIntent.FLAG_UPDATE_CURRENT;
-			vibrate = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
-			vibrate.vibrate(pattern, 0);
+		emptyIntent = getIntent().getExtras().isEmpty();
+		
+		if (!emptyIntent) {
+			String sound = getIntent().getExtras().getString(Alarm.PACKAGE_PREFIX + ".sound");
+			if (!sound.equals("Silent")) {
+				soundOn = true;
+				if (sound.equals("Default")) {
+					mediaPlayer = MediaPlayer.create(this, R.raw.normal);
+				} else if (sound.equals("C'mon Man")) {
+					mediaPlayer = MediaPlayer.create(this, R.raw.cmon_man);
+				} else if (sound.equals("Red Alert")) {
+					mediaPlayer = MediaPlayer.create(this, R.raw.red_alert);
+				}
+			}
+	
+			if (soundOn) {
+				mediaPlayer.start();
+				mediaPlayer.setLooping(true);
+			}
+			
+			if (getIntent().getExtras().getInt(Alarm.PACKAGE_PREFIX + ".vibrate") > 0) {
+				vibrateOn = true;
+				snooze_flag = PendingIntent.FLAG_UPDATE_CURRENT;
+				vibrate = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
+				vibrate.vibrate(pattern, 0);
+			}
 		}
 			
 	}
@@ -126,40 +131,42 @@ public class Snooze extends Activity {
 		@Override
 		public void onClick(View v) {
 
-			if (soundOn) {
-				mediaPlayer.stop();
-				mediaPlayer.release();
+			if (!emptyIntent) {
+				if (soundOn) {
+					mediaPlayer.stop();
+					mediaPlayer.release();
+				}
+				
+				Intent i = new Intent(getBaseContext(), AlarmReceiver.class);
+				i.putExtra(Alarm.PACKAGE_PREFIX + ".sound", getIntent().getExtras().getString(Alarm.PACKAGE_PREFIX + ".sound"));
+				i.putExtra(Alarm.PACKAGE_PREFIX + ".has_repeat", getIntent().getExtras().getBoolean(Alarm.PACKAGE_PREFIX + ".has_repeat"));
+				
+				if (vibrateOn) {
+					vibrate.cancel();
+					i.putExtra(Alarm.PACKAGE_PREFIX + ".vibrate", getIntent().getExtras().getInt(Alarm.PACKAGE_PREFIX + ".vibrate"));
+				}
+	
+				if (challengeOn) 
+					i.putExtra(Alarm.PACKAGE_PREFIX + ".challenge_on", getIntent().getExtras().getInt(Alarm.PACKAGE_PREFIX + ".challenge_on"));
+					i.putExtra(Alarm.PACKAGE_PREFIX + ".challenge_level", getIntent().getExtras().getInt(Alarm.PACKAGE_PREFIX + ".challenge_level"));
+				
+				if (!isNativeSnooze) {
+					i.putExtra(Alarm.PACKAGE_PREFIX + ".failsafe_on", 1);
+					i.putExtra(Alarm.PACKAGE_PREFIX + ".snooze_count", snooze_remaining - 1);
+				}
+	
+				PendingIntent pendingIntent = PendingIntent.getBroadcast(
+						getBaseContext(), 0, i, snooze_flag);
+				
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTimeInMillis(System.currentTimeMillis());
+				calendar.add(Calendar.SECOND, SNOOZE_INTERVAL);
+				
+		        AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+		        am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);	
+				
+				finish();
 			}
-			
-			Intent i = new Intent(getBaseContext(), AlarmReceiver.class);
-			i.putExtra(Alarm.PACKAGE_PREFIX + ".sound", getIntent().getExtras().getString(Alarm.PACKAGE_PREFIX + ".sound"));
-			i.putExtra(Alarm.PACKAGE_PREFIX + ".has_repeat", getIntent().getExtras().getBoolean(Alarm.PACKAGE_PREFIX + ".has_repeat"));
-			
-			if (vibrateOn) {
-				vibrate.cancel();
-				i.putExtra(Alarm.PACKAGE_PREFIX + ".vibrate", getIntent().getExtras().getInt(Alarm.PACKAGE_PREFIX + ".vibrate"));
-			}
-
-			if (challengeOn) 
-				i.putExtra(Alarm.PACKAGE_PREFIX + ".challenge_on", getIntent().getExtras().getInt(Alarm.PACKAGE_PREFIX + ".challenge_on"));
-				i.putExtra(Alarm.PACKAGE_PREFIX + ".challenge_level", getIntent().getExtras().getInt(Alarm.PACKAGE_PREFIX + ".challenge_level"));
-			
-			if (!isNativeSnooze) {
-				i.putExtra(Alarm.PACKAGE_PREFIX + ".failsafe_on", 1);
-				i.putExtra(Alarm.PACKAGE_PREFIX + ".snooze_count", snooze_remaining - 1);
-			}
-
-			PendingIntent pendingIntent = PendingIntent.getBroadcast(
-					getBaseContext(), 0, i, snooze_flag);
-			
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTimeInMillis(System.currentTimeMillis());
-			calendar.add(Calendar.SECOND, SNOOZE_INTERVAL);
-			
-	        AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
-	        am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);	
-			
-			finish();
 		}
 	};
 	
@@ -186,36 +193,38 @@ public class Snooze extends Activity {
 
 			if (progress == seekBar.getMax()) {
 
-				Intent i = new Intent(getBaseContext(), AlarmService.class);
-				i.setAction(AlarmService.ACTION_STOP_ALARM);
-				startService(i);
-
-				if (soundOn) {
-					mediaPlayer.stop();
-					mediaPlayer.release();
+				if (!emptyIntent) {
+					Intent i = new Intent(getBaseContext(), AlarmService.class);
+					i.setAction(AlarmService.ACTION_STOP_ALARM);
+					startService(i);
+	
+					if (soundOn) {
+						mediaPlayer.stop();
+						mediaPlayer.release();
+					}
+					if (vibrateOn) {
+						vibrate.cancel();
+					}
+					
+					/*
+					Intent j = new Intent(getBaseContext(), AlarmService.class);
+					j.setAction(AlarmService.ACTION_SHOW_NOTIF);
+					startService(j);
+					
+					
+					Intent k = new Intent(getBaseContext(), AlarmService.class);
+					k.setAction(AlarmService.ACTION_SET_ALARM);
+					k.putExtra("continuousAlarm", 1);
+					startService(k);
+			        */
+					
+					Intent refresh = new Intent(getBaseContext(), AlarmClock.class);
+					refresh.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+					refresh.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					startActivity(refresh);
+	
+					finish();
 				}
-				if (vibrateOn) {
-					vibrate.cancel();
-				}
-				
-				/*
-				Intent j = new Intent(getBaseContext(), AlarmService.class);
-				j.setAction(AlarmService.ACTION_SHOW_NOTIF);
-				startService(j);
-				
-				
-				Intent k = new Intent(getBaseContext(), AlarmService.class);
-				k.setAction(AlarmService.ACTION_SET_ALARM);
-				k.putExtra("continuousAlarm", 1);
-				startService(k);
-		        */
-				
-				Intent refresh = new Intent(getBaseContext(), AlarmClock.class);
-				refresh.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-				refresh.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				startActivity(refresh);
-
-				finish();
 			}
 		}
 	};

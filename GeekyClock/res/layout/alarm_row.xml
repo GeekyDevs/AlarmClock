@@ -8,13 +8,22 @@
   	android:id="@+id/ar_ll_selectable_row" 
   	android:gravity="center_vertical">
 	
-   	<CheckBox 
-	    android:layout_height="wrap_content" 
-	    android:layout_width="wrap_content" 
-	    android:layout_gravity="center_vertical" 
-	    android:id="@+id/alarm_enabled_row" 
-	    android:focusable="false">
-	</CheckBox>
+    <LinearLayout 
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content">
+        
+        <ImageView 
+            android:layout_width="wrap_content" 
+            android:layout_height="wrap_content" 
+            android:id="@+id/alarm_enabled_row" 
+            android:adjustViewBounds="true"
+            android:maxHeight="54dip" 
+            android:maxWidth="54dip" 
+            android:minHeight="54dip" 
+            android:minWidth="54dip">
+        </ImageView>
+    </LinearLayout>
+
     
    	<View          
       android:layout_width="1dp" 
@@ -137,7 +146,7 @@
     <LinearLayout 
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
-        android:layout_marginLeft="20dip">
+        android:layout_marginLeft="14dip">
         
         <ImageView 
             android:layout_width="wrap_content" 
@@ -154,7 +163,7 @@
     <LinearLayout 
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
-        android:layout_marginLeft="20dip">
+        android:layout_marginLeft="14dip">
         
         <ImageView 
             android:layout_width="wrap_content" 
@@ -171,7 +180,7 @@
    	<LinearLayout 
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
-        android:layout_marginLeft="20dip">
+        android:layout_marginLeft="14dip">
 		
 	    <ImageView 
             android:layout_width="wrap_content" 

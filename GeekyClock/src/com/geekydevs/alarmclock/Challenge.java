@@ -65,6 +65,7 @@ public class Challenge extends Activity{
 	private boolean soundOn = false;
 	private boolean vibrateOn = false;
 	private boolean isHard = false;
+	private boolean canRefresh = true;
 	
 	private int snooze_flag = 0;
 	private int snooze_remaining;
@@ -88,8 +89,6 @@ public class Challenge extends Activity{
         keyguardLock =  keyguardManager.newKeyguardLock("TAG");
         keyguardLock.disableKeyguard();
 		
-		difficultyLevel = getIntent().getExtras().getString(Alarm.PACKAGE_PREFIX + ".challenge_level");
-		
 		findViews();
 		
 		refreshImage.setOnClickListener(refreshOnClick);
@@ -102,6 +101,8 @@ public class Challenge extends Activity{
 
 		generateSoundVibrate();
 
+		difficultyLevel = getIntent().getExtras().getString(Alarm.PACKAGE_PREFIX + ".challenge_level");
+		
 		if (difficultyLevel.equals("Easy")) {
 			generateEasy();
 		} else if (difficultyLevel.equals("Medium")) {
@@ -148,7 +149,7 @@ public class Challenge extends Activity{
 	private void findViews() {
 		
 		refreshImage = (ImageView)findViewById(R.id.refresh);
-		refreshImage.setImageDrawable(getResources().getDrawable(R.drawable.refresh));
+		refreshImage.setImageDrawable(getResources().getDrawable(R.drawable.refresh_on));
 		
 		operandAView = (TextView)findViewById(R.id.operand_a);
 		operandBView = (TextView)findViewById(R.id.operand_b);
@@ -165,13 +166,15 @@ public class Challenge extends Activity{
 		@Override
 		public void onClick(View v) {
 			
-			if (difficultyLevel.equals("Easy")) {
-				generateEasy();
-			} else if (difficultyLevel.equals("Medium")) {
-				generateMedium();
-			} else if (difficultyLevel.equals("Hard")) {
-				isHard = true;
-				generateHard();
+			if (canRefresh) {
+				if (difficultyLevel.equals("Easy")) {
+					generateEasy();
+				} else if (difficultyLevel.equals("Medium")) {
+					generateMedium();
+				} else if (difficultyLevel.equals("Hard")) {
+					isHard = true;
+					generateHard();
+				}
 			}
 		}
 	};
@@ -253,6 +256,11 @@ public class Challenge extends Activity{
 				i.setAction(AlarmService.ACTION_STOP_ALARM);
 				startService(i);
 				
+				Intent refresh = new Intent(getBaseContext(), AlarmClock.class);
+				refresh.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+				refresh.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				startActivity(refresh);
+				
 				finish();
 			}
 		}
@@ -269,6 +277,8 @@ public class Challenge extends Activity{
 				
 				snoozeButton.setVisibility(Button.VISIBLE);
 				dismissBar.setVisibility(SeekBar.VISIBLE);
+				refreshImage.setImageDrawable(getResources().getDrawable(R.drawable.refresh_off));
+				canRefresh = false;
 				
 				InputMethodManager mgr = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 				mgr.hideSoftInputFromWindow(answerEdit.getWindowToken(), 0);
@@ -282,6 +292,8 @@ public class Challenge extends Activity{
 				snoozeButton.setVisibility(Button.GONE);
 				dismissBar.setVisibility(SeekBar.GONE);
 				snoozeRemaining.setVisibility(TextView.GONE);
+				refreshImage.setImageDrawable(getResources().getDrawable(R.drawable.refresh_on));
+				canRefresh = true;
 			}
 		} 
 	}

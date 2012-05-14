@@ -11,12 +11,14 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.View.OnCreateContextMenuListener;
 import android.view.ViewGroup;
@@ -56,11 +58,13 @@ public class AlarmClock extends ListActivity {
 	private TextView friText;
 	private TextView satText;
 	
+	private ImageView alarmOnImage;
 	private ImageView failsafeImage;
 	private ImageView challengeImage;
 	private ImageView soundImage;
 	
-	private CheckBox chkAlarmOn;
+	private LinearLayout lLAddRow;
+	private ImageView addAlarmImage;
 	
 	private AdView adView;
 	
@@ -94,6 +98,12 @@ public class AlarmClock extends ListActivity {
         dbAdapter = new AlarmDBAdapter(this);
         dbAdapter.open();
 
+        lLAddRow = (LinearLayout)findViewById(R.id.add_alarm_row);
+        lLAddRow.setOnClickListener(addOnClick);
+        
+        addAlarmImage = (ImageView)findViewById(R.id.add_new_alarm);
+        addAlarmImage.setImageDrawable(getResources().getDrawable(R.drawable.alarm_add));
+		
         Cursor c = dbAdapter.fetchAllAlarms();
         
         startManagingCursor(c);
@@ -112,8 +122,6 @@ public class AlarmClock extends ListActivity {
     	ListView listV = getListView();
     	listV.setAdapter(curAdapter);
     	listV.setOnCreateContextMenuListener(createItemContext);
-    	
-    	((Button)findViewById(R.id.m_btn_add_new)).setOnClickListener(onAddNewAlarmClick);
     }
     
     @Override
@@ -146,7 +154,7 @@ public class AlarmClock extends ListActivity {
 		launchAlarmEdit(id);
 		super.onListItemClick(l, v, position, id);
 	}
- 
+
     /*
      * Sends an intent to alarm edit screen with the alarm's id attached. 
      */
@@ -159,16 +167,15 @@ public class AlarmClock extends ListActivity {
     /*
      * Launches the alarm edit screen when the user adds a new alarm.  Default values will
      */
-    private final View.OnClickListener onAddNewAlarmClick = new View.OnClickListener() {
-
-		@Override
+    private View.OnClickListener addOnClick = new View.OnClickListener() {
+    	
+    	@Override
 		public void onClick(View v) {
-			Intent i = new Intent (getBaseContext(), AlarmEdit.class);
-			startActivity(i);
-		}
-		
-	};
-	
+    		Intent i = new Intent (getBaseContext(), AlarmEdit.class);
+    		startActivity(i);
+    	}
+    };
+    
 	/*
 	 * Helper method to start service for notification. 
 	 */
@@ -277,41 +284,47 @@ public class AlarmClock extends ListActivity {
 			// Icon images
 			//turnOnOffImage.setImageDrawable(getResources().getDrawable(R.drawable.icon));
 			
+			Boolean alarmOn = (cursor.getInt(16) > 0);
 			Boolean showFailSafe = (cursor.getInt(11) > 0);
 			Boolean showChallenge = (cursor.getInt(12) > 0);
 			Boolean vibrateOn = (cursor.getInt(13) > 0);
 			Boolean soundOff = (cursor.getString(14).equals("Silent"));
-			
-			//alarmImage.setImageDrawable(getResources().getDrawable(R.drawable.alarm_icon));
-			failsafeImage.setImageDrawable(getResources().getDrawable(R.drawable.failsafe_icon));
-			challengeImage.setImageDrawable(getResources().getDrawable(R.drawable.challenge_icon));
-			soundImage.setImageDrawable(getResources().getDrawable(R.drawable.sound));
-			
-			failsafeImage.setVisibility(ImageView.INVISIBLE);
-			challengeImage.setVisibility(ImageView.INVISIBLE);
 
+			alarmOnImage.setImageDrawable(getResources().getDrawable(R.drawable.alarm_on));
+			failsafeImage.setImageDrawable(getResources().getDrawable(R.drawable.failsafe_off));
+			challengeImage.setImageDrawable(getResources().getDrawable(R.drawable.challenge_off));
+			soundImage.setImageDrawable(getResources().getDrawable(R.drawable.sound_on_vibrate_off));
+
+			if (alarmOn) {
+				alarmOnImage.setTag(cursor.getInt(0));
+			} else {
+				alarmOnImage.setImageDrawable(getResources().getDrawable(R.drawable.alarm_off));
+				if (cursor.getInt(0) == 0) {
+					alarmOnImage.setTag(-1000);
+				} else {
+					alarmOnImage.setTag(0 - cursor.getInt(0));
+				}
+			}
+
+			alarmOnImage.setOnClickListener(enableAlarmOn);
+			
 			if (showFailSafe) {
-				failsafeImage.setVisibility(ImageView.VISIBLE);
+				failsafeImage.setImageDrawable(getResources().getDrawable(R.drawable.failsafe_on));
 			}
 			
 			if (showChallenge) {
-				challengeImage.setVisibility(ImageView.VISIBLE);
+				challengeImage.setImageDrawable(getResources().getDrawable(R.drawable.challenge_on));
 			}
 			
 			if (soundOff && vibrateOn) {
-				soundImage.setImageDrawable(getResources().getDrawable(R.drawable.vibrate));
+				soundImage.setImageDrawable(getResources().getDrawable(R.drawable.sound_off_vibrate_on));
 			} else if (soundOff && !vibrateOn) {
-				soundImage.setImageDrawable(getResources().getDrawable(R.drawable.mute));
+				soundImage.setImageDrawable(getResources().getDrawable(R.drawable.sound_off_vibrate_off));
 			} else if (!soundOff && vibrateOn) {
-				soundImage.setImageDrawable(getResources().getDrawable(R.drawable.sound_vibrate));
+				soundImage.setImageDrawable(getResources().getDrawable(R.drawable.sound_on_vibrate_on));
 			}
-			
-			chkAlarmOn.setOnCheckedChangeListener(null);
-			chkAlarmOn.setTag(cursor.getInt(0));
-			chkAlarmOn.setChecked(cursor.getInt(16) > 0);
-			chkAlarmOn.setOnCheckedChangeListener(checkAlarm);
 		}
-		
+
 		@Override
 		public View newView(Context context, Cursor cursor, ViewGroup parent) {
 			
@@ -322,26 +335,6 @@ public class AlarmClock extends ListActivity {
 
 			return v;
 		}
-		
-		private CheckBox.OnCheckedChangeListener checkAlarm = new CheckBox.OnCheckedChangeListener() {
-			
-			@Override
-			public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
-				
-				int alarmId = Integer.parseInt(arg0.getTag().toString());
-				dbAdapter.setAlarmToDB(alarmId, arg1);
-				curAdapter.getCursor().requery();
-
-				if (arg1) { 
-					setUpAlarm();
-				} else {
-					turnOffAlarm();
-				}
-				
-				toggleNotif();
-			}
-			
-		};
 	}
 	
 	private void findViews(View v) {
@@ -358,12 +351,37 @@ public class AlarmClock extends ListActivity {
 		friText = (TextView) v.findViewById(R.id.friday);
 		satText = (TextView) v.findViewById(R.id.saturday);
 		
+		alarmOnImage = (ImageView) v.findViewById(R.id.alarm_enabled_row);
 		failsafeImage = (ImageView) v.findViewById(R.id.failsafe_icon);
 		challengeImage = (ImageView) v.findViewById(R.id.challenge_icon);
 		soundImage = (ImageView) v.findViewById(R.id.sound_icon);
-		
-		chkAlarmOn = (CheckBox) v.findViewById(R.id.alarm_enabled_row);
 	}
+	
+	private ImageView.OnClickListener enableAlarmOn = new Button.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			
+			int tagId = (Integer) v.getTag();
+			boolean alarmOn = tagId >= 0;
+
+			if (alarmOn) {
+				alarmOnImage.setImageDrawable(getResources().getDrawable(R.drawable.alarm_off));
+				setUpAlarm();
+			} else {
+				if (tagId == -1000) {
+					tagId = 0;
+				} else {
+					tagId *= -1;
+				}
+				alarmOnImage.setImageDrawable(getResources().getDrawable(R.drawable.alarm_on));
+				turnOffAlarm();
+			}
+			dbAdapter.setAlarmToDB(tagId, !alarmOn);
+			curAdapter.getCursor().requery();
+			toggleNotif();
+		}
+	};
 	
 	/*
 	 * Highlight (in yellow) all the days in the alarm list screen with respect to the user's
