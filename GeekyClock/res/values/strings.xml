@@ -13,7 +13,7 @@
     <string name="label">Label</string>
     <string name="label_msg">Enter a custom label for your alarm</string>
     <string name="alarm_time">Time</string>
-    <string name="alarm_repeat">Alarm repeat</string>
+    <string name="alarm_repeat">Repeat</string>
     
     <string name="alarm_mode_header">WakeUp Settings</string>
     <string name="failsafe_mode">FailSafe</string>
