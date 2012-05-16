@@ -89,7 +89,12 @@ public class Snooze extends Activity {
 		amanager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 		amanager.setStreamVolume(AudioManager.STREAM_ALARM, 20, 0);
 		
-		emptyIntent = getIntent().getExtras().isEmpty();
+		if (getIntent().getExtras() == null) {
+			emptyIntent = true;
+		} else {
+			emptyIntent = getIntent().getExtras().isEmpty();
+		}
+		
 		
 		if (!emptyIntent) {
 			String sound = getIntent().getExtras().getString(Alarm.PACKAGE_PREFIX + ".sound");

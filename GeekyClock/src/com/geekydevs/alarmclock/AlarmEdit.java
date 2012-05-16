@@ -485,6 +485,7 @@ public class AlarmEdit extends Activity {
 		@Override
 		public void onClick(View v) {
 		
+			
 			wakeUp.setChecked(!wakeUp.isChecked());
 			if (wakeUp.isChecked()) {
 				difficultyView.setVisibility(View.VISIBLE);
@@ -501,9 +502,11 @@ public class AlarmEdit extends Activity {
 		
 		@Override
 		public void onClick(View v) {
-			Intent i = new Intent(AlarmEdit.this, DifficultySelection.class);
-			i.putExtra(Alarm.PACKAGE_PREFIX + ".level", difficultyView.getText());
-			startActivityForResult(i, ACTION_CHOOSE_LEVEL);	
+			if (wakeUp.isChecked()) {
+				Intent i = new Intent(AlarmEdit.this, DifficultySelection.class);
+				i.putExtra(Alarm.PACKAGE_PREFIX + ".level", difficultyView.getText());
+				startActivityForResult(i, ACTION_CHOOSE_LEVEL);	
+			}
 		}
 	};
 	
