@@ -27,6 +27,7 @@ public class AlarmService extends Service {
 	public static final String EXTRA_DONT_DISABLE = "don't disable";
 
 	private static final int NOTIFY_ALARM_SET = R.layout.alarm_edit;
+	private static final int WEEK_INTERVAL = 604800000;
 	
 	private NotificationManager notifManager;
 	private AlarmDBAdapter dbAdapter;
@@ -89,11 +90,9 @@ public class AlarmService extends Service {
 						c.moveToFirst();
 	
 						Log.d("Checking", "Scheduling Alarm " + alarmPos);
-						//if (!isActive(toSchedule, c)) {
-							//Log.d("Checking", "Alarm " + alarmPos + " is not active");
+
 						setAlarm(toSchedule, c);
-						//}
-						
+	
 						performAction(new Intent().setAction(ACTION_SHOW_NOTIF));
 					}
 				}
@@ -102,8 +101,10 @@ public class AlarmService extends Service {
 				
 				Intent stopIntent = new Intent(this, AlarmReceiver.class);
 				
+				int id = intent.getExtras().getInt(Alarm.PACKAGE_PREFIX + ".id");
+				
 				PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(),
-												0, stopIntent, 0);
+												id, stopIntent, 0);
 	
 				AlarmManager alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
 				alarmManager.cancel(pendingIntent);	
@@ -139,33 +140,7 @@ public class AlarmService extends Service {
 			}
 		}
 	}
-	/*
-	private boolean isActive(Calendar c, Cursor cursor) {
-		
-		Intent i = new Intent(this, AlarmReceiver.class);
-		
-		// Check if failSafe mode has been enabled. If yes, pass the snooze limit to broadcast receiver.
-		if (cursor.getInt(11) > 0)
-			i.putExtra("failsafe_on", cursor.getInt(11));
-			i.putExtra("snooze_count", cursor.getInt(15));
-		
-		if (cursor.getInt(12) > 0)
-			i.putExtra("challenge_on", cursor.getInt(12));
-			i.putExtra("challenge_level", cursor.getString(17));
-		
-		if (cursor.getInt(13) > 0)
-			i.putExtra("vibrate", 1);
-		else 
-			i.putExtra("vibrate", 0);
-		
-		i.putExtra("sound", cursor.getString(14));
 
-		boolean active = (PendingIntent.getBroadcast(
-				this.getApplicationContext(), 0, i, PendingIntent.FLAG_NO_CREATE) != null);
-		
-		return active;
-	}
-	*/
 	/*
 	 * Schedule the alarm.
 	 */
@@ -196,7 +171,7 @@ public class AlarmService extends Service {
 		i.putExtra(Alarm.PACKAGE_PREFIX + ".has_repeat", haveRepeat(cursor));
 		
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(
-				this.getApplicationContext(), 0, i, flag);
+				this.getApplicationContext(), cursor.getInt(0), i, flag);
 		
 		Calendar calendar = Calendar.getInstance();
 		c.set(Calendar.SECOND, 0);
@@ -210,7 +185,11 @@ public class AlarmService extends Service {
 		// Testing purposes
 		//calendar.add(Calendar.SECOND, 5);
 
-		am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);	
+		if (haveRepeat(cursor)){
+			am.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), WEEK_INTERVAL, pendingIntent);
+		} else {
+			am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);	
+		}
 	}
 
 	/*
@@ -253,16 +232,20 @@ public class AlarmService extends Service {
 				if (c.getInt(i) > 0) { // if the day has a repeat
 					if (i-dif < day) {
 						// Keep only the first day before current day
-						if (i-dif < day) { 
+						//if (i-dif < day) { 
+						if (temp == 0) {
 							temp = i-dif; 
-						} 
+						}
+						//} 
 					} else if (i-dif == day) {
 						// Keep day same as current day if time scheduled hasn't pass yet
 						if ((fHour > hour) || ((fHour == hour) && (fMinute > minute))) {
 							fDay = i-dif;
 							break;
 						} else {
-							temp = i-dif;
+							if (temp == 0) {
+								temp = i-dif;
+							}
 						}
 					// Grab the first day after current day
 					} else if (i-dif > day) {
@@ -283,12 +266,24 @@ public class AlarmService extends Service {
 				}
 			}
 		}
-		if (fDay == fCalendar.get(Calendar.DAY_OF_WEEK)) {
-			fDay = fCalendar.get(Calendar.DAY_OF_MONTH);
-		} else if (fDay == 0){
-			fDay = fCalendar.get(Calendar.DAY_OF_MONTH) + (daysInWeek - fCalendar.get(Calendar.DAY_OF_WEEK) + temp);
+		if (repeatFlag) {
+			if (fDay == fCalendar.get(Calendar.DAY_OF_WEEK)) {
+				fDay = fCalendar.get(Calendar.DAY_OF_MONTH);
+			} else if (fDay == 0){
+				fDay = fCalendar.get(Calendar.DAY_OF_MONTH) + (daysInWeek - fCalendar.get(Calendar.DAY_OF_WEEK) + temp);
+			} else {
+				fDay = fCalendar.get(Calendar.DAY_OF_MONTH) + Math.abs(fCalendar.get(Calendar.DAY_OF_WEEK) - fDay);
+			}
 		} else {
-			fDay = fCalendar.get(Calendar.DAY_OF_MONTH) + Math.abs(fCalendar.get(Calendar.DAY_OF_WEEK) - fDay);
+			if (fDay == fCalendar.get(Calendar.DAY_OF_WEEK)) {
+				fDay = fCalendar.get(Calendar.DAY_OF_MONTH);
+			} else {
+				if (fDay > 1) {
+					fDay = fCalendar.get(Calendar.DAY_OF_MONTH) + Math.abs(fCalendar.get(Calendar.DAY_OF_WEEK) - fDay);
+				} else {
+					fDay = fCalendar.get(Calendar.DAY_OF_MONTH) + 1;
+				}
+			}
 		}
 	
 		fCalendar.set(fYear, fMonth, fDay, fHour, fMinute, fSecond);
@@ -389,8 +384,9 @@ public class AlarmService extends Service {
 		String message = "Next alarm: " + timeString; 
 		
 		Intent intent = new Intent(this, AlarmClock.class);
-		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		intent.setAction(Intent.ACTION_MAIN);
+		intent.addCategory(Intent.CATEGORY_LAUNCHER);
+		
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, 0);
 		
 		Notification notif = new Notification(R.drawable.alarm_icon, message, System.currentTimeMillis());

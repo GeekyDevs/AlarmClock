@@ -24,6 +24,8 @@ public class FailSafe extends Activity {
 	private countDown timer;
 	private final long lockOutTime = 10000; //600000;
 	private final long interval = 1000;
+	
+	private AudioManager amanager;
 	private MediaPlayer mediaPlayer;
 	
 	private Vibrator vibrate;
@@ -31,8 +33,14 @@ public class FailSafe extends Activity {
 	
 	private boolean vibrateOn = false;
 	
+	private int oldVolumeIndex = 0;
+	private int id = -1;
+	
 	private WakeLock wakeLock;
 	private KeyguardLock keyguardLock;
+	
+	private AlarmDBAdapter dbAdapter;
+	private boolean repeatFlag = false;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -40,14 +48,11 @@ public class FailSafe extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.failsafe_layout);
 		
-		PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
-        wakeLock = pm.newWakeLock((PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP), "TAG");
-        wakeLock.acquire();
-        
-        KeyguardManager keyguardManager = (KeyguardManager) getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE); 
-        keyguardLock =  keyguardManager.newKeyguardLock("TAG");
-        keyguardLock.disableKeyguard();
+		dbAdapter = new AlarmDBAdapter(getBaseContext());
+		dbAdapter.open();
 		
+		WakeLocker.acquire(getBaseContext());
+
 		// Assigning views
 		ImageView lockImage = (ImageView) findViewById(R.id.failsafe_screen);
 		lockImage.setImageDrawable(getResources().getDrawable(R.drawable.failsafe_lock));
@@ -55,10 +60,14 @@ public class FailSafe extends Activity {
 		timeRemaining = (TextView) findViewById(R.id.time_remaining);
 		
 		// Sound settings
-		AudioManager amanager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-		amanager.setStreamVolume(AudioManager.STREAM_ALARM, 20, 0);
+		amanager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+		oldVolumeIndex = amanager.getStreamVolume(AudioManager.STREAM_MUSIC);
+		amanager.setStreamVolume(AudioManager.STREAM_MUSIC, amanager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) / 2, 0);
 		
+		repeatFlag = getIntent().getExtras().getBoolean(Alarm.PACKAGE_PREFIX + ".has_repeat");
+		id = getIntent().getExtras().getInt(Alarm.PACKAGE_PREFIX + ".id"); 
 		String sound = getIntent().getExtras().getString(Alarm.PACKAGE_PREFIX + ".sound");
+		
 		if (sound.equals("Silent") || sound.equals("Default")) {
 			mediaPlayer = MediaPlayer.create(this, R.raw.normal);
 		} else if (sound.equals("C'mon Man")) {
@@ -80,11 +89,44 @@ public class FailSafe extends Activity {
 		timer.start();
 	}
 	
+
+	@Override
+	public void onResume() {
+		try {
+			Log.v("On resume called","------ WakeLocker aquire next!");
+			WakeLocker.acquire();
+		}catch(Exception ex){
+
+		}
+
+		super.onResume();
+	}
+	
+	@Override
+	protected void onPause() {
+
+		try {
+			Log.v("on pause called", "on pause called");
+			WakeLocker.release();
+		}catch(Exception ex){
+			Log.e("Exception in on menu", "exception on menu");
+		}
+		super.onPause();
+	}
+	
 	@Override
 	public void onDestroy() {
+
+		try {
+			Log.v("on destroy called", "on destroy called");
+			WakeLocker.release();
+			WakeLocker.exit();
+		}catch(Exception ex){
+			Log.e("Exception in on menu", "exception on menu");
+		}
+
+		dbAdapter.close();
 		super.onDestroy();
-		wakeLock.release();
-		//keyguardLock.reenableKeyguard();
 	}
 	
 	/*
@@ -132,14 +174,16 @@ public class FailSafe extends Activity {
 				vibrate.cancel();
 			}
 			
+			amanager.setStreamVolume(AudioManager.STREAM_MUSIC, oldVolumeIndex, 0);
+			
 			Intent i = new Intent(getBaseContext(), AlarmService.class);
 			i.setAction(AlarmService.ACTION_STOP_ALARM);
+			i.putExtra(Alarm.PACKAGE_PREFIX + ".id", id);
 			startService(i);
 			
-			Intent refresh = new Intent(getBaseContext(), AlarmClock.class);
-			refresh.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-			refresh.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			startActivity(refresh);
+			if (!repeatFlag) {
+				dbAdapter.setAlarmToDB(id, false);
+			}
 			
 			finish();
 		}

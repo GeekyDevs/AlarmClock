@@ -74,7 +74,6 @@ public class AlarmClock extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
-        
         // Create an ad.
         adView = new AdView(this, AdSize.BANNER, "a14f8cdc40486f5");
         
@@ -93,8 +92,7 @@ public class AlarmClock extends ListActivity {
         
         // Start loading the ad in the background.
         adView.loadAd(request);
-        
-        
+
         dbAdapter = new AlarmDBAdapter(this);
         dbAdapter.open();
 
@@ -122,6 +120,17 @@ public class AlarmClock extends ListActivity {
     	ListView listV = getListView();
     	listV.setAdapter(curAdapter);
     	listV.setOnCreateContextMenuListener(createItemContext);
+    }
+    
+    @Override
+    protected void onResume() {
+    	curAdapter.getCursor().requery();
+    	
+    	Intent i = new Intent(getBaseContext(), AlarmService.class);
+		i.setAction(AlarmService.ACTION_SHOW_NOTIF);
+		startService(i);
+		
+    	super.onResume();
     }
     
     @Override
@@ -215,7 +224,7 @@ public class AlarmClock extends ListActivity {
 			dbAdapter.deleteAlarm(selectedId);
 			curAdapter.getCursor().requery();
 
-			turnOffAlarm();
+			turnOffAlarm((int)selectedId);
 			toggleNotif();
 			
 			break;
@@ -227,9 +236,10 @@ public class AlarmClock extends ListActivity {
 	/*
 	 * Request that the alarm service be started.
 	 */
-	private void setUpAlarm() {
+	private void setUpAlarm(int id) {
 		
 		Intent i = new Intent(this, AlarmService.class);
+		i.putExtra(Alarm.PACKAGE_PREFIX + ".id", id);
 		i.setAction(AlarmService.ACTION_SET_ALARM);
 		startService(i);
 		
@@ -239,9 +249,10 @@ public class AlarmClock extends ListActivity {
 	 * Removes the alarm with the intent.  Occurs when user disables the 
 	 * alarm or deletes it.
 	 */
-	private void turnOffAlarm() {
+	private void turnOffAlarm(int id) {
 		
 		Intent i = new Intent(this, AlarmService.class);
+		i.putExtra(Alarm.PACKAGE_PREFIX + ".id", id);
 		i.setAction(AlarmService.ACTION_STOP_ALARM);
 		startService(i);
 	}
@@ -262,8 +273,6 @@ public class AlarmClock extends ListActivity {
 		@Override
 		public void bindView(View view, Context context, Cursor cursor) {
 			
-			//ImageView turnOnOffImage = (ImageView) view.v.findViewById(R.id.turn_onoff_icon);
-
 			findViews(view);
 			
 			//Display the alarm label
@@ -363,11 +372,17 @@ public class AlarmClock extends ListActivity {
 		public void onClick(View v) {
 			
 			int tagId = (Integer) v.getTag();
+			int t = (Integer) v.getTag();
 			boolean alarmOn = tagId >= 0;
 
 			if (alarmOn) {
+				if (t == -1000) {
+					t = 0;
+				} else {
+					t *= -1;
+				}
 				alarmOnImage.setImageDrawable(getResources().getDrawable(R.drawable.alarm_off));
-				setUpAlarm();
+				setUpAlarm(t);
 			} else {
 				if (tagId == -1000) {
 					tagId = 0;
@@ -375,9 +390,10 @@ public class AlarmClock extends ListActivity {
 					tagId *= -1;
 				}
 				alarmOnImage.setImageDrawable(getResources().getDrawable(R.drawable.alarm_on));
-				turnOffAlarm();
+				turnOffAlarm(tagId);
 			}
 			dbAdapter.setAlarmToDB(tagId, !alarmOn);
+			dbAdapter.setAlarmToDB(t, !alarmOn);
 			curAdapter.getCursor().requery();
 			toggleNotif();
 		}

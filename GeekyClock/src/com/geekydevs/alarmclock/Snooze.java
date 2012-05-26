@@ -4,18 +4,19 @@ import java.util.Calendar;
 
 import android.app.Activity;
 import android.app.AlarmManager;
-import android.app.KeyguardManager;
 import android.app.KeyguardManager.KeyguardLock;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.os.PowerManager.WakeLock;
 import android.os.Vibrator;
+import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -26,7 +27,7 @@ import android.widget.TextView;
 public class Snooze extends Activity {
 
 	private static long[] pattern = {200, 500};
-	private static final int SNOOZE_INTERVAL = 5;
+	private static final int SNOOZE_INTERVAL = 10;
 	
 	private MediaPlayer mediaPlayer;
 	private AudioManager amanager;
@@ -37,15 +38,21 @@ public class Snooze extends Activity {
 	
 	private boolean isNativeSnooze = true;
 	private boolean soundOn = false;
-	private boolean challengeOn = false;
 	private boolean vibrateOn = false;
 	private boolean emptyIntent = false;
 	
 	private int snooze_flag = 0;
 	private int snooze_remaining;
+	private int id = -1;
+	
+	private int oldVolumeIndex = 0;
 
-	private WakeLock wakeLock;
+	private PowerManager.WakeLock wakeLock;
+	private PowerManager pm;
 	private KeyguardLock keyguardLock;
+	
+	private AlarmDBAdapter dbAdapter;
+	private boolean repeatFlag = false;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -54,15 +61,12 @@ public class Snooze extends Activity {
 		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.snooze);
-
-		PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
-        wakeLock = pm.newWakeLock((PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP), "TAG");
-        wakeLock.acquire();
-        
-        KeyguardManager keyguardManager = (KeyguardManager) getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE); 
-        keyguardLock =  keyguardManager.newKeyguardLock("TAG");
-        keyguardLock.disableKeyguard();
 		
+		dbAdapter = new AlarmDBAdapter(getBaseContext());
+		dbAdapter.open();
+		
+		WakeLocker.acquire(this);
+
 		int snooze_cnt = 0;
 		
 		if (getIntent().hasExtra(Alarm.PACKAGE_PREFIX + ".snooze_count"))
@@ -82,22 +86,22 @@ public class Snooze extends Activity {
 			snooze.setText("Snooze Remaining: " + snooze_cnt);
 			snooze_remaining = snooze_cnt;
 		}
-		
-		if (getIntent().hasExtra(Alarm.PACKAGE_PREFIX + ".challenge_on"))
-			challengeOn = getIntent().getExtras().getInt(Alarm.PACKAGE_PREFIX + ".challenge_on") > 0;
-		
-		amanager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-		amanager.setStreamVolume(AudioManager.STREAM_ALARM, 20, 0);
-		
+
 		if (getIntent().getExtras() == null) {
 			emptyIntent = true;
 		} else {
 			emptyIntent = getIntent().getExtras().isEmpty();
 		}
 		
+		amanager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+		oldVolumeIndex = amanager.getStreamVolume(AudioManager.STREAM_MUSIC);
+		amanager.setStreamVolume(AudioManager.STREAM_MUSIC, amanager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) / 2, 0);
 		
 		if (!emptyIntent) {
 			String sound = getIntent().getExtras().getString(Alarm.PACKAGE_PREFIX + ".sound");
+			id = getIntent().getExtras().getInt(Alarm.PACKAGE_PREFIX + ".id");
+			repeatFlag = getIntent().getExtras().getBoolean(Alarm.PACKAGE_PREFIX + ".has_repeat");
+			
 			if (!sound.equals("Silent")) {
 				soundOn = true;
 				if (sound.equals("Default")) {
@@ -108,7 +112,6 @@ public class Snooze extends Activity {
 					mediaPlayer = MediaPlayer.create(this, R.raw.red_alert);
 				}
 			}
-	
 			if (soundOn) {
 				mediaPlayer.start();
 				mediaPlayer.setLooping(true);
@@ -125,10 +128,43 @@ public class Snooze extends Activity {
 	}
 	
 	@Override
+	public void onResume() {
+		try {
+			Log.v("On resume called","------ WakeLocker aquire next!");
+			WakeLocker.acquire();
+		}catch(Exception ex){
+
+		}
+
+		super.onResume();
+	}
+	
+	@Override
+	protected void onPause() {
+
+		try {
+			Log.v("on pause called", "on pause called");
+			WakeLocker.release();
+		}catch(Exception ex){
+			Log.e("Exception in on menu", "exception on menu");
+		}
+		super.onPause();
+	}
+	
+	
+	@Override
 	public void onDestroy() {
+
+		try {
+			Log.v("on destroy called", "on destroy called");
+			WakeLocker.release();
+			WakeLocker.exit();
+		}catch(Exception ex){
+			Log.e("Exception in on menu", "exception on menu");
+		}
+
+		dbAdapter.close();
 		super.onDestroy();
-		wakeLock.release();
-		//keyguardLock.reenableKeyguard();
 	}
 	
 	private Button.OnClickListener snoozeOnClick = new Button.OnClickListener() {
@@ -145,23 +181,20 @@ public class Snooze extends Activity {
 				Intent i = new Intent(getBaseContext(), AlarmReceiver.class);
 				i.putExtra(Alarm.PACKAGE_PREFIX + ".sound", getIntent().getExtras().getString(Alarm.PACKAGE_PREFIX + ".sound"));
 				i.putExtra(Alarm.PACKAGE_PREFIX + ".has_repeat", getIntent().getExtras().getBoolean(Alarm.PACKAGE_PREFIX + ".has_repeat"));
+				i.putExtra(Alarm.PACKAGE_PREFIX + ".id", id);
 				
 				if (vibrateOn) {
 					vibrate.cancel();
 					i.putExtra(Alarm.PACKAGE_PREFIX + ".vibrate", getIntent().getExtras().getInt(Alarm.PACKAGE_PREFIX + ".vibrate"));
 				}
-	
-				if (challengeOn) 
-					i.putExtra(Alarm.PACKAGE_PREFIX + ".challenge_on", getIntent().getExtras().getInt(Alarm.PACKAGE_PREFIX + ".challenge_on"));
-					i.putExtra(Alarm.PACKAGE_PREFIX + ".challenge_level", getIntent().getExtras().getInt(Alarm.PACKAGE_PREFIX + ".challenge_level"));
-				
+
 				if (!isNativeSnooze) {
 					i.putExtra(Alarm.PACKAGE_PREFIX + ".failsafe_on", 1);
 					i.putExtra(Alarm.PACKAGE_PREFIX + ".snooze_count", snooze_remaining - 1);
 				}
 	
 				PendingIntent pendingIntent = PendingIntent.getBroadcast(
-						getBaseContext(), 0, i, snooze_flag);
+						getBaseContext(), id, i, snooze_flag);
 				
 				Calendar calendar = Calendar.getInstance();
 				calendar.setTimeInMillis(System.currentTimeMillis());
@@ -196,10 +229,11 @@ public class Snooze extends Activity {
 		public void onProgressChanged(SeekBar seekBar, int progress,
 				boolean fromUser) {
 
-			if (progress == seekBar.getMax()) {
+			if (progress > seekBar.getMax() - 5) {
 
 				if (!emptyIntent) {
 					Intent i = new Intent(getBaseContext(), AlarmService.class);
+					i.putExtra(Alarm.PACKAGE_PREFIX + ".id", id);
 					i.setAction(AlarmService.ACTION_STOP_ALARM);
 					startService(i);
 	
@@ -211,28 +245,29 @@ public class Snooze extends Activity {
 						vibrate.cancel();
 					}
 					
-					/*
-					Intent j = new Intent(getBaseContext(), AlarmService.class);
-					j.setAction(AlarmService.ACTION_SHOW_NOTIF);
-					startService(j);
+					amanager.setStreamVolume(AudioManager.STREAM_MUSIC, oldVolumeIndex, 0);
 					
+					if (!repeatFlag) {
+						dbAdapter.setAlarmToDB(id, false);
+					}
 					
-					Intent k = new Intent(getBaseContext(), AlarmService.class);
-					k.setAction(AlarmService.ACTION_SET_ALARM);
-					k.putExtra("continuousAlarm", 1);
-					startService(k);
-			        */
-					
-					Intent refresh = new Intent(getBaseContext(), AlarmClock.class);
-					refresh.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-					refresh.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-					startActivity(refresh);
-	
 					finish();
 				}
 			}
 		}
 	};
+	
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent ev) {
+	    Rect dialogBounds = new Rect();
+	    getWindow().getDecorView().getHitRect(dialogBounds);
+
+	    if (!dialogBounds.contains((int) ev.getX(), (int) ev.getY())) {
+	        return false;
+	    }
+	    return super.dispatchTouchEvent(ev);
+	}
+
 	
 	/*
 	 * Disable the user from exiting the failsafe screen.
@@ -241,7 +276,8 @@ public class Snooze extends Activity {
 	public boolean onKeyDown(int keyCode, KeyEvent event)  {
 	
 		if ((keyCode == KeyEvent.KEYCODE_VOLUME_UP) ||
-			(keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)) {
+			(keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) || 
+			(keyCode == KeyEvent.KEYCODE_HOME)) {
 			return true;
 		}
 
@@ -255,7 +291,7 @@ public class Snooze extends Activity {
 	
 	@Override
 	public void onAttachedToWindow() {
-	    this.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD);
 	    super.onAttachedToWindow();
+	    this.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD);
 	}
 }

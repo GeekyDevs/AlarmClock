@@ -70,10 +70,16 @@ public class Challenge extends Activity{
 	private int snooze_flag = 0;
 	private int snooze_remaining;
 	
+	private int oldVolumeIndex = 0;
+	private int id = -1;
+	
 	private String difficultyLevel;
 	
 	private WakeLock wakeLock;
 	private KeyguardLock keyguardLock;
+	
+	private AlarmDBAdapter dbAdapter;
+	private boolean repeatFlag = false;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -81,13 +87,10 @@ public class Challenge extends Activity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.challenge);
 		
-		PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
-        wakeLock = pm.newWakeLock((PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP), "TAG");
-        wakeLock.acquire();
-        
-        KeyguardManager keyguardManager = (KeyguardManager) getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE); 
-        keyguardLock =  keyguardManager.newKeyguardLock("TAG");
-        keyguardLock.disableKeyguard();
+		dbAdapter = new AlarmDBAdapter(getBaseContext());
+		dbAdapter.open();
+		
+		WakeLocker.acquire(getBaseContext());
 		
 		findViews();
 		
@@ -97,10 +100,13 @@ public class Challenge extends Activity{
 		dismissBar.setProgress(1);
 		
 		amanager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-		amanager.setStreamVolume(AudioManager.STREAM_ALARM, 20, 0);
+		oldVolumeIndex = amanager.getStreamVolume(AudioManager.STREAM_MUSIC);
+		amanager.setStreamVolume(AudioManager.STREAM_MUSIC, amanager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) / 2, 0);
 
 		generateSoundVibrate();
 
+		id = getIntent().getExtras().getInt(Alarm.PACKAGE_PREFIX + ".id");
+		repeatFlag = getIntent().getExtras().getBoolean(Alarm.PACKAGE_PREFIX + ".has_repeat");
 		difficultyLevel = getIntent().getExtras().getString(Alarm.PACKAGE_PREFIX + ".challenge_level");
 		
 		if (difficultyLevel.equals("Easy")) {
@@ -135,11 +141,45 @@ public class Challenge extends Activity{
 		});
 	}
 	
+
+	@Override
+	public void onResume() {
+		try {
+			Log.v("On resume called","------ WakeLocker aquire next!");
+			WakeLocker.acquire();
+		}catch(Exception ex){
+
+		}
+
+		super.onResume();
+	}
+	
+	@Override
+	protected void onPause() {
+
+		try {
+			Log.v("on pause called", "on pause called");
+			WakeLocker.release();
+		}catch(Exception ex){
+			Log.e("Exception in on menu", "exception on menu");
+		}
+		super.onPause();
+	}
+	
+	
 	@Override
 	public void onDestroy() {
+
+		try {
+			Log.v("on destroy called", "on destroy called");
+			WakeLocker.release();
+			WakeLocker.exit();
+		}catch(Exception ex){
+			Log.e("Exception in on menu", "exception on menu");
+		}
+		
+		dbAdapter.close();
 		super.onDestroy();
-		wakeLock.release();
-		//keyguardLock.reenableKeyguard();
 	}
 	
 	/*
@@ -193,6 +233,7 @@ public class Challenge extends Activity{
 			i.putExtra(Alarm.PACKAGE_PREFIX + ".sound", getIntent().getExtras().getString(Alarm.PACKAGE_PREFIX + ".sound"));
 			i.putExtra(Alarm.PACKAGE_PREFIX + ".challenge_on", 1);
 			i.putExtra(Alarm.PACKAGE_PREFIX + ".challenge_level", difficultyLevel);
+			i.putExtra(Alarm.PACKAGE_PREFIX + ".id", id);
 			
 
 			if (vibrateOn) {
@@ -208,7 +249,7 @@ public class Challenge extends Activity{
 			}
 
 			PendingIntent pendingIntent = PendingIntent.getBroadcast(
-					getBaseContext(), 0, i, snooze_flag);
+					getBaseContext(), id, i, snooze_flag);
 			
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTimeInMillis(System.currentTimeMillis());
@@ -252,14 +293,16 @@ public class Challenge extends Activity{
 					vibrate.cancel();
 				}
 				
+				amanager.setStreamVolume(AudioManager.STREAM_MUSIC, oldVolumeIndex, 0);
+				
 				Intent i = new Intent(getBaseContext(), AlarmService.class);
+				i.putExtra(Alarm.PACKAGE_PREFIX + ".id", id);
 				i.setAction(AlarmService.ACTION_STOP_ALARM);
 				startService(i);
-				
-				Intent refresh = new Intent(getBaseContext(), AlarmClock.class);
-				refresh.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-				refresh.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				startActivity(refresh);
+	
+				if (!repeatFlag) {
+					dbAdapter.setAlarmToDB(id, false);
+				}
 				
 				finish();
 			}

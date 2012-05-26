@@ -230,6 +230,7 @@ public class AlarmEdit extends Activity {
 			timeView.setText(Alarm.formatTime(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)));
 			updateSoundView(alarm.getAll().get("sound") + "");
 		}
+		
 	}
 	
 	/*
@@ -543,9 +544,9 @@ public class AlarmEdit extends Activity {
 			dbAdapter.saveAlarm(alarm.getAll());
 			
 			int id = (Integer) alarm.getAll().get("_id");
-
+			dbAdapter.setAlarmToDB(id, true);
+			
 			if (newAlarm) {
-				dbAdapter.setAlarmToDB(id, true);
 				setUpAlarm(id);	
 			} else {
 				if (dbAdapter.fetchEnabledById(id)) {

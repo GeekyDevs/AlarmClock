@@ -8,11 +8,14 @@
     
     <uses-sdk android:minSdkVersion="7" android:targetSdkVersion="13"/>
     
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
   	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
   	<uses-permission android:name="android.permission.WAKE_LOCK" />
  	<uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+ 	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+ 	
     
  	<supports-screens
  	    android:largeScreens="true"
@@ -26,9 +29,9 @@
         android:label="@string/app_name" >
 
         <activity
-            android:theme="@android:style/Theme.NoTitleBar"
-            android:launchMode="singleInstance" 
+            android:theme="@android:style/Theme.NoTitleBar" 
             android:name=".AlarmClock"
+            android:launchMode="singleTop"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -44,7 +47,9 @@
         <activity 
             android:theme="@android:style/Theme.NoTitleBar"
             android:configChanges="keyboard|keyboardHidden|orientation"
-            android:name=".AlarmEdit" 
+            android:name=".AlarmEdit"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:label="@string/edit_alarm_title">
         </activity>
         
@@ -61,6 +66,7 @@
         
         <activity
             android:name=".Snooze"
+            android:immersive="true"
             android:theme="@android:style/Theme.Dialog">
         </activity>
         
@@ -84,17 +90,19 @@
         <activity
             android:theme="@android:style/Theme.NoTitleBar"
             android:name=".Challenge"
+            android:immersive="true"
             android:windowSoftInputMode="stateAlwaysVisible"
             android:screenOrientation="portrait">
         </activity>
         
-        <service android:name=".AlarmService"></service>
+        <service android:name=".AlarmService"> 
+        </service>
         
         <receiver 
-            android:name=".AlarmReceiver"
-            android:enabled="true">
+            android:name=".AlarmReceiver">
             <intent-filter>
 				<action android:name="android.intent.action.TIME_SET" />
+				<action android:name="android.intent.action.BOOT_COMPLETED" />
         	</intent-filter>  
         </receiver>
         
