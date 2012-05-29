@@ -8,14 +8,12 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.Gravity;
 import android.widget.Toast;
-
 
 public class AlarmService extends Service {
 
@@ -177,8 +175,13 @@ public class AlarmService extends Service {
 		c.set(Calendar.SECOND, 0);
 		c.set(Calendar.MILLISECOND, 0);
 
+		long millisDif = (c.getTimeInMillis() - calendar.getTimeInMillis());
 		long secondsDif = (c.getTimeInMillis() - calendar.getTimeInMillis()) / 1000;
-        
+
+		Toast toast = Toast.makeText(this, "Alarm set for " + Alarm.getDurationBreakdown(millisDif) + " from now.", Toast.LENGTH_LONG);
+		toast.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL, 0, 0);  
+		toast.show();
+		
 		calendar.setTimeInMillis(System.currentTimeMillis());
 		calendar.add(Calendar.SECOND, (int) secondsDif);
 		

@@ -109,10 +109,11 @@ public class AlarmClock extends ListActivity {
         
         assignListeners();
         
+        /*
         Intent i = new Intent(getBaseContext(), AlarmService.class);
 		i.setAction(AlarmService.ACTION_SHOW_NOTIF);
 		startService(i);
-		
+		*/
     }
     
     private void assignListeners() {
@@ -124,12 +125,13 @@ public class AlarmClock extends ListActivity {
     
     @Override
     protected void onResume() {
+    	
     	curAdapter.getCursor().requery();
     	
     	Intent i = new Intent(getBaseContext(), AlarmService.class);
 		i.setAction(AlarmService.ACTION_SHOW_NOTIF);
 		startService(i);
-		
+
     	super.onResume();
     }
     
@@ -141,7 +143,7 @@ public class AlarmClock extends ListActivity {
     	if (adView != null) {
 	      adView.destroy();
 	    }
-    	
+    	curAdapter.getCursor().close();
     	dbAdapter.close();
     	super.onDestroy();
     }
@@ -372,17 +374,13 @@ public class AlarmClock extends ListActivity {
 		public void onClick(View v) {
 			
 			int tagId = (Integer) v.getTag();
-			int t = (Integer) v.getTag();
 			boolean alarmOn = tagId >= 0;
 
+			Log.d("Checking", "Alarm " + v.getTag() + " is " + alarmOn);
+			
 			if (alarmOn) {
-				if (t == -1000) {
-					t = 0;
-				} else {
-					t *= -1;
-				}
 				alarmOnImage.setImageDrawable(getResources().getDrawable(R.drawable.alarm_off));
-				setUpAlarm(t);
+				turnOffAlarm(tagId);
 			} else {
 				if (tagId == -1000) {
 					tagId = 0;
@@ -390,10 +388,11 @@ public class AlarmClock extends ListActivity {
 					tagId *= -1;
 				}
 				alarmOnImage.setImageDrawable(getResources().getDrawable(R.drawable.alarm_on));
-				turnOffAlarm(tagId);
+				setUpAlarm(tagId);
 			}
+			
 			dbAdapter.setAlarmToDB(tagId, !alarmOn);
-			dbAdapter.setAlarmToDB(t, !alarmOn);
+			
 			curAdapter.getCursor().requery();
 			toggleNotif();
 		}

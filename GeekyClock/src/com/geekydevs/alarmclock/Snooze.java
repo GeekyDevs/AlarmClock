@@ -5,6 +5,8 @@ import java.util.Calendar;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.KeyguardManager.KeyguardLock;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -23,6 +25,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
 
 public class Snooze extends Activity {
 
@@ -47,6 +50,8 @@ public class Snooze extends Activity {
 	
 	private int oldVolumeIndex = 0;
 
+	private NotificationManager notifManager;
+	
 	private PowerManager.WakeLock wakeLock;
 	private PowerManager pm;
 	private KeyguardLock keyguardLock;
@@ -64,6 +69,8 @@ public class Snooze extends Activity {
 		
 		dbAdapter = new AlarmDBAdapter(getBaseContext());
 		dbAdapter.open();
+		
+		//notifManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 		
 		WakeLocker.acquire(this);
 
@@ -204,6 +211,8 @@ public class Snooze extends Activity {
 		        am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);	
 				
 				finish();
+				
+				//setSnoozeNotification(calendar.toString());
 			}
 		}
 	};
@@ -251,11 +260,27 @@ public class Snooze extends Activity {
 						dbAdapter.setAlarmToDB(id, false);
 					}
 					
+					//notifManager.cancel(0);
 					finish();
 				}
 			}
 		}
 	};
+	
+	/*
+	 * Set the snooze notification in the widget bar
+	 */
+	private void setSnoozeNotification(String timeString) {
+		
+		String message = "Alarm (snoozed)";
+
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, null, 0);
+		
+		Notification notif = new Notification(R.drawable.alarm_icon, message, System.currentTimeMillis());
+		notif.setLatestEventInfo(this, message, timeString, contentIntent);
+		notif.flags = Notification.FLAG_AUTO_CANCEL;
+		notifManager.notify(0, notif);	
+	}
 	
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {
