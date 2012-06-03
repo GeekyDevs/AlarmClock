@@ -20,6 +20,10 @@ public class Alarm {
 	public static final int ALARM_FRIDAY = 9;
 	public static final int ALARM_SATURDAY = 10;
 	
+	private static final int MILLIS_IN_DAY = 86400000;
+	private static final int MILLIS_IN_HOUR = 3600000;
+	private static final int MILLIS_IN_MINUTE = 60000;
+	
 	public static final String PACKAGE_PREFIX = "com.geekydevs.alarmclock";
 	
 
@@ -179,31 +183,32 @@ public class Alarm {
             throw new IllegalArgumentException("Duration must be greater than zero!");
         }
 
-        long days = TimeUnit.MILLISECONDS.toDays(millis);
-        millis -= TimeUnit.DAYS.toMillis(days);
-        long hours = TimeUnit.MILLISECONDS.toHours(millis);
-        millis -= TimeUnit.HOURS.toMillis(hours);
-        long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
-        millis -= TimeUnit.MINUTES.toMillis(minutes);
-        long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
+        long days = (long) Math.ceil(millis / MILLIS_IN_DAY);
+        millis = millis % MILLIS_IN_DAY;
+        long hours = (long) Math.ceil(millis / MILLIS_IN_HOUR);
+        millis = millis % MILLIS_IN_HOUR;
+        long minutes = (long) Math.ceil(millis / (MILLIS_IN_MINUTE + 0.0));
 
         StringBuilder sb = new StringBuilder(64);
-        if (days > 0) {
-        	sb.append(days);
-        	sb.append(" days, ");
-        }
-        if (days > 0 || hours > 0) {
-        	sb.append(hours);
-        	sb.append(" hours, and ");
-        }
         
-        if (days > 0 || hours > 0 || minutes > 0) {
-        	sb.append(minutes);
-        	sb.append(" minutes ");
-        }
-        
-        if (days == 0 && hours == 0 && minutes == 0) {
-        	sb.append("less than 1 minute");
+        if (days == 0 && hours == 0 && minutes == 1) {
+	        if (millis < MILLIS_IN_MINUTE) {
+	        	sb.append("less than 1 minute");
+	        }
+        } else {
+	        if (days > 0) {
+	        	sb.append(days);
+	        	sb.append(" days, ");
+	        }
+	        if (days > 0 || hours > 0) {
+	        	sb.append(hours);
+	        	sb.append(" hours, and ");
+	        }
+	        
+	        if (days > 0 || hours > 0 || minutes > 0) {
+	        	sb.append(minutes);
+	        	sb.append(" minutes ");
+	        }
         }
         return(sb.toString());
 

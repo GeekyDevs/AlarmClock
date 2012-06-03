@@ -16,16 +16,17 @@ public abstract class WakeLocker {
         if (wakeLock != null) {
         	wakeLock.release();
         }
-
-        PowerManager pm = (PowerManager) ctx.getSystemService(Context.POWER_SERVICE);
-        wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK |
-                PowerManager.ACQUIRE_CAUSES_WAKEUP |
-                PowerManager.ON_AFTER_RELEASE, "AlarmClock.class");
-        wakeLock.acquire();
-        
-        keyguardManager = (KeyguardManager) ctx.getSystemService(Context.KEYGUARD_SERVICE); 
-        keyguardLock = keyguardManager.newKeyguardLock("TAG");
-        keyguardLock.disableKeyguard();
+        else {
+	        PowerManager pm = (PowerManager) ctx.getSystemService(Context.POWER_SERVICE);
+	        wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK |
+	                PowerManager.ACQUIRE_CAUSES_WAKEUP |
+	                PowerManager.ON_AFTER_RELEASE, "AlarmClock.class");
+	        wakeLock.acquire();
+	        
+	        keyguardManager = (KeyguardManager) ctx.getSystemService(Context.KEYGUARD_SERVICE); 
+	        keyguardLock = keyguardManager.newKeyguardLock("TAG");
+	        keyguardLock.disableKeyguard();
+        }
     }
 
     public static void release() {
@@ -41,6 +42,9 @@ public abstract class WakeLocker {
     }
     
     public static void acquire() {
-    	wakeLock.acquire();
+    	
+    	if ((wakeLock != null) && !wakeLock.isHeld()) {
+    		wakeLock.acquire();
+    	}
     }
 }

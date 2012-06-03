@@ -158,6 +158,16 @@ public class Snooze extends Activity {
 		super.onPause();
 	}
 	
+	@Override
+	protected void onStop() {
+		try {
+			Log.v("on stopped called", "on stopped called");
+			WakeLocker.release();
+		}catch(Exception ex){
+			Log.e("Exception in on menu", "exception on menu");
+		}
+		super.onStop();
+	}
 	
 	@Override
 	public void onDestroy() {
@@ -274,7 +284,8 @@ public class Snooze extends Activity {
 		
 		String message = "Alarm (snoozed)";
 
-		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, null, 0);
+		Intent intent = new Intent();
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, 0);
 		
 		Notification notif = new Notification(R.drawable.alarm_icon, message, System.currentTimeMillis());
 		notif.setLatestEventInfo(this, message, timeString, contentIntent);

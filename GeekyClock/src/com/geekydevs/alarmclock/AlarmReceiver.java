@@ -29,34 +29,7 @@ public class AlarmReceiver extends BroadcastReceiver{
 				dbAdapter.open();
 
 				int scheduleId = arg1.getExtras().getInt(Alarm.PACKAGE_PREFIX + ".id");
-				/*
-				Cursor enabledCursors = dbAdapter.fetchEnabledAlarms();
-				int scheduleId = arg1.getExtras().getInt(Alarm.PACKAGE_PREFIX + ".id");
-				
-				Intent stopIntent = new Intent(ctx, AlarmReceiver.class);
-				PendingIntent pendingIntent;
-				AlarmManager alarmManager;
-				
-				if (enabledCursors.moveToFirst()) {
-					if (enabledCursors.getInt(0) != scheduleId) {
-						pendingIntent = PendingIntent.getBroadcast(ctx,
-								enabledCursors.getInt(0), stopIntent, 0);
-						
-						alarmManager = (AlarmManager)ctx.getSystemService(Context.ALARM_SERVICE);
-						alarmManager.cancel(pendingIntent);	
-					}
-					while (enabledCursors.moveToNext()) {
-						if (enabledCursors.getInt(0) != scheduleId) {
-							pendingIntent = PendingIntent.getBroadcast(ctx,
-									enabledCursors.getInt(0), stopIntent, 0);
-							
-							alarmManager = (AlarmManager)ctx.getSystemService(Context.ALARM_SERVICE);
-							alarmManager.cancel(pendingIntent);	
-						}
-					}
-				}
-				*/
-				
+
 				boolean challengeOn = arg1.hasExtra(Alarm.PACKAGE_PREFIX + ".challenge_on");
 				boolean failSafeOn = arg1.hasExtra(Alarm.PACKAGE_PREFIX + ".failsafe_on");
 				
@@ -97,6 +70,7 @@ public class AlarmReceiver extends BroadcastReceiver{
 				dbAdapter.close();
 			}
 		} else {
+			
 			Intent i = new Intent(ctx, AlarmService.class);
 			i.setAction(AlarmService.ACTION_SET_ALARM);
 			ctx.startService(i);

@@ -115,6 +115,17 @@ public class FailSafe extends Activity {
 	}
 	
 	@Override
+	protected void onStop() {
+		try {
+			Log.v("on stopped called", "on stopped called");
+			WakeLocker.release();
+		}catch(Exception ex){
+			Log.e("Exception in on menu", "exception on menu");
+		}
+		super.onStop();
+	}
+	
+	@Override
 	public void onDestroy() {
 
 		try {

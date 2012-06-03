@@ -269,6 +269,7 @@ public class AlarmService extends Service {
 				}
 			}
 		}
+		
 		if (repeatFlag) {
 			if (fDay == fCalendar.get(Calendar.DAY_OF_WEEK)) {
 				fDay = fCalendar.get(Calendar.DAY_OF_MONTH);
