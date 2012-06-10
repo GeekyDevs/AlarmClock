@@ -183,9 +183,9 @@ public class Alarm {
             throw new IllegalArgumentException("Duration must be greater than zero!");
         }
 
-        long days = (long) Math.ceil(millis / MILLIS_IN_DAY);
+        long days = (long)(millis / MILLIS_IN_DAY);
         millis = millis % MILLIS_IN_DAY;
-        long hours = (long) Math.ceil(millis / MILLIS_IN_HOUR);
+        long hours = (long)(millis / MILLIS_IN_HOUR);
         millis = millis % MILLIS_IN_HOUR;
         long minutes = (long) Math.ceil(millis / (MILLIS_IN_MINUTE + 0.0));
 
@@ -196,19 +196,36 @@ public class Alarm {
 	        	sb.append("less than 1 minute");
 	        }
         } else {
-	        if (days > 0) {
-	        	sb.append(days);
-	        	sb.append(" days, ");
-	        }
-	        if (days > 0 || hours > 0) {
-	        	sb.append(hours);
-	        	sb.append(" hours, and ");
-	        }
-	        
-	        if (days > 0 || hours > 0 || minutes > 0) {
-	        	sb.append(minutes);
-	        	sb.append(" minutes ");
-	        }
+        	
+        	if (minutes == 60) {
+        		hours += 1;
+        		minutes = 0;
+        	}
+        	if (hours == 24) {
+        		days += 1;
+        		hours = 0;
+        	}
+        	
+	       if ((days > 0)) {
+	    	   if (days == 7) {
+	    		   sb.append("1 week");
+	    	   } else if (days > 0) {
+	    		   sb.append(days + " ");
+	    		   sb.append((days > 1) ? "days" : "day");
+	    	   }
+	       }
+	       
+	       if (hours > 0) {
+	    	   sb.append((days > 0) ? ", " : "");
+	    	   sb.append(hours + " ");
+	    	   sb.append((hours > 1) ? "hours" : "hour");
+	       }
+	       
+	       if (minutes > 0) {
+	    	   sb.append((days > 0 || hours > 0) ? " and " : "");
+	    	   sb.append(minutes);
+	    	   sb.append((minutes > 1) ? " minutes" : " minute");
+	       }
         }
         return(sb.toString());
 
