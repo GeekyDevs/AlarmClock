@@ -1,5 +1,9 @@
 package com.geekydevs.alarmclock;
 
+import com.google.ads.AdRequest;
+import com.google.ads.AdSize;
+import com.google.ads.AdView;
+
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.app.KeyguardManager.KeyguardLock;
@@ -16,6 +20,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class FailSafe extends Activity {
@@ -42,6 +47,8 @@ public class FailSafe extends Activity {
 	private AlarmDBAdapter dbAdapter;
 	private boolean repeatFlag = false;
 	
+	private AdView adView;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
@@ -57,6 +64,24 @@ public class FailSafe extends Activity {
 		ImageView lockImage = (ImageView) findViewById(R.id.failsafe_screen);
 		lockImage.setImageDrawable(getResources().getDrawable(R.drawable.failsafe_lock));
 		
+        // Add the AdView to the view hierarchy. The view will have no size
+        // until the ad is loaded.
+        // Create an ad.
+        adView = new AdView(this, AdSize.BANNER, "a14f8cdc40486f5");
+        LinearLayout layout = (LinearLayout) findViewById(R.id.ad);
+        layout.addView(adView);
+        
+        // Create an ad request. Check logcat output for the hashed device ID to
+        // get test ads on a physical device.
+        AdRequest request = new AdRequest();
+        request.addTestDevice(AdRequest.TEST_EMULATOR);
+        
+        // Testing on real device
+        request.addTestDevice("3334DE9B8EA200EC");
+        
+        // Start loading the ad in the background.
+        adView.loadAd(request);
+        
 		timeRemaining = (TextView) findViewById(R.id.time_remaining);
 		
 		// Sound settings
@@ -69,9 +94,7 @@ public class FailSafe extends Activity {
 		String sound = getIntent().getExtras().getString(Alarm.PACKAGE_PREFIX + ".sound");
 		
 		if (sound.equals("Silent") || sound.equals("Default")) {
-			mediaPlayer = MediaPlayer.create(this, R.raw.normal);
-		} else if (sound.equals("C'mon Man")) {
-			mediaPlayer = MediaPlayer.create(this, R.raw.cmon_man);
+			mediaPlayer = MediaPlayer.create(this, R.raw.normal);		
 		} else if (sound.equals("Red Alert")) {
 			mediaPlayer = MediaPlayer.create(this, R.raw.red_alert);
 		}
@@ -127,7 +150,11 @@ public class FailSafe extends Activity {
 	
 	@Override
 	public void onDestroy() {
-
+    	// Destroy the AdView.
+    	if (adView != null) {
+	      adView.destroy();
+	    }
+		
 		try {
 			Log.v("on destroy called", "on destroy called");
 			WakeLocker.release();

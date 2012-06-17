@@ -113,8 +113,6 @@ public class Snooze extends Activity {
 				soundOn = true;
 				if (sound.equals("Default")) {
 					mediaPlayer = MediaPlayer.create(this, R.raw.normal);
-				} else if (sound.equals("C'mon Man")) {
-					mediaPlayer = MediaPlayer.create(this, R.raw.cmon_man);
 				} else if (sound.equals("Red Alert")) {
 					mediaPlayer = MediaPlayer.create(this, R.raw.red_alert);
 				}

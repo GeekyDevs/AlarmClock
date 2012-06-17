@@ -10,7 +10,6 @@ import android.widget.RadioButton;
 public class SoundSelection extends Activity{
 
 	private RadioButton dfault;
-	private RadioButton cmon;
 	private RadioButton alert;
 	private RadioButton silent;
 	
@@ -23,9 +22,8 @@ public class SoundSelection extends Activity{
 		
 		silent = (RadioButton)findViewById(R.id.silent);
 		dfault = (RadioButton)findViewById(R.id.default_ring);
-		cmon = (RadioButton)findViewById(R.id.cmon_man_ring);
 		alert = (RadioButton)findViewById(R.id.red_alert_ring);
-		
+
 		findViewById(R.id.ring_ok).setOnClickListener(okOnClick);
 		findViewById(R.id.ring_cancel).setOnClickListener(cancelOnClick);
 		
@@ -35,8 +33,6 @@ public class SoundSelection extends Activity{
 			silent.setChecked(true);
 		} else if (sound.equals("Default")) {
 			dfault.setChecked(true);
-		} else if (sound.equals("C'mon Man")) {
-			cmon.setChecked(true);
 		} else if (sound.equals("Red Alert")) {
 			alert.setChecked(true);
 		}
@@ -53,8 +49,6 @@ public class SoundSelection extends Activity{
 				i.putExtra(Alarm.PACKAGE_PREFIX + ".sound", "Silent");
 			} else if (dfault.isChecked()) {
 				i.putExtra(Alarm.PACKAGE_PREFIX + ".sound", "Default");
-			} else if (cmon.isChecked()) {
-				i.putExtra(Alarm.PACKAGE_PREFIX + ".sound", "C'mon Man");
 			} else if (alert.isChecked()) {
 				i.putExtra(Alarm.PACKAGE_PREFIX + ".sound", "Red Alert");
 			}

@@ -22,4 +22,18 @@
 		android:id="@+id/time_remaining">
 	</TextView>
 
+	<LinearLayout
+  	    android:layout_width="fill_parent"
+  	    android:layout_height="wrap_content"
+  	    android:gravity="bottom"
+  	    android:layout_alignParentBottom="true">
+	  	
+	   	<LinearLayout
+            android:id="@+id/ad"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="bottom">
+		</LinearLayout>
+	</LinearLayout>
+	
 </LinearLayout>

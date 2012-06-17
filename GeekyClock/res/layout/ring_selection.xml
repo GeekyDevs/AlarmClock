@@ -40,16 +40,6 @@
 	  	android:focusable="false" 
 	  	android:focusableInTouchMode="false">
 	</RadioButton>
-	
-	<RadioButton 
-		android:layout_width="fill_parent" 
-	    android:layout_height="wrap_content" 
-	  	android:id="@+id/cmon_man_ring" 
-	  	android:text="C'mon Man"
-	  	android:textSize="20dip"
-	  	android:focusable="false" 
-	  	android:focusableInTouchMode="false">
-	</RadioButton>
  	
 	<View android:layout_width="fill_parent" 
 		  android:layout_height="1dip" 
