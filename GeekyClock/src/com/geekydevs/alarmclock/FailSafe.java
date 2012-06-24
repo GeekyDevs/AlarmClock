@@ -93,14 +93,16 @@ public class FailSafe extends Activity {
 		id = getIntent().getExtras().getInt(Alarm.PACKAGE_PREFIX + ".id"); 
 		String sound = getIntent().getExtras().getString(Alarm.PACKAGE_PREFIX + ".sound");
 		
-		if (sound.equals("Silent") || sound.equals("Default")) {
+		if (sound.equals("Default")) {
 			mediaPlayer = MediaPlayer.create(this, R.raw.normal);		
 		} else if (sound.equals("Red Alert")) {
 			mediaPlayer = MediaPlayer.create(this, R.raw.red_alert);
 		}
 
-		mediaPlayer.start();
-		mediaPlayer.setLooping(true);
+		if(mediaPlayer!=null) {
+			mediaPlayer.start();
+			mediaPlayer.setLooping(true);
+		}
 		
 		if (getIntent().getExtras().getInt(Alarm.PACKAGE_PREFIX + ".vibrate") == 1) {
 			vibrateOn = true;
@@ -206,8 +208,11 @@ public class FailSafe extends Activity {
 		@Override
 		public void onFinish() {
 			timer.cancel();
-			mediaPlayer.stop();
-			mediaPlayer.release();
+			if(mediaPlayer!=null){
+				mediaPlayer.stop();
+				mediaPlayer.release();
+				mediaPlayer = null;
+			}
 			if (vibrateOn) {
 				vibrate.cancel();
 			}
