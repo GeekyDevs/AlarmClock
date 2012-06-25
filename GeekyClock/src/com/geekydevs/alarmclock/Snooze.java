@@ -112,9 +112,19 @@ public class Snooze extends Activity {
 			if (!sound.equals("Silent")) {
 				soundOn = true;
 				if (sound.equals("Default")) {
-					mediaPlayer = MediaPlayer.create(this, R.raw.normal);
+					mediaPlayer = MediaPlayer.create(this, R.raw.default_ring);
+				} else if (sound.equals("Digital")) {
+					mediaPlayer = MediaPlayer.create(this, R.raw.digital_alarm);
+				} else if (sound.equals("Rooster")) {
+					mediaPlayer = MediaPlayer.create(this, R.raw.rooster);
+				} else if (sound.equals("Trumpet")) {
+					mediaPlayer = MediaPlayer.create(this, R.raw.trumpet_alarm);
+				} else if (sound.equals("Awaken")) {
+					mediaPlayer = MediaPlayer.create(this, R.raw.awaken);
 				} else if (sound.equals("Red Alert")) {
 					mediaPlayer = MediaPlayer.create(this, R.raw.red_alert);
+				} else if (sound.equals("Buzz")) {
+					mediaPlayer = MediaPlayer.create(this, R.raw.buzz_alert);
 				}
 			}
 			if (soundOn) {

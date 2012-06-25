@@ -1,71 +1,152 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RadioGroup
-  	xmlns:android="http://schemas.android.com/apk/res/android"
-  	android:layout_width="fill_parent"
-  	android:orientation="vertical" 
-  	android:layout_height="fill_parent">
-  		
-	<View android:layout_width="fill_parent" 
-		android:layout_height="1dip" 
-		android:background="@android:drawable/divider_horizontal_dark">
-	</View>
-  
-	<RadioButton 
-		android:layout_width="fill_parent" 
-	  	android:layout_height="wrap_content" 
-	  	android:id="@+id/silent"
-	  	android:text="Silent"
-	  	android:textSize="20dip"
-	  	android:focusable="false" 
-	  	android:focusableInTouchMode="false">
-	</RadioButton>
-	
-  	<RadioButton 
-  		android:checked="true"
-		android:layout_width="fill_parent" 
-	  	android:layout_height="wrap_content" 
-	  	android:id="@+id/default_ring"
-	  	android:text="Default"
-	  	android:textSize="20dip"
-	  	android:focusable="false" 
-	  	android:focusableInTouchMode="false">
-	</RadioButton>
-  
-  	<RadioButton 
-		android:layout_width="fill_parent" 
-	  	android:layout_height="wrap_content" 
-	  	android:id="@+id/red_alert_ring" 
-	  	android:text="Red Alert"
-	  	android:textSize="20dip"
-	  	android:focusable="false" 
-	  	android:focusableInTouchMode="false">
-	</RadioButton>
- 	
-	<View android:layout_width="fill_parent" 
-		  android:layout_height="1dip" 
-		  android:background="@android:drawable/divider_horizontal_dark">
-	</View>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
 
-	<LinearLayout android:orientation="horizontal" 
-				  android:layout_weight="1" 
-				  android:layout_width="wrap_content" 
-				  android:gravity="center_horizontal" 
-				  android:background="#CCC">
-				  
-		<Button android:layout_width="wrap_content" 
-				android:layout_height="wrap_content" 
-				android:id="@+id/ring_ok" 
-				android:text="Ok" 
-				android:width="100dip" 
-				android:layout_margin="10dip">
-		</Button>
-		
-		<Button android:layout_width="wrap_content" 
-				android:layout_height="wrap_content" 
-				android:id="@+id/ring_cancel" 
-				android:text="@string/cancel_button" 
-				android:width="100dip" 
-				android:layout_margin="10dip">
-		</Button>
-	</LinearLayout>
-</RadioGroup>
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:background="@android:drawable/divider_horizontal_dark" >
+    </View>
+
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_weight="2" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dip"
+                android:background="@android:drawable/divider_horizontal_dark" >
+            </View>
+
+            <RadioGroup
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="vertical" >
+
+                <RadioButton
+                    android:id="@+id/silent"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:text="Silent"
+                    android:textSize="20dip" >
+                </RadioButton>
+
+                <RadioButton
+                    android:id="@+id/default_ring"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:text="Default"
+                    android:textSize="20dip" >
+                </RadioButton>
+
+                <RadioButton
+                    android:id="@+id/digital"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:text="Digital"
+                    android:textSize="20dip" >
+                </RadioButton>
+
+                <RadioButton
+                    android:id="@+id/rooster"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:text="Rooster"
+                    android:textSize="20dip" >
+                </RadioButton>
+
+				<RadioButton
+                    android:id="@+id/awaken"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:text="Awaken"
+                    android:textSize="20dip" >
+                </RadioButton>
+                
+                <RadioButton
+                    android:id="@+id/trumpet"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:text="Trumpet"
+                    android:textSize="20dip" >
+                </RadioButton>
+
+                <RadioButton
+                    android:id="@+id/red_alert"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:text="Red Alert"
+                    android:textSize="20dip" >
+                </RadioButton>
+
+                <RadioButton
+                    android:id="@+id/buzz_alert"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:text="Buzz"
+                    android:textSize="20dip" >
+                </RadioButton>
+            </RadioGroup>
+        </LinearLayout>
+    </ScrollView>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:background="@android:drawable/divider_horizontal_dark" >
+    </View>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="100dip"
+        android:layout_weight="1"
+        android:background="#CCC"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/ring_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dip"
+            android:text="Ok"
+            android:width="100dip" >
+        </Button>
+
+        <Button
+            android:id="@+id/ring_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dip"
+            android:text="@string/cancel_button"
+            android:width="100dip" >
+        </Button>
+    </LinearLayout>
+
+</LinearLayout>
