@@ -30,7 +30,7 @@ import android.widget.TextView;
 public class Snooze extends Activity {
 
 	private static long[] pattern = {200, 500};
-	private static final int SNOOZE_INTERVAL = 10;
+	private static final int SNOOZE_INTERVAL = 540;
 	
 	private MediaPlayer mediaPlayer;
 	private AudioManager amanager;

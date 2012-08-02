@@ -26,8 +26,8 @@ import android.widget.TextView;
 public class FailSafe extends Activity {
 
 	TextView timeRemaining;
-	private countDown timer;
-	private final long lockOutTime = 10000; //600000;
+	private CountDown timer;
+	private final long lockOutTime = 120000;
 	private final long interval = 1000;
 	
 	private AudioManager amanager;
@@ -120,7 +120,7 @@ public class FailSafe extends Activity {
 			vibrate.vibrate(pattern, 0);
 		}
 		
-		timer = new countDown(lockOutTime, interval);
+		timer = new CountDown(lockOutTime, interval);
 		timer.start();
 	}
 	
@@ -209,9 +209,9 @@ public class FailSafe extends Activity {
 	 * Extends the existing counter class to display count down and turn
 	 * off ring on finish. 
 	 */
-	public class countDown extends CountDownTimer {
+	public class CountDown extends CountDownTimer {
 		
-		public countDown (long startTime, long interval) {
+		public CountDown (long startTime, long interval) {
 			super(startTime, interval);
 		}
 		

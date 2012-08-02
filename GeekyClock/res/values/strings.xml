@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">GeekyAlarm</string>
+    <string name="app_name">Perk Up Alarm</string>
     <string name="menu_add">Add New Alarm</string>
     <string name="notif_on">Turn Notification On</string>
     <string name="notif_off">Turn Notification Off</string>
@@ -18,7 +18,7 @@
     <string name="alarm_mode_header">WakeUp Settings</string>
     <string name="failsafe_mode">FailSafe</string>
     <string name="failsafe_desc">
-        Disable the ability to turn off the alarm (for 3 mins) after the snooze limit is reached </string>
+        Disable the ability to turn off the alarm (for 2 mins) after the snooze limit is reached </string>
     <string name="snooze_limit">Snooze Limit</string>
     <string name="challenge_mode">WakeUp Challenge</string>
     <string name="challenge_desc">
@@ -40,7 +40,7 @@
     <string name="cancel_button">Cancel</string>
     
     <string name="launch_msg">Alarm Launched</string>
-    <string name="app_launched">GeekyAlarm Launched!</string>
+    <string name="app_launched">Perk Up Alarm Launched!</string>
     
     <string name="snooze">Snooze</string>
     <string name="dismiss">Dismiss Alarm</string>

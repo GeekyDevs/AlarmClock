@@ -394,7 +394,7 @@ public class AlarmService extends Service {
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, 0);
 		
 		Notification notif = new Notification(R.drawable.alarm_icon, message, System.currentTimeMillis());
-		notif.setLatestEventInfo(this, "GeekyAlarm Scheduled", timeString, contentIntent);
+		notif.setLatestEventInfo(this, "Perk Up Alarm Scheduled", timeString, contentIntent);
 		notif.flags = Notification.FLAG_ONGOING_EVENT;
 		notifManager.notify(NOTIFY_ALARM_SET, notif);	
 	}
