@@ -243,24 +243,25 @@ public class FailSafe extends Activity {
 		
 		@Override
 		public void onTick (long timeTillFinished) {
-			
 			long minute = timeTillFinished/60000;
 			long seconds = (timeTillFinished % 60000)/1000;
-			String time;
 			
-			if (minute > 1) {
-				time = minute + ":";	
-			} else {
-				time = "00:";
+			StringBuffer time = new StringBuffer();
+			if (minute >= 1) {
+				time.append(minute);
+				time.append(":");	
+			} else {				
+				time.append("00:");
 			}
 			
 			if (seconds > 9) {
-				time += seconds;
+				time.append(seconds);
 			} else {
-				time += "0" + seconds;
+				time.append("0");
+				time.append(seconds);
 			}
 
-			timeRemaining.setText("Time remain:  " + time);
+			timeRemaining.setText(time.toString());
 		}
 	}
 
