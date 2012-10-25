@@ -51,7 +51,7 @@ public class Challenge extends Activity{
 	private static int MEDIUM_MULTIPLY_DIFFERENCE = 10;
 	private static int DIVISOR_DIFFERENCE = 9;
 	private static int QUOTIENT_DIFFERENCE = 12;
-	private static final int SNOOZE_INTERVAL = 5;
+	private static final int SNOOZE_INTERVAL = 540;
 	
 	private int correctAnswer = 0;
 	private int correctOperandAAnswer = 0;
